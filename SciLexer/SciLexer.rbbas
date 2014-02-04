@@ -1223,6 +1223,9 @@ Protected Module SciLexer
 
 	#tag Method, Flags = &h0
 		Function IsAvailable() As Boolean
+		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
+		  ' Calling System.IsFunctionAvailable is equivalent to calling LoadLibrary and GetProcAddress
+		  ' which is how Scintilla initializes itself
 		  Return System.IsFunctionAvailable("Scintilla_DirectFunction", "SciLexer")
 		End Function
 	#tag EndMethod
@@ -1272,6 +1275,110 @@ Protected Module SciLexer
 		  a As Integer
 		h As Integer
 	#tag EndStructure
+
+
+	#tag Enum, Name = Lexers, Type = Integer, Flags = &h1
+	CONTAINER
+NULL
+PYTHON
+CPP
+HTML
+XML
+PERL
+SQL
+VB
+PROPERTIES
+ERRORLIST
+MAKEFILE
+BATCH
+XCODE
+LATEX
+LUA
+DIFF
+CONF
+PASCAL
+AVE
+ADA
+LISP
+RUBY
+EIFFEL
+EIFFELKW
+TCL
+NNCRONTAB
+BULLANT
+VBSCRIPT
+BAAN
+MATLAB
+SCRIPTOL
+ASM
+CPPNOCASE
+FORTRAN
+F77
+CSS
+POV
+LOUT
+ESCRIPT
+PS
+NSIS
+MMIXAL
+CLW
+CLWNOCASE
+LOT
+YAML
+TEX
+METAPOST
+POWERBASIC
+FORTH
+ERLANG
+OCTAVE
+MSSQL
+VERILOG
+KIX
+GUI4CLI
+SPECMAN
+AU3
+APDL
+BASH
+ASN1
+VHDL
+CAML
+BLITZBASIC
+PUREBASIC
+HASKELL
+PHPSCRIPT
+TADS3
+REBOL
+SMALLTALK
+FLAGSHIP
+CSOUND
+FREEBASIC
+INNOSETUP
+OPAL
+SPICE
+D
+CMAKE
+GAP
+PLM
+PROGRESS
+ABAQUS
+ASYMPTOTE
+R
+MAGIK
+POWERSHELL
+MYSQL
+PO
+TAL
+COBOL
+TACL
+SORCUS
+POWERPRO
+NIMROD
+SML
+MARKDOWN
+TXT2TAGS
+A68K
+AUTOMATIC
+	#tag EndEnum
 
 
 	#tag ViewBehavior

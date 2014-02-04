@@ -43,7 +43,7 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub ClearSelection(NewCaretPosition As Integer = -1)
+		Sub ClearSelection(NewCaretPosition As Integer = - 1)
 		  Dim mb As New MemoryBlock(4)
 		  If NewCaretPosition > -1 Then
 		    mb.Int32Value(0) = NewCaretPosition
@@ -809,7 +809,6 @@ Inherits RectControl
 		SCN_HOTSPOTCLICK 2019
 		SCN_HOTSPOTDOUBLECLICK 2020
 		SCN_CALLTIPCLICK 2021
-		
 	#tag EndNote
 
 
@@ -831,6 +830,24 @@ Inherits RectControl
 			End Set
 		#tag EndSetter
 		CaretPosition As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  'Return Me.SendMessage(SCI_GETCURRENTPOS, Nil, Nil)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Dim wparam As New MemoryBlock(4)
+			  wparam.Int32Value(0) = Integer(value)
+			  Call Me.SendMessage(SCI_SETLEXER, wparam, Nil)
+			  
+			  
+			End Set
+		#tag EndSetter
+		Lexer As SciLexer.Lexers
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
@@ -921,6 +938,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETLENGTH, Type = Double, Dynamic = False, Default = \"2006", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_GETLEXER, Type = Double, Dynamic = False, Default = \"4002", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETTEXT, Type = Double, Dynamic = False, Default = \"2182", Scope = Protected
 	#tag EndConstant
 
@@ -945,6 +965,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2613", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
 	#tag EndConstant
 
@@ -960,6 +983,11 @@ Inherits RectControl
 			InitialValue="True"
 			Type="Boolean"
 			InheritedFrom="RectControl"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CaretPosition"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Enabled"
@@ -1070,11 +1098,21 @@ Inherits RectControl
 			InheritedFrom="RectControl"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="Text"
+			Group="Behavior"
+			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Top"
 			Visible=true
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="TopLine"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Visible"

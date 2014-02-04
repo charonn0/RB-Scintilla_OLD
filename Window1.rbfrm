@@ -26,6 +26,7 @@ Begin Window Window1
    Width           =   600
    Begin SciLexer.ScintillaEditor ScintillaEditor1
       AutoDeactivate  =   True
+      CaretPosition   =   ""
       Enabled         =   True
       Height          =   400
       HelpTag         =   ""
@@ -42,6 +43,7 @@ Begin Window Window1
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   0
+      TopLine         =   ""
       Visible         =   True
       Width           =   463
    End
@@ -195,8 +197,9 @@ End
 		Sub Action()
 		  'Dim i As Integer = ScintillaEditor1.SendMessage(
 		  'MsgBox(ScintillaEditor1.Text)
-		  MsgBox(Str(ScintillaEditor1.LineFromPosition(14)))
+		  'MsgBox(Str(ScintillaEditor1.LineFromPosition(14)))
 		  'ScintillaEditor1.ClearAll
+		  ScintillaEditor1.Lexer = SciLexer.Lexers.HTML
 		End Sub
 	#tag EndEvent
 #tag EndEvents
