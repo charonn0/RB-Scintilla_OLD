@@ -17,8 +17,9 @@ Inherits RectControl
 	#tag Event
 		Sub Open()
 		  mHandle = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
+		  pHandle = Me.Window.Handle
 		  If mHandle > 0 Then
-		    Subclass(Me.Window, Me)
+		    Subclass(pHandle, Me)
 		  End If
 		End Sub
 	#tag EndEvent
@@ -99,6 +100,7 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Sub Destructor()
 		  Call Me.SendMessage(WM_DESTROY, Nil, Nil)
+		  UnSubclass(pHandle)
 		End Sub
 	#tag EndMethod
 
@@ -139,19 +141,19 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Shared Sub Subclass(SuperWin As Window, SubWin As SciLexer.ScintillaEditor)
+		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As SciLexer.ScintillaEditor)
 		  #If TargetWin32 Then
-		    If WndProcs.HasKey(SuperWin.Handle) Then
+		    If WndProcs.HasKey(SuperWin) Then
 		      Dim d As New Dictionary
-		      d.Value(SuperWin.Handle) = SubWin
+		      d.Value(SuperWin) = SubWin
 		      Subclasses.Append(d)
 		      Return
 		    End
 		    Dim windproc As Ptr = AddressOf DefWindowProc
-		    Dim oldWndProc As Integer = SetWindowLong(SuperWin.Handle, GWL_WNDPROC, windproc)
-		    WndProcs.Value(SuperWin.Handle) = oldWndProc
+		    Dim oldWndProc As Integer = SetWindowLong(SuperWin, GWL_WNDPROC, windproc)
+		    WndProcs.Value(SuperWin) = oldWndProc
 		    Dim d As New Dictionary
-		    d.Value(SuperWin.Handle) = SubWin
+		    d.Value(SuperWin) = SubWin
 		    Subclasses.Append(d)
 		  #endif
 		End Sub
@@ -166,16 +168,16 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Shared Sub UnSubclass(SuperWin As Window)
+		Protected Shared Sub UnSubclass(SuperWin As Integer)
 		  #If TargetWin32 Then
-		    If Not WndProcs.HasKey(SuperWin.Handle) Then Return
-		    Dim oldWndProc As Ptr = WndProcs.Value(SuperWin.Handle)
-		    Call SetWindowLong(SuperWin.Handle, GWL_WNDPROC, oldWndProc)
-		    WndProcs.Remove(SuperWin.Handle)
+		    If Not WndProcs.HasKey(SuperWin) Then Return
+		    Dim oldWndProc As Ptr = WndProcs.Value(SuperWin)
+		    Call SetWindowLong(SuperWin, GWL_WNDPROC, oldWndProc)
+		    WndProcs.Remove(SuperWin)
 		    Dim wndclass As Dictionary
 		    For i As Integer = UBound(Subclasses) DownTo 0
 		      wndclass = Subclasses(i)
-		      If wndclass.HasKey(SuperWin.Handle) Then
+		      If wndclass.HasKey(SuperWin) Then
 		        Subclasses.Remove(i)
 		      End
 		    Next
@@ -859,6 +861,10 @@ Inherits RectControl
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private pHandle As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private Shared Subclasses() As Dictionary
 	#tag EndProperty
 
@@ -1101,6 +1107,7 @@ Inherits RectControl
 			Name="Text"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
