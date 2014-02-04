@@ -14,7 +14,7 @@ Begin Window Window1
    MaxHeight       =   32000
    MaximizeButton  =   False
    MaxWidth        =   32000
-   MenuBar         =   1854007295
+   MenuBar         =   1166641151
    MenuBarVisible  =   True
    MinHeight       =   64
    MinimizeButton  =   True
@@ -142,6 +142,39 @@ End
 	#tag EndEvent
 
 
+	#tag MenuHandler
+		Function EditClear() As Boolean Handles EditClear.Action
+			ScintillaEditor1.ClearAll
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function EditRedo() As Boolean Handles EditRedo.Action
+			Call ScintillaEditor1.Redo
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function EditSelectAll() As Boolean Handles EditSelectAll.Action
+			ScintillaEditor1.SelectAll
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function EditUndo() As Boolean Handles EditUndo.Action
+			Call ScintillaEditor1.Undo
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+
 	#tag Property, Flags = &h1
 		Protected Lexer As SciLexer.ScintillaEditor
 	#tag EndProperty
@@ -152,7 +185,8 @@ End
 #tag Events ScintillaEditor1
 	#tag Event
 		Sub ScintillaEvent(EventCode As Integer)
-		  Listbox1.AddRow(Str(EventCode))
+		  Listbox1.AddRow(SciLexer.FormatCode(EventCode))
+		  Listbox1.ScrollPosition = Listbox1.ListCount
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -160,7 +194,9 @@ End
 	#tag Event
 		Sub Action()
 		  'Dim i As Integer = ScintillaEditor1.SendMessage(
-		  MsgBox(ScintillaEditor1.Text)
+		  'MsgBox(ScintillaEditor1.Text)
+		  MsgBox(Str(ScintillaEditor1.LineFromPosition(14)))
+		  'ScintillaEditor1.ClearAll
 		End Sub
 	#tag EndEvent
 #tag EndEvents
