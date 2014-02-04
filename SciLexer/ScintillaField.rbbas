@@ -1,16 +1,19 @@
 #tag Class
-Protected Class ScintillaEditor
+Protected Class ScintillaField
 Inherits RectControl
 	#tag Event
 		Function KeyDown(Key As String) As Boolean
-		  Call Me.SendMessage(SCI_BEGINUNDOACTION, Nil, Nil)
-		  Return True
+		  If Not RaiseEvent KeyDown(key) Then
+		    Call Me.SendMessage(SCI_BEGINUNDOACTION, Nil, Nil)
+		    Return True
+		  End If
 		End Function
 	#tag EndEvent
 
 	#tag Event
 		Sub KeyUp(Key As String)
 		  Call Me.SendMessage(SCI_ENDUNDOACTION, Nil, Nil)
+		  RaiseEvent KeyUp(key)
 		End Sub
 	#tag EndEvent
 
@@ -21,9 +24,21 @@ Inherits RectControl
 		  If mHandle > 0 Then
 		    Subclass(pHandle, Me)
 		  End If
+		  
+		  RaiseEvent Open()
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h0
+		Sub AppendText(Text As String)
+		  Dim wparam As MemoryBlock = IntToPtr(Text.LenB)
+		  Declare Function malloc Lib "msvcrt" (Size As Integer) As Ptr
+		  Dim lparam As MemoryBlock = malloc(Text.LenB * 2)
+		  lparam.CString(0) = Text
+		  Call Me.SendMessage(SCI_APPENDTEXT, wparam, lparam)
+		End Sub
+	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function CanRedo() As Boolean
@@ -38,6 +53,22 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CharAtPos(Position As Integer) As String
+		  Dim mb As MemoryBlock = IntToPtr(Position)
+		  Dim char As Integer = Me.SendMessage(SCI_GETCHARAT, mb, Nil)
+		  If char > 0 Then
+		    Return Chr(char)
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub CharAtPos(Position As Integer, Assigns NewChar As String)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub ClearAll()
 		  Call Me.SendMessage(SCI_CLEARALL, Nil, Nil)
 		End Sub
@@ -45,11 +76,11 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub ClearSelection(NewCaretPosition As Integer = - 1)
-		  Dim mb As New MemoryBlock(4)
+		  Dim mb As MemoryBlock
 		  If NewCaretPosition > -1 Then
-		    mb.Int32Value(0) = NewCaretPosition
+		    mb = IntToPtr(NewCaretPosition)
 		  Else
-		    mb.Int32Value(0) = 0
+		    mb = IntToPtr(0)
 		  End If
 		  Call Me.SendMessage(SCI_SETEMPTYSELECTION, mb, Nil)
 		End Sub
@@ -72,7 +103,7 @@ Inherits RectControl
 		  #If TargetWin32 Then
 		    For Each wndclass As Dictionary In Subclasses
 		      If wndclass.HasKey(HWND) Then
-		        Dim subclass As SciLexer.ScintillaEditor = wndclass.Value(HWND)
+		        Dim subclass As SciLexer.ScintillaField = wndclass.Value(HWND)
 		        If subclass <> Nil And subclass.WndProc(HWND, msg, wParam, lParam) Then
 		          Return 1
 		        End If
@@ -106,16 +137,29 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Integer
-		  Dim mb As New MemoryBlock(4)
-		  mb.Int32Value(0) = Position
+		  Dim mb As MemoryBlock = IntToPtr(Position)
 		  Return Me.SendMessage(SCI_LINEFROMPOSITION, mb, Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function MarginType(MarginNumber As Integer) As Integer
+		  Dim mb As MemoryBlock = IntToPtr(MarginNumber)
+		  Return Me.SendMessage(SCI_GETMARGINTYPEN, mb, Nil)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub MarginType(MarginNumber As Integer, Assigns NewType As Integer)
+		  Dim wparam As MemoryBlock = IntToPtr(MarginNumber)
+		  Dim lparam As MemoryBlock = IntToPtr(NewType)
+		  Call Me.SendMessage(SCI_SETMARGINTYPEN, wparam, lparam)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function PositionFromLine(Line As Integer) As Integer
-		  Dim mb As New MemoryBlock(4)
-		  mb.Int32Value(0) = Line
+		  Dim mb As MemoryBlock = IntToPtr(Line)
 		  Return Me.SendMessage(SCI_POSITIONFROMLINE, mb, Nil)
 		End Function
 	#tag EndMethod
@@ -134,14 +178,24 @@ Inherits RectControl
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SendMessage(SciMessage As Integer, WParam As Ptr, LParam As Ptr) As Integer
+	#tag Method, Flags = &h1
+		Protected Function SendMessage(SciMessage As Integer, WParam As Ptr, LParam As Ptr) As Integer
 		  Return SendMessage(Me.mHandle, SciMessage, WParam, LParam)
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub SetLineMark(Line As Integer, MarkerStyle As Integer = - 1)
+		  Dim ln, st As MemoryBlock
+		  ln = IntToPtr(Line)
+		  If MarkerStyle <= -1 Then MarkerStyle = 0
+		  st = IntToPtr(MarkerStyle)
+		  Call Me.SendMessage(SCI_MARKERADD, st, Nil)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
-		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As SciLexer.ScintillaEditor)
+		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As SciLexer.ScintillaField)
 		  #If TargetWin32 Then
 		    If WndProcs.HasKey(SuperWin) Then
 		      Dim d As New Dictionary
@@ -187,6 +241,8 @@ Inherits RectControl
 
 	#tag Method, Flags = &h1
 		Protected Function WndProc(HWND as Integer, msg as Integer, wParam as Ptr, lParam as Ptr) As Boolean
+		  #pragma Unused HWND
+		  #pragma Unused wParam
 		  If msg = WM_NOTIFY Then
 		    Dim mb As MemoryBlock = lParam
 		    Dim h As Integer = mb.UInt32Value(0)
@@ -202,6 +258,18 @@ Inherits RectControl
 		End Function
 	#tag EndMethod
 
+
+	#tag Hook, Flags = &h0
+		Event KeyDown(key As String) As Boolean
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event KeyUp(key As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event Open()
+	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event ScintillaEvent(EventCode As Integer)
@@ -831,7 +899,7 @@ Inherits RectControl
 			  
 			End Set
 		#tag EndSetter
-		CaretPosition As Integer
+		CaretPosition1 As Integer
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -874,11 +942,10 @@ Inherits RectControl
 			  Dim len As Integer = Me.SendMessage(SCI_GETLENGTH, Nil, Nil)
 			  Dim mb As New MemoryBlock(len * 2)
 			  Dim nb As New MemoryBlock(4)
-			  nb.Int32Value(0) = len
+			  nb.Int32Value(0) = len + 1
 			  len = Me.SendMessage(SCI_GETTEXT, nb, mb)
-			  Dim ret As String = mb.WString(0)
+			  Dim ret As String = mb.CString(0)
 			  Return ret
-			  
 			End Get
 		#tag EndGetter
 		Text As String
@@ -920,6 +987,9 @@ Inherits RectControl
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = SCI_APPENDTEXT, Type = Double, Dynamic = False, Default = \"2282", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_BEGINUNDOACTION, Type = Double, Dynamic = False, Default = \"2078", Scope = Protected
 	#tag EndConstant
 
@@ -935,6 +1005,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_ENDUNDOACTION, Type = Double, Dynamic = False, Default = \"2079", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_GETCHARAT, Type = Double, Dynamic = False, Default = \"2007", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETCURRENTPOS, Type = Double, Dynamic = False, Default = \"2008", Scope = Protected
 	#tag EndConstant
 
@@ -947,10 +1020,19 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETLEXER, Type = Double, Dynamic = False, Default = \"4002", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_GETMARGINTYPEN, Type = Double, Dynamic = False, Default = \"2241", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETTEXT, Type = Double, Dynamic = False, Default = \"2182", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_LINEFROMPOSITION, Type = Double, Dynamic = False, Default = \"2166", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARKERADD, Type = Double, Dynamic = False, Default = \"2043", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARKERDELETE, Type = Double, Dynamic = False, Default = \"2044", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_POSITIONFROMLINE, Type = Double, Dynamic = False, Default = \"2167", Scope = Protected
@@ -974,6 +1056,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETMARGINTYPEN, Type = Double, Dynamic = False, Default = \"2340", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
 	#tag EndConstant
 
@@ -989,11 +1074,6 @@ Inherits RectControl
 			InitialValue="True"
 			Type="Boolean"
 			InheritedFrom="RectControl"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="CaretPosition"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Enabled"
@@ -1104,22 +1184,11 @@ Inherits RectControl
 			InheritedFrom="RectControl"
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="Text"
-			Group="Behavior"
-			Type="String"
-			EditorType="MultiLineEditor"
-		#tag EndViewProperty
-		#tag ViewProperty
 			Name="Top"
 			Visible=true
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="TopLine"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Visible"

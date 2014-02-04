@@ -24,29 +24,6 @@ Begin Window Window1
    Title           =   "Untitled"
    Visible         =   True
    Width           =   600
-   Begin SciLexer.ScintillaEditor ScintillaEditor1
-      AutoDeactivate  =   True
-      CaretPosition   =   ""
-      Enabled         =   True
-      Height          =   400
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   0
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   True
-      LockTop         =   True
-      Scope           =   1
-      TabIndex        =   0
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   0
-      TopLine         =   ""
-      Visible         =   True
-      Width           =   463
-   End
    Begin Listbox Listbox1
       AutoDeactivate  =   True
       AutoHideScrollbars=   True
@@ -127,6 +104,27 @@ Begin Window Window1
       Visible         =   True
       Width           =   8
    End
+   Begin SciLexer.ScintillaField ScintillaField1
+      AutoDeactivate  =   True
+      Enabled         =   True
+      Height          =   400
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   0
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   1
+      TabIndex        =   3
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   0
+      Visible         =   True
+      Width           =   463
+   End
 End
 #tag EndWindow
 
@@ -138,7 +136,7 @@ End
 		  'Else
 		  'MsgBox("Not Available")
 		  'End If
-		  'Lexer = New SciLexer.ScintillaEditor
+		  'Lexer = New SciLexer.ScintillaField
 		  'Lexer.EmbedWithin(Self, 5, 5, Self.Width - 10, Self.Height - 10)
 		End Sub
 	#tag EndEvent
@@ -146,7 +144,7 @@ End
 
 	#tag MenuHandler
 		Function EditClear() As Boolean Handles EditClear.Action
-			ScintillaEditor1.ClearAll
+			ScintillaField1.ClearAll
 			Return True
 			
 		End Function
@@ -154,7 +152,7 @@ End
 
 	#tag MenuHandler
 		Function EditRedo() As Boolean Handles EditRedo.Action
-			Call ScintillaEditor1.Redo
+			Call ScintillaField1.Redo
 			Return True
 			
 		End Function
@@ -162,7 +160,7 @@ End
 
 	#tag MenuHandler
 		Function EditSelectAll() As Boolean Handles EditSelectAll.Action
-			ScintillaEditor1.SelectAll
+			ScintillaField1.SelectAll
 			Return True
 			
 		End Function
@@ -170,7 +168,7 @@ End
 
 	#tag MenuHandler
 		Function EditUndo() As Boolean Handles EditUndo.Action
-			Call ScintillaEditor1.Undo
+			Call ScintillaField1.Undo
 			Return True
 			
 		End Function
@@ -178,28 +176,31 @@ End
 
 
 	#tag Property, Flags = &h1
-		Protected Lexer As SciLexer.ScintillaEditor
+		Protected Lexer As SciLexer.ScintillaField
 	#tag EndProperty
 
 
 #tag EndWindowCode
 
-#tag Events ScintillaEditor1
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  'Dim i As Integer = ScintillaField1.SendMessage(
+		  MsgBox(ScintillaField1.Text)
+		  'MsgBox(Str(ScintillaField1.LineFromPosition(14)))
+		  'ScintillaField1.ClearAll
+		  'ScintillaField1.Lexer = SciLexer.Lexers.HTML
+		  'ScintillaField1.AppendText("Hello, world!")
+		  'MsgBox(ScintillaField1.CharAtPos(1))
+		  'ScintillaField1.SetLineMark(2, 4)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ScintillaField1
 	#tag Event
 		Sub ScintillaEvent(EventCode As Integer)
 		  Listbox1.AddRow(SciLexer.FormatCode(EventCode))
 		  Listbox1.ScrollPosition = Listbox1.ListCount
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events PushButton1
-	#tag Event
-		Sub Action()
-		  'Dim i As Integer = ScintillaEditor1.SendMessage(
-		  'MsgBox(ScintillaEditor1.Text)
-		  'MsgBox(Str(ScintillaEditor1.LineFromPosition(14)))
-		  'ScintillaEditor1.ClearAll
-		  ScintillaEditor1.Lexer = SciLexer.Lexers.HTML
 		End Sub
 	#tag EndEvent
 #tag EndEvents

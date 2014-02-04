@@ -1221,6 +1221,14 @@ Protected Module SciLexer
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function IntToPtr(Num As Integer) As Ptr
+		  Dim mb As New MemoryBlock(4)
+		  mb.Int32Value(0) = Num
+		  Return mb
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Function IsAvailable() As Boolean
 		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
@@ -1231,7 +1239,7 @@ Protected Module SciLexer
 	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SendMessage Lib "User32" Alias "SendMessageW" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
+		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -1278,106 +1286,106 @@ Protected Module SciLexer
 
 
 	#tag Enum, Name = Lexers, Type = Integer, Flags = &h1
-	CONTAINER
-NULL
-PYTHON
-CPP
-HTML
-XML
-PERL
-SQL
-VB
-PROPERTIES
-ERRORLIST
-MAKEFILE
-BATCH
-XCODE
-LATEX
-LUA
-DIFF
-CONF
-PASCAL
-AVE
-ADA
-LISP
-RUBY
-EIFFEL
-EIFFELKW
-TCL
-NNCRONTAB
-BULLANT
-VBSCRIPT
-BAAN
-MATLAB
-SCRIPTOL
-ASM
-CPPNOCASE
-FORTRAN
-F77
-CSS
-POV
-LOUT
-ESCRIPT
-PS
-NSIS
-MMIXAL
-CLW
-CLWNOCASE
-LOT
-YAML
-TEX
-METAPOST
-POWERBASIC
-FORTH
-ERLANG
-OCTAVE
-MSSQL
-VERILOG
-KIX
-GUI4CLI
-SPECMAN
-AU3
-APDL
-BASH
-ASN1
-VHDL
-CAML
-BLITZBASIC
-PUREBASIC
-HASKELL
-PHPSCRIPT
-TADS3
-REBOL
-SMALLTALK
-FLAGSHIP
-CSOUND
-FREEBASIC
-INNOSETUP
-OPAL
-SPICE
-D
-CMAKE
-GAP
-PLM
-PROGRESS
-ABAQUS
-ASYMPTOTE
-R
-MAGIK
-POWERSHELL
-MYSQL
-PO
-TAL
-COBOL
-TACL
-SORCUS
-POWERPRO
-NIMROD
-SML
-MARKDOWN
-TXT2TAGS
-A68K
-AUTOMATIC
+		CONTAINER
+		  NULL
+		  PYTHON
+		  CPP
+		  HTML
+		  XML
+		  PERL
+		  SQL
+		  VB
+		  PROPERTIES
+		  ERRORLIST
+		  MAKEFILE
+		  BATCH
+		  XCODE
+		  LATEX
+		  LUA
+		  DIFF
+		  CONF
+		  PASCAL
+		  AVE
+		  ADA
+		  LISP
+		  RUBY
+		  EIFFEL
+		  EIFFELKW
+		  TCL
+		  NNCRONTAB
+		  BULLANT
+		  VBSCRIPT
+		  BAAN
+		  MATLAB
+		  SCRIPTOL
+		  ASM
+		  CPPNOCASE
+		  FORTRAN
+		  F77
+		  CSS
+		  POV
+		  LOUT
+		  ESCRIPT
+		  PS
+		  NSIS
+		  MMIXAL
+		  CLW
+		  CLWNOCASE
+		  LOT
+		  YAML
+		  TEX
+		  METAPOST
+		  POWERBASIC
+		  FORTH
+		  ERLANG
+		  OCTAVE
+		  MSSQL
+		  VERILOG
+		  KIX
+		  GUI4CLI
+		  SPECMAN
+		  AU3
+		  APDL
+		  BASH
+		  ASN1
+		  VHDL
+		  CAML
+		  BLITZBASIC
+		  PUREBASIC
+		  HASKELL
+		  PHPSCRIPT
+		  TADS3
+		  REBOL
+		  SMALLTALK
+		  FLAGSHIP
+		  CSOUND
+		  FREEBASIC
+		  INNOSETUP
+		  OPAL
+		  SPICE
+		  D
+		  CMAKE
+		  GAP
+		  PLM
+		  PROGRESS
+		  ABAQUS
+		  ASYMPTOTE
+		  R
+		  MAGIK
+		  POWERSHELL
+		  MYSQL
+		  PO
+		  TAL
+		  COBOL
+		  TACL
+		  SORCUS
+		  POWERPRO
+		  NIMROD
+		  SML
+		  MARKDOWN
+		  TXT2TAGS
+		  A68K
+		AUTOMATIC
 	#tag EndEnum
 
 
