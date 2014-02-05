@@ -86,7 +86,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   467
+      Left            =   443
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -102,7 +102,7 @@ Begin Window Window1
       Top             =   239
       Underline       =   ""
       Visible         =   True
-      Width           =   8
+      Width           =   32
    End
    Begin SciLexer.ScintillaField ScintillaField1
       AutoDeactivate  =   True
@@ -114,16 +114,17 @@ Begin Window Window1
       Left            =   0
       LockBottom      =   ""
       LockedInPosition=   False
-      LockLeft        =   True
+      LockLeft        =   ""
       LockRight       =   ""
-      LockTop         =   True
-      Scope           =   1
-      TabIndex        =   3
+      LockTop         =   ""
+      Scope           =   0
+      TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   0
+      TopLine         =   ""
       Visible         =   True
-      Width           =   463
+      Width           =   438
    End
 End
 #tag EndWindow
@@ -186,13 +187,21 @@ End
 	#tag Event
 		Sub Action()
 		  'Dim i As Integer = ScintillaField1.SendMessage(
-		  MsgBox(ScintillaField1.Text)
+		  'MsgBox(ScintillaField1.Text)
 		  'MsgBox(Str(ScintillaField1.LineFromPosition(14)))
 		  'ScintillaField1.ClearAll
 		  'ScintillaField1.Lexer = SciLexer.Lexers.HTML
 		  'ScintillaField1.AppendText("Hello, world!")
 		  'MsgBox(ScintillaField1.CharAtPos(1))
-		  'ScintillaField1.SetLineMark(2, 4)
+		  ScintillaField1.SetLineMark(2, 4)
+		  'ScintillaField1.AppendText("Hello, world!")
+		  'ScintillaField1.Text = "Hello, world!"
+		  'ScintillaField1.ReadOnly = Not ScintillaField1.ReadOnly
+		  'MsgBox(ScintillaField1.GetLine(1))
+		  'MsgBox(Str(ScintillaField1.CurrentLine))
+		  'ScintillaField1.EOLVisible = Not ScintillaField1.EOLVisible
+		  'ScintillaField1.SetLineMark(ScintillaField1.TopLine)
+		  ScintillaField1.SelectRange(-1, -1)
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -201,6 +210,23 @@ End
 		Sub ScintillaEvent(EventCode As Integer)
 		  Listbox1.AddRow(SciLexer.FormatCode(EventCode))
 		  Listbox1.ScrollPosition = Listbox1.ListCount
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Open()
+		  Me.MarginType(0) = 1
+		  Me.MarginWidth(0) = 15
+		  Me.MarginClickable(0) = True
+		  
+		  Me.MarginType(1) = 0
+		  Me.MarginWidth(1) = 15
+		  Me.MarginClickable(1) = True
+		  
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub TextChanged()
+		  'MsgBox("Changed")
 		End Sub
 	#tag EndEvent
 #tag EndEvents

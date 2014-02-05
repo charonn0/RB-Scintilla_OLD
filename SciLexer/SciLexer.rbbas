@@ -1231,6 +1231,14 @@ Protected Module SciLexer
 	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Boolean, LParam As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Integer, LParam As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
 	#tag EndExternalMethod
 
@@ -1270,10 +1278,40 @@ Protected Module SciLexer
 	#tag EndConstant
 
 
-	#tag Structure, Name = JDR, Flags = &h0
-		g As Integer
-		  a As Integer
-		h As Integer
+	#tag Structure, Name = CharacterRange, Flags = &h1
+		cpMin As Integer
+		cpMax As Integer
+	#tag EndStructure
+
+	#tag Structure, Name = SCNotification, Flags = &h1
+		HWND As Integer
+		  ID As Integer
+		  Code As Integer
+		  Position As Integer
+		  Ch As Integer
+		  Modifiers As Integer
+		  ModificationType As Integer
+		  Text As Ptr
+		  Length As Integer
+		  LinesAdded As Integer
+		  Message As Integer
+		  WParam As Ptr
+		  LParam As Ptr
+		  Line As Integer
+		  FoldLevelNow As Integer
+		  FoldLevelPrev As Integer
+		  Margin As Integer
+		  ListType As Integer
+		  X As Integer
+		  Y As Integer
+		  Token As Integer
+		  AnnotatedLinesAdded As Integer
+		Updated As Integer
+	#tag EndStructure
+
+	#tag Structure, Name = TextRange, Flags = &h1
+		Range As CharacterRange
+		Text As Ptr
 	#tag EndStructure
 
 
