@@ -32,11 +32,10 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub AppendText(Text As String)
-		  Dim wparam As MemoryBlock = IntToPtr(Text.LenB)
-		  Declare Function malloc Lib "msvcrt" (Size As Integer) As Ptr
-		  Dim lparam As MemoryBlock = malloc(Text.LenB * 2)
+		  Dim wparam As Integer = Text.LenB
+		  Dim lparam As New MemoryBlock(Text.LenB * 2)
 		  lparam.CString(0) = Text
-		  Call Me.SendMessage(SCI_APPENDTEXT, wparam, lparam)
+		  Call Me.SendMessage(SCI_APPENDTEXT, Ptr(wparam), lparam)
 		End Sub
 	#tag EndMethod
 
@@ -54,8 +53,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function CharAtPos(Position As Integer) As String
-		  Dim mb As MemoryBlock = IntToPtr(Position)
-		  Dim char As Integer = Me.SendMessage(SCI_GETCHARAT, mb, Nil)
+		  Dim char As Integer = Me.SendMessage(SCI_GETCHARAT, Ptr(Position), Nil)
 		  If char > 0 Then
 		    Return Chr(char)
 		  End If
@@ -76,13 +74,8 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub ClearSelection(NewCaretPosition As Integer = - 1)
-		  Dim mb As MemoryBlock
-		  If NewCaretPosition > -1 Then
-		    mb = IntToPtr(NewCaretPosition)
-		  Else
-		    mb = IntToPtr(0)
-		  End If
-		  Call Me.SendMessage(SCI_SETEMPTYSELECTION, mb, Nil)
+		  If NewCaretPosition <= -1 Then NewCaretPosition = 0
+		  Call Me.SendMessage(SCI_SETEMPTYSELECTION, Ptr(NewCaretPosition), Nil)
 		End Sub
 	#tag EndMethod
 
@@ -137,30 +130,25 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Integer
-		  Dim mb As MemoryBlock = IntToPtr(Position)
-		  Return Me.SendMessage(SCI_LINEFROMPOSITION, mb, Nil)
+		  Return Me.SendMessage(SCI_LINEFROMPOSITION, Ptr(Position), Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function MarginType(MarginNumber As Integer) As Integer
-		  Dim mb As MemoryBlock = IntToPtr(MarginNumber)
-		  Return Me.SendMessage(SCI_GETMARGINTYPEN, mb, Nil)
+		  Return Me.SendMessage(SCI_GETMARGINTYPEN, Ptr(MarginNumber), Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MarginType(MarginNumber As Integer, Assigns NewType As Integer)
-		  Dim wparam As MemoryBlock = IntToPtr(MarginNumber)
-		  Dim lparam As MemoryBlock = IntToPtr(NewType)
-		  Call Me.SendMessage(SCI_SETMARGINTYPEN, wparam, lparam)
+		  Call Me.SendMessage(SCI_SETMARGINTYPEN, Ptr(MarginNumber), Ptr(NewType))
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function PositionFromLine(Line As Integer) As Integer
-		  Dim mb As MemoryBlock = IntToPtr(Line)
-		  Return Me.SendMessage(SCI_POSITIONFROMLINE, mb, Nil)
+		  Return Me.SendMessage(SCI_POSITIONFROMLINE, Ptr(Line), Nil)
 		End Function
 	#tag EndMethod
 
@@ -186,11 +174,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub SetLineMark(Line As Integer, MarkerStyle As Integer = - 1)
-		  Dim ln, st As MemoryBlock
-		  ln = IntToPtr(Line)
-		  If MarkerStyle <= -1 Then MarkerStyle = 0
-		  st = IntToPtr(MarkerStyle)
-		  Call Me.SendMessage(SCI_MARKERADD, st, Nil)
+		  Call Me.SendMessage(SCI_MARKERADD, Ptr(Line), Ptr(MarkerStyle))
 		End Sub
 	#tag EndMethod
 
@@ -941,9 +925,7 @@ Inherits RectControl
 			Get
 			  Dim len As Integer = Me.SendMessage(SCI_GETLENGTH, Nil, Nil)
 			  Dim mb As New MemoryBlock(len * 2)
-			  Dim nb As New MemoryBlock(4)
-			  nb.Int32Value(0) = len + 1
-			  len = Me.SendMessage(SCI_GETTEXT, nb, mb)
+			  len = Me.SendMessage(SCI_GETTEXT, Ptr(mb.Size), mb)
 			  Dim ret As String = mb.CString(0)
 			  Return ret
 			End Get
@@ -1076,6 +1058,11 @@ Inherits RectControl
 			InheritedFrom="RectControl"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="CaretPosition1"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Enabled"
 			Visible=true
 			Group="Appearance"
@@ -1184,11 +1171,21 @@ Inherits RectControl
 			InheritedFrom="RectControl"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="Text"
+			Group="Behavior"
+			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Top"
 			Visible=true
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="TopLine"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Visible"

@@ -1221,14 +1221,6 @@ Protected Module SciLexer
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function IntToPtr(Num As Integer) As Ptr
-		  Dim mb As New MemoryBlock(4)
-		  mb.Int32Value(0) = Num
-		  Return mb
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
 		Function IsAvailable() As Boolean
 		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
