@@ -202,6 +202,12 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function PositionFromXY(X As Integer, Y As Integer) As Integer
+		  Return SendMessage(mHandle, SCI_POSITIONFROMPOINTCLOSE, X, Y)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Redo() As Boolean
 		  If CanRedo Then
 		    Return SendMessage(mHandle, SCI_REDO, Nil, Nil) = 0
@@ -210,9 +216,30 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub ScrollToLine(Line As Integer)
+		  Call SendMessage(mHandle, SCI_GOTOLINE, Line, 0)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ScrollToPosition(Position As Integer)
+		  Call SendMessage(mHandle, SCI_GOTOPOS, Position, 0)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SelectAll()
 		  Call SendMessage(mHandle, SCI_SELECTALL, Nil, Nil)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SelectedText() As String
+		  Dim sz As Integer = SendMessage(mHandle, SCI_GETSELTEXT, 0, 0)
+		  Dim mb As New MemoryBlock(sz + 1)
+		  Call SendMessage(mHandle, SCI_GETSELTEXT, Nil, mb)
+		  Return mb.CString(0)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -226,6 +253,28 @@ Inherits RectControl
 		Sub SetLineMark(Line As Integer, MarkerStyle As Integer = - 1)
 		  Call SendMessage(mHandle, SCI_MARKERADD, Ptr(Line), Ptr(MarkerStyle))
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetRangeStyle(Start As Integer, Stop As Integer, Assigns NewStyle As SciLexer.Style)
+		  If NewStyle.Owner <> mHandle Then Raise New RuntimeException
+		  
+		  Call SendMessage(mHandle, SCI_STARTSTYLING, Start, &h1F) ' start styling
+		  Call SendMessage(mHandle, SCI_SETSTYLING, Stop - Start, NewStyle.StyleNumber)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Style(StyleNumber As Integer) As SciLexer.Style
+		  Return New SciLexer.Style(mHandle, StyleNumber)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function StyleAtPosition(Position As Integer) As SciLexer.Style
+		  Dim s As Integer = SendMessage(mHandle, SCI_GETSTYLEAT, Position, 0)
+		  Return New SciLexer.Style(mHandle, s)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -289,15 +338,25 @@ Inherits RectControl
 		        
 		      Case SCN_MODIFIED
 		        RaiseEvent TextChanged()
-		        
 		      Else
 		        RaiseEvent ScintillaEvent(notification.Code)
-		        
 		      End Select
 		      Return True
 		    End If
 		    'Return WindowMessage(HWND, msg, wParam, lParam)
 		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function XFromPosition(Position As Integer) As Integer
+		  Return SendMessage(mHandle, SCI_POINTXFROMPOSITION, 0, Position)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function YFromPosition(Position As Integer) As Integer
+		  Return SendMessage(mHandle, SCI_POINTYFROMPOSITION, 0, Position)
 		End Function
 	#tag EndMethod
 
@@ -1170,10 +1229,22 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETREADONLY, Type = Double, Dynamic = False, Default = \"2140", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_GETSELTEXT, Type = Double, Dynamic = False, Default = \"2161", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETSTYLEAT, Type = Double, Dynamic = False, Default = \"2010", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETTEXT, Type = Double, Dynamic = False, Default = \"2182", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETVIEWEOL, Type = Double, Dynamic = False, Default = \"2355", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GOTOLINE, Type = Double, Dynamic = False, Default = \"2024", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GOTOPOS, Type = Double, Dynamic = False, Default = \"2025", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_LINEFROMPOSITION, Type = Double, Dynamic = False, Default = \"2166", Scope = Protected
@@ -1188,7 +1259,16 @@ Inherits RectControl
 	#tag Constant, Name = SCI_MARKERDELETE, Type = Double, Dynamic = False, Default = \"2044", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_POINTXFROMPOSITION, Type = Double, Dynamic = False, Default = \"2164", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_POINTYFROMPOSITION, Type = Double, Dynamic = False, Default = \"2165", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_POSITIONFROMLINE, Type = Double, Dynamic = False, Default = \"2167", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_POSITIONFROMPOINTCLOSE, Type = Double, Dynamic = False, Default = \"2023", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_REDO, Type = Double, Dynamic = False, Default = \"2011", Scope = Protected
@@ -1227,10 +1307,16 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETSEL, Type = Double, Dynamic = False, Default = \"2160", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETVIEWEOL, Type = Double, Dynamic = False, Default = \"2356", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_STARTSTYLING, Type = Double, Dynamic = False, Default = \"2032", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_UNDO, Type = Double, Dynamic = False, Default = \"2176", Scope = Protected

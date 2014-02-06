@@ -99,7 +99,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   239
+      Top             =   238
       Underline       =   ""
       Visible         =   True
       Width           =   32
@@ -193,7 +193,7 @@ End
 		  'ScintillaField1.Lexer = SciLexer.Lexers.HTML
 		  'ScintillaField1.AppendText("Hello, world!")
 		  'MsgBox(ScintillaField1.CharAtPos(1))
-		  ScintillaField1.SetLineMark(2, 4)
+		  'ScintillaField1.SetLineMark(2, 4)
 		  'ScintillaField1.AppendText("Hello, world!")
 		  'ScintillaField1.Text = "Hello, world!"
 		  'ScintillaField1.ReadOnly = Not ScintillaField1.ReadOnly
@@ -201,7 +201,14 @@ End
 		  'MsgBox(Str(ScintillaField1.CurrentLine))
 		  'ScintillaField1.EOLVisible = Not ScintillaField1.EOLVisible
 		  'ScintillaField1.SetLineMark(ScintillaField1.TopLine)
-		  ScintillaField1.SelectRange(-1, -1)
+		  'ScintillaField1.SelectRange(-1, -1)
+		  'ScintillaField1.ScrollToLine(10)
+		  'MsgBox(ScintillaField1.SelectedText)
+		  Dim s As SciLexer.Style = ScintillaField1.Style(0)
+		  s.Background = &c80808000
+		  s.TextColor = &cFF000000
+		  s.Underline = True
+		  ScintillaField1.SetRangeStyle(0, 5) = s
 		End Sub
 	#tag EndEvent
 #tag EndEvents
