@@ -1265,6 +1265,12 @@ Protected Module SciLexer
 	#tag Constant, Name = WM_NOTIFY, Type = Double, Dynamic = False, Default = \"&h004E", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = WM_SIZE, Type = Double, Dynamic = False, Default = \"&h0005", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_SIZING, Type = Double, Dynamic = False, Default = \"&h0214", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = WS_CHILD, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Private
 	#tag EndConstant
 
@@ -1281,6 +1287,13 @@ Protected Module SciLexer
 	#tag Structure, Name = CharacterRange, Flags = &h1
 		cpMin As Integer
 		cpMax As Integer
+	#tag EndStructure
+
+	#tag Structure, Name = RECT, Flags = &h1
+		left As Integer
+		  top As Integer
+		  right As Integer
+		bottom As Integer
 	#tag EndStructure
 
 	#tag Structure, Name = SCNotification, Flags = &h1

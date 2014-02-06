@@ -88,15 +88,18 @@ Protected Class Style
 			Get
 			  Dim mb As New MemoryBlock(4)
 			  Dim i As Integer = SendMessage(SciWindow, SCI_STYLEGETFORE, Me.StyleNumber, 0)
-			  mb.Int32Value(0) = i
-			  Return RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
+			  mb.ColorValue(0, 32) = Color(i)
+			  Return mb.ColorValue(0, 32)
+			  'RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  'Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, UInt32(value))
 			  Dim mb As New MemoryBlock(4)
-			  mb.ColorValue(0, 32) = value
+			  mb.Byte(0) = value.Red
+			  mb.Byte(1) = value.Green
+			  mb.Byte(2) = value.Blue
 			  Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
@@ -228,6 +231,7 @@ Protected Class Style
 			Name="TextFont"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="TextSize"
