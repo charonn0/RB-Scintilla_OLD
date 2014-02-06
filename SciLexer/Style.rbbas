@@ -31,7 +31,9 @@ Protected Class Style
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Call SendMessage(SciWindow, SCI_STYLEGETBACK, Me.StyleNumber, Int32(value))
+			  Dim mb As New MemoryBlock(4)
+			  mb.ColorValue(0, 32) = value
+			  Call SendMessage(SciWindow, SCI_STYLEGETBACK, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
 		Background As Color
@@ -92,7 +94,10 @@ Protected Class Style
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, Int32(value))
+			  'Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, UInt32(value))
+			  Dim mb As New MemoryBlock(4)
+			  mb.ColorValue(0, 32) = value
+			  Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
 		TextColor As Color

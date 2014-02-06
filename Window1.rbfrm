@@ -205,8 +205,8 @@ End
 		  'ScintillaField1.ScrollToLine(10)
 		  'MsgBox(ScintillaField1.SelectedText)
 		  Dim s As SciLexer.Style = ScintillaField1.Style(0)
-		  s.Background = &c80808000
-		  s.TextColor = &cFF000000
+		  s.Background = &cFF80FF00
+		  s.TextColor = &c0000FF00
 		  s.Underline = True
 		  ScintillaField1.SetRangeStyle(0, 5) = s
 		End Sub
