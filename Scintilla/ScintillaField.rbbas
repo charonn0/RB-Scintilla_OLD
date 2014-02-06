@@ -168,6 +168,12 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function LastError() As Integer
+		  Return SendMessage(SciHandle, SCI_GETSTATUS, Nil, Nil)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Integer
 		  Return SendMessage(SciHandle, SCI_LINEFROMPOSITION, Ptr(Position), Nil)
 		End Function

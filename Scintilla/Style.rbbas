@@ -125,9 +125,19 @@ Protected Class Style
 		TextFont As String
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return SendMessage(SciWindow, SCI_STYLEGETSIZE, mStyleNumber, 0)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call SendMessage(SciWindow, SCI_STYLESETSIZEFRACTIONAL, mStyleNumber, value * 100)
+			End Set
+		#tag EndSetter
 		TextSize As Double
-	#tag EndProperty
+	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -163,6 +173,9 @@ Protected Class Style
 	#tag Constant, Name = SCI_STYLEGETITALIC, Type = Double, Dynamic = False, Default = \"2484", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_STYLEGETSIZE, Type = Double, Dynamic = False, Default = \"2485", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_STYLEGETUNDERLINE, Type = Double, Dynamic = False, Default = \"2488", Scope = Protected
 	#tag EndConstant
 
@@ -179,6 +192,12 @@ Protected Class Style
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_STYLESETITALIC, Type = Double, Dynamic = False, Default = \"2054", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_STYLESETSIZE, Type = Double, Dynamic = False, Default = \"2055", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_STYLESETSIZEFRACTIONAL, Type = Double, Dynamic = False, Default = \"2061", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_STYLESETUNDERLINE, Type = Double, Dynamic = False, Default = \"2059", Scope = Protected

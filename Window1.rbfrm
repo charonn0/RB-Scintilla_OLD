@@ -539,8 +539,8 @@ Begin Window Window1
       Index           =   -2147483648
       Left            =   839
       LockedInPosition=   False
-      Mode            =   2
-      Period          =   1000
+      Mode            =   1
+      Period          =   500
       Scope           =   0
       TabPanelIndex   =   0
       Top             =   -30
@@ -631,37 +631,6 @@ Begin Window Window1
       Visible         =   True
       Width           =   46
    End
-   Begin PushButton PushButton1
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Untitled"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   637
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   21
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   213
-      Underline       =   ""
-      Visible         =   True
-      Width           =   80
-   End
    Begin PushButton PushButton2
       AutoDeactivate  =   True
       Bold            =   ""
@@ -675,7 +644,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   545
+      Left            =   926
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -688,7 +657,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   247
+      Top             =   -30
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -836,6 +805,14 @@ End
 		  CanRedo.Value = ScintillaField1.CanRedo
 		  CanUndo.Value = ScintillaField1.CanUndo
 		  ReadOnly.Value = ScintillaField1.ReadOnly
+		  textSize.ListIndex = ScintillaField1.Style(0).TextSize - 9
+		  Dim f As String = ScintillaField1.Style(0).TextFont.Trim
+		  For i As Integer = 0 To textFont.ListCount - 1
+		    If textFont.List(i) = f Then
+		      textFont.ListIndex = i
+		      Exit For
+		    End If
+		  Next
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -891,9 +868,9 @@ End
 #tag Events textSize
 	#tag Event
 		Sub Open()
-		  Me.AddRow("Size")
+		  'Me.AddRow("Size")
 		  Me.ListIndex = 0
-		  For i As Integer = 8 To 72
+		  For i As Integer = 1 To 54
 		    Me.AddRow(Str(i))
 		  Next
 		  
@@ -901,22 +878,9 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub Change()
-		  If Me.ListIndex >= 1 Then
-		    Dim s As Scintilla.Style = ScintillaField1.Style(0)
-		    s.TextSize = Val(Me.Text)
-		    ScintillaField1.SetRangeStyle(0, 5) = s
-		  End If
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events PushButton1
-	#tag Event
-		Sub Action()
-		  If Not ScintillaField1.LineHasMarker(1, Integer(Scintilla.Markers.BoxPlus)) Then
-		    Self.Marker = ScintillaField1.AddMarker(1, Scintilla.Markers.BoxPlus)
-		  Else
-		    ScintillaField1.RemoveMarker(1, Self.Marker)
-		  End If
+		  'If Me.ListIndex >= 1 Then
+		  ScintillaField1.Style(0).TextSize = CDbl(Me.Text)
+		  'End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

@@ -1230,6 +1230,47 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function SciMessage(HWND As Integer, Command As Integer, WParam As Variant, LParam As Variant) As Integer
+		  Dim p1, p2 As Ptr
+		  Select Case VarType(WParam)
+		  Case Variant.TypeBoolean
+		    p1 = New MemoryBlock(1)
+		    p1.Boolean(0) = WParam.BooleanValue
+		    
+		  Case Variant.TypeColor
+		    Dim mb As New MemoryBlock(4)
+		    mb.ColorValue(0, 32) = WParam.ColorValue
+		    p1 = mb
+		    
+		  Case Variant.TypeString, Variant.TypePtr
+		    p1 = WParam.PtrValue
+		    
+		  Case Variant.TypeInteger
+		    p1 = Integer(WParam)
+		    
+		  Else
+		    Raise New 
+		    
+		  End Select
+		  
+		  Select Case VarType(LParam)
+		  Case Variant.TypeBoolean
+		    
+		  Case Variant.TypeColor
+		    
+		  Case Variant.TypeString
+		    
+		  Case Variant.TypeInteger
+		    
+		  Case Variant.TypePtr
+		    
+		  Else
+		    
+		  End Select
+		End Function
+	#tag EndMethod
+
 	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Boolean, LParam As Integer) As Integer
 	#tag EndExternalMethod
@@ -1251,6 +1292,9 @@ Protected Module Scintilla
 	#tag EndConstant
 
 	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_CREATE, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Private
