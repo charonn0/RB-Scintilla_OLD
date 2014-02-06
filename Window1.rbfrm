@@ -24,7 +24,7 @@ Begin Window Window1
    Title           =   "Untitled"
    Visible         =   True
    Width           =   8.17e+2
-   Begin SciLexer.ScintillaField ScintillaField1
+   Begin ScintillaField ScintillaField1
       AutoDeactivate  =   True
       CaretPosition   =   ""
       Enabled         =   True
@@ -546,37 +546,6 @@ Begin Window Window1
       Top             =   -30
       Width           =   32
    End
-   Begin PushButton PushButton1
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Untitled"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   977
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   17
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   80
-      Underline       =   ""
-      Visible         =   True
-      Width           =   80
-   End
    Begin Oval Oval1
       AutoDeactivate  =   True
       BorderColor     =   &h000000
@@ -600,18 +569,142 @@ Begin Window Window1
       Visible         =   True
       Width           =   28
    End
+   Begin PopupMenu textFont
+      AutoDeactivate  =   True
+      Bold            =   False
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      InitialValue    =   ""
+      Italic          =   False
+      Left            =   498
+      ListIndex       =   0
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   False
+      LockTop         =   False
+      Scope           =   0
+      TabIndex        =   19
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   11.0
+      TextUnit        =   0
+      Top             =   174
+      Underline       =   False
+      Visible         =   True
+      Width           =   120
+   End
+   Begin PopupMenu textSize
+      AutoDeactivate  =   True
+      Bold            =   False
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      InitialValue    =   ""
+      Italic          =   False
+      Left            =   623
+      ListIndex       =   0
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   False
+      LockTop         =   False
+      Scope           =   0
+      TabIndex        =   20
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   11.0
+      TextUnit        =   0
+      Top             =   174
+      Underline       =   False
+      Visible         =   True
+      Width           =   46
+   End
+   Begin PushButton PushButton1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   637
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   21
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   213
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
+   Begin PushButton PushButton2
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   545
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   22
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   247
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndWindow
 
 #tag WindowCode
 	#tag Event
 		Sub Open()
-		  'If SciLexer.IsAvailable Then
+		  'If Scintilla.IsAvailable Then
 		  'MsgBox("Available")
 		  'Else
 		  'MsgBox("Not Available")
 		  'End If
-		  'Lexer = New SciLexer.ScintillaField
+		  'Lexer = New ScintillaField
 		  'Lexer.EmbedWithin(Self, 5, 5, Self.Width - 10, Self.Height - 10)
 		End Sub
 	#tag EndEvent
@@ -658,7 +751,7 @@ End
 
 
 	#tag Method, Flags = &h0
-		Function GetRefHandler(Sender As MarginEdit) As SciLexer.ScintillaField
+		Function GetRefHandler(Sender As MarginEdit) As ScintillaField
 		  #pragma Unused Sender
 		  Return ScintillaField1
 		End Function
@@ -666,7 +759,11 @@ End
 
 
 	#tag Property, Flags = &h1
-		Protected Lexer As SciLexer.ScintillaField
+		Protected Lexer As ScintillaField
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Marker As Scintilla.Marker
 	#tag EndProperty
 
 
@@ -692,7 +789,7 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub MarginClicked(MarginNumber As Integer, LineNumber As Integer)
-		  Me.SetLineMark(LineNumber, 2)
+		  'Dim i As Integer = Me.AddMarker(LineNumber, Scintilla.Markers.BoxPlus)
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -750,9 +847,8 @@ End
 		  Dim c As Color = me.FillColor
 		  Call SelectColor(c, "Choose a Color")
 		  me.FillColor = c
-		  Dim s As SciLexer.Style = ScintillaField1.Style(0)
-		  s.TextColor = c
-		  ScintillaField1.SetRangeStyle(0, 5) = s
+		  ScintillaField1.Style(0).TextColor = c
+		  
 		End Function
 	#tag EndEvent
 	#tag Event
@@ -763,6 +859,93 @@ End
 	#tag Event
 		Sub MouseExit()
 		  me.MouseCursor = System.Cursors.StandardPointer
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events textFont
+	#tag Event
+		Sub Open()
+		  Me.AddRow("Font")
+		  Me.ListIndex = 0
+		  Dim fonts() As String
+		  For i As Integer = 1 To FontCount - 1
+		    Dim textfont As String = Font(i)
+		    fonts.Append(textfont)
+		  Next
+		  fonts.Sort
+		  For i As Integer = 0 To fonts.Ubound
+		    Me.AddRow(fonts(i))
+		  Next
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Change()
+		  If Me.ListIndex >= 1 Then
+		    Dim s As Scintilla.Style = ScintillaField1.Style(0)
+		    s.TextFont = Me.Text
+		    ScintillaField1.SetRangeStyle(0, 5) = s
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events textSize
+	#tag Event
+		Sub Open()
+		  Me.AddRow("Size")
+		  Me.ListIndex = 0
+		  For i As Integer = 8 To 72
+		    Me.AddRow(Str(i))
+		  Next
+		  
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Change()
+		  If Me.ListIndex >= 1 Then
+		    Dim s As Scintilla.Style = ScintillaField1.Style(0)
+		    s.TextSize = Val(Me.Text)
+		    ScintillaField1.SetRangeStyle(0, 5) = s
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  If Not ScintillaField1.LineHasMarker(1, Integer(Scintilla.Markers.BoxPlus)) Then
+		    Self.Marker = ScintillaField1.AddMarker(1, Scintilla.Markers.BoxPlus)
+		  Else
+		    ScintillaField1.RemoveMarker(1, Self.Marker)
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton2
+	#tag Event
+		Sub Action()
+		  Dim rand As New Random
+		  For i As Integer = 0 To 4
+		    ScintillaField1.Style(i).TextColor = RGB(Rand.InRange(0, 255), Rand.InRange(0, 255), Rand.InRange(0, 255))
+		    If Rand.InRange(0, 1) = 1 Then
+		      ScintillaField1.Style(i).Bold = True
+		    Else
+		      ScintillaField1.Style(i).Bold = False
+		    End If
+		    If Rand.InRange(0, 1) = 1 Then
+		      ScintillaField1.Style(i).Italic = True
+		    Else
+		      ScintillaField1.Style(i).Italic = False
+		    End If
+		  Next
+		  Dim x As Integer
+		  For i As Integer = 0 To ScintillaField1.Text.Len
+		    ScintillaField1.SetRangeStyle(x, x + 1) = ScintillaField1.Style(x)
+		    If x = 4 Then
+		      x = 0
+		    Else
+		      x = x + 1
+		    End If
+		  Next
 		End Sub
 	#tag EndEvent
 #tag EndEvents

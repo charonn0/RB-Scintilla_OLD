@@ -1,5 +1,5 @@
 #tag Class
-Protected Class ScintillaField
+Class ScintillaField
 Inherits RectControl
 	#tag Event
 		Function KeyDown(Key As String) As Boolean
@@ -29,6 +29,18 @@ Inherits RectControl
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h0
+		Function AddMarker(Line As Integer, MarkerStyle As Scintilla.Markers) As Scintilla.Marker
+		  Return New Scintilla.Marker(SendMessage(SciHandle, SCI_MARKERADD, Line, Integer(MarkerStyle)))
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function AllMarkersForLine(LineNumber As Integer) As Integer
+		  Return SendMessage(SciHandle, SCI_MARKERGET, LineNumber, 0)
+		End Function
+	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub AppendText(Text As String)
@@ -82,7 +94,7 @@ Inherits RectControl
 	#tag Method, Flags = &h1000
 		Sub Constructor()
 		  // Calling the overridden superclass constructor.
-		  If Not SciLexer.IsAvailable Then
+		  If Not Scintilla.IsAvailable Then
 		    Raise New PlatformNotSupportedException
 		  End If
 		  Super.Constructor
@@ -102,7 +114,7 @@ Inherits RectControl
 		  #If TargetWin32 Then
 		    For Each wndclass As Dictionary In Subclasses
 		      If wndclass.HasKey(HWND) Then
-		        Dim subclass As SciLexer.ScintillaField = wndclass.Value(HWND)
+		        Dim subclass As ScintillaField = wndclass.Value(HWND)
 		        If subclass <> Nil And subclass.WndProc(HWND, msg, wParam, lParam) Then
 		          Return 1
 		        End If
@@ -158,6 +170,15 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Integer
 		  Return SendMessage(SciHandle, SCI_LINEFROMPOSITION, Ptr(Position), Nil)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LineHasMarker(LineNumber As Integer, MarkerNumber As Integer) As Boolean
+		  Dim mb As New MemoryBlock(32)
+		  mb.Int32Value(0) = Me.AllMarkersForLine(LineNumber)
+		  Return (mb.Byte(MarkerNumber) = 1)
+		  
 		End Function
 	#tag EndMethod
 
@@ -222,6 +243,12 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub RemoveMarker(Line As Integer, MarkerToRemove As Scintilla.Marker)
+		  Call SendMessage(SciHandle, SCI_MARKERDELETE, Line, MarkerToRemove.MarkerNumber)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ScintillaHWND() As Integer
 		  Return SciHandle
 		End Function
@@ -262,13 +289,7 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SetLineMark(Line As Integer, MarkerStyle As Integer = - 1)
-		  Call SendMessage(SciHandle, SCI_MARKERADD, Ptr(Line), Ptr(MarkerStyle))
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub SetRangeStyle(Start As Integer, Stop As Integer, Assigns NewStyle As SciLexer.Style)
+		Sub SetRangeStyle(Start As Integer, Stop As Integer, Assigns NewStyle As Scintilla.Style)
 		  If NewStyle.Owner <> SciHandle Then Raise New RuntimeException
 		  
 		  Call SendMessage(SciHandle, SCI_STARTSTYLING, Start, &h1F) ' start styling
@@ -277,20 +298,20 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Style(StyleNumber As Integer) As SciLexer.Style
-		  Return New SciLexer.Style(SciHandle, StyleNumber)
+		Function Style(StyleNumber As Integer) As Scintilla.Style
+		  Return New Scintilla.Style(SciHandle, StyleNumber)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function StyleAtPosition(Position As Integer) As SciLexer.Style
+		Function StyleAtPosition(Position As Integer) As Scintilla.Style
 		  Dim s As Integer = SendMessage(SciHandle, SCI_GETSTYLEAT, Position, 0)
-		  Return New SciLexer.Style(SciHandle, s)
+		  Return New Scintilla.Style(SciHandle, s)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As SciLexer.ScintillaField)
+		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As ScintillaField)
 		  #If TargetWin32 Then
 		    If WndProcs.HasKey(SuperWin) Then
 		      Dim d As New Dictionary
@@ -363,7 +384,7 @@ Inherits RectControl
 		    End If
 		    
 		  Case WM_SIZING
-		    Dim r As SciLexer.RECT
+		    Dim r As Scintilla.RECT
 		    Dim s As MemoryBlock = lParam
 		    r.StringValue(TargetLittleEndian) = s.StringValue(0, 15)
 		    Select Case Integer(wParam)
@@ -1115,7 +1136,7 @@ Inherits RectControl
 			  
 			End Set
 		#tag EndSetter
-		Lexer As SciLexer.Lexers
+		Lexer As Scintilla.Lexers
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
@@ -1295,6 +1316,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_MARKERDELETE, Type = Double, Dynamic = False, Default = \"2044", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_MARKERGET, Type = Double, Dynamic = False, Default = \"2046", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_POINTXFROMPOSITION, Type = Double, Dynamic = False, Default = \"2164", Scope = Protected
 	#tag EndConstant
 
@@ -1400,6 +1424,7 @@ Inherits RectControl
 			Name="EOL"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="EOLVisible"

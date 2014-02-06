@@ -115,6 +115,13 @@ Protected Class Style
 			  Return ret
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  Dim mb As New MemoryBlock(value.LenB + 1)
+			  mb.CString(0) = value
+			  Call SendMessage(SciWindow, SCI_STYLESETFONT, Ptr(Me.StyleNumber), mb)
+			End Set
+		#tag EndSetter
 		TextFont As String
 	#tag EndComputedProperty
 

@@ -1,5 +1,5 @@
 #tag Module
-Protected Module SciLexer
+Protected Module Scintilla
 	#tag ExternalMethod, Flags = &h21
 		Private Declare Function CallWindowProc Lib "User32" Alias "CallWindowProcW" (WindowProc As Integer, HWND As Integer, msg As Integer, wParam As Ptr, lParam As Ptr) As Integer
 	#tag EndExternalMethod
@@ -1429,6 +1429,31 @@ Protected Module SciLexer
 		  TXT2TAGS
 		  A68K
 		AUTOMATIC
+	#tag EndEnum
+
+	#tag Enum, Name = Markers, Type = Integer, Flags = &h1
+		Circle
+		  RoundRect
+		  Arrow
+		  SmallRect
+		  ShortArrow
+		  Empty
+		  ArrowDown
+		  Minus
+		  Plus
+		  VLine
+		  LCorner
+		  TCorner
+		  BoxPlus
+		  BoxPlusConnected
+		  BoxMinus
+		  BoxMinusConnected
+		  LCornerCurve
+		  TCornerCurve
+		  CirclePlus
+		  CirclePlusConnected
+		  CircleMinus
+		CircleMinusConnected
 	#tag EndEnum
 
 
