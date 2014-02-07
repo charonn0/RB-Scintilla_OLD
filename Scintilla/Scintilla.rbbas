@@ -1230,54 +1230,17 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function SciMessage(HWND As Integer, Command As Integer, WParam As Variant, LParam As Variant) As Integer
-		  Dim p1, p2 As Ptr
-		  Select Case VarType(WParam)
-		  Case Variant.TypeBoolean
-		    p1 = New MemoryBlock(1)
-		    p1.Boolean(0) = WParam.BooleanValue
-		    
-		  Case Variant.TypeColor
-		    Dim mb As New MemoryBlock(4)
-		    mb.ColorValue(0, 32) = WParam.ColorValue
-		    p1 = mb
-		    
-		  Case Variant.TypeString, Variant.TypePtr
-		    p1 = WParam.PtrValue
-		    
-		  Case Variant.TypeInteger
-		    p1 = Integer(WParam)
-		    
-		  Else
-		    Raise New 
-		    
-		  End Select
-		  
-		  Select Case VarType(LParam)
-		  Case Variant.TypeBoolean
-		    
-		  Case Variant.TypeColor
-		    
-		  Case Variant.TypeString
-		    
-		  Case Variant.TypeInteger
-		    
-		  Case Variant.TypePtr
-		    
-		  Else
-		    
-		  End Select
+	#tag Method, Flags = &h1
+		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Integer, LParam As Integer) As Integer
+		  Return SendMessage(HWND, Command, Ptr(WParam), Ptr(LParam))
 		End Function
 	#tag EndMethod
 
-	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Boolean, LParam As Integer) As Integer
-	#tag EndExternalMethod
-
-	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Integer, LParam As Integer) As Integer
-	#tag EndExternalMethod
+	#tag Method, Flags = &h1
+		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Ptr, LParam As Ptr) As Integer
+		  Return SendMessage(HWND, Command, WParam, LParam)
+		End Function
+	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
@@ -1476,28 +1439,38 @@ Protected Module Scintilla
 	#tag EndEnum
 
 	#tag Enum, Name = Markers, Type = Integer, Flags = &h1
-		Circle
-		  RoundRect
-		  Arrow
-		  SmallRect
-		  ShortArrow
-		  Empty
-		  ArrowDown
-		  Minus
-		  Plus
-		  VLine
-		  LCorner
-		  TCorner
-		  BoxPlus
-		  BoxPlusConnected
-		  BoxMinus
-		  BoxMinusConnected
-		  LCornerCurve
-		  TCornerCurve
-		  CirclePlus
-		  CirclePlusConnected
-		  CircleMinus
-		CircleMinusConnected
+		CIRCLE
+		  ROUNDRECT
+		  ARROW
+		  SMALLRECT
+		  SHORTARROW
+		  EMPTY
+		  ARROWDOWN
+		  MINUS
+		  PLUS
+		  VLINE
+		  LCORNER
+		  TCORNER
+		  BOXPLUS
+		  BOXPLUSCONNECTED
+		  BOXMINUS
+		  BOXMINUSCONNECTED
+		  LCORNERCURVE
+		  TCORNERCURVE
+		  CIRCLEPLUS
+		  CIRCLEPLUSCONNECTED
+		  CIRCLEMINUS
+		  CIRCLEMINUSCONNECTED
+		  BACKGROUND
+		  DOTDOTDOT
+		  ARROWS
+		  PIXMAP
+		  FOLDEREND=25
+		  FOLDEROPENMID
+		  FOLDERMIDTAIL
+		  FOLDERSUB
+		  FOLDER
+		FOLDEROPEN
 	#tag EndEnum
 
 

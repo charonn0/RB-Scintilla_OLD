@@ -4,7 +4,7 @@ Inherits RectControl
 	#tag Event
 		Function KeyDown(Key As String) As Boolean
 		  If Not RaiseEvent KeyDown(key) Then
-		    Call SendMessage(SciHandle, SCI_BEGINUNDOACTION, Nil, Nil)
+		    Call SciMessage(SciHandle, SCI_BEGINUNDOACTION, Nil, Nil)
 		    Return True
 		  End If
 		End Function
@@ -12,7 +12,7 @@ Inherits RectControl
 
 	#tag Event
 		Sub KeyUp(Key As String)
-		  Call SendMessage(SciHandle, SCI_ENDUNDOACTION, Nil, Nil)
+		  Call SciMessage(SciHandle, SCI_ENDUNDOACTION, Nil, Nil)
 		  RaiseEvent KeyUp(key)
 		End Sub
 	#tag EndEvent
@@ -24,48 +24,36 @@ Inherits RectControl
 		  If SciHandle > 0 Then
 		    Subclass(pHandle, Me)
 		  End If
-		  Call SendMessage(SciHandle, SCI_SETSAVEPOINT, Nil, Nil)
+		  Call SciMessage(SciHandle, SCI_SETSAVEPOINT, Nil, Nil)
 		  RaiseEvent Open()
 		End Sub
 	#tag EndEvent
 
 
 	#tag Method, Flags = &h0
-		Function AddMarker(Line As Integer, MarkerStyle As Scintilla.Markers) As Scintilla.Marker
-		  Return New Scintilla.Marker(SendMessage(SciHandle, SCI_MARKERADD, Line, Integer(MarkerStyle)))
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function AllMarkersForLine(LineNumber As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_MARKERGET, LineNumber, 0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub AppendText(Text As String)
 		  Dim wparam As Integer = Text.LenB
 		  Dim lparam As New MemoryBlock(Text.LenB * 2)
 		  lparam.CString(0) = Text
-		  Call SendMessage(SciHandle, SCI_APPENDTEXT, Ptr(wparam), lparam)
+		  Call SciMessage(SciHandle, SCI_APPENDTEXT, Ptr(wparam), lparam)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function CanRedo() As Boolean
-		  Return SendMessage(SciHandle, SCI_CANREDO, Nil, Nil) = 1
+		  Return SciMessage(SciHandle, SCI_CANREDO, Nil, Nil) = 1
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function CanUndo() As Boolean
-		  Return SendMessage(SciHandle, SCI_CANUNDO, Nil, Nil) = 1
+		  Return SciMessage(SciHandle, SCI_CANUNDO, Nil, Nil) = 1
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function CharAtPos(Position As Integer) As String
-		  Dim char As Integer = SendMessage(SciHandle, SCI_GETCHARAT, Ptr(Position), Nil)
+		  Dim char As Integer = SciMessage(SciHandle, SCI_GETCHARAT, Ptr(Position), Nil)
 		  If char > 0 Then
 		    Return Chr(char)
 		  End If
@@ -74,20 +62,20 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub CharAtPos(Position As Integer, Assigns NewChar As String)
-		  
+		  #pragma Warning "Fix Me"
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub ClearAll()
-		  Call SendMessage(SciHandle, SCI_CLEARALL, Nil, Nil)
+		  Call SciMessage(SciHandle, SCI_CLEARALL, Nil, Nil)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub ClearSelection(NewCaretPosition As Integer = - 1)
 		  If NewCaretPosition <= -1 Then NewCaretPosition = 0
-		  Call SendMessage(SciHandle, SCI_SETEMPTYSELECTION, Ptr(NewCaretPosition), Nil)
+		  Call SciMessage(SciHandle, SCI_SETEMPTYSELECTION, Ptr(NewCaretPosition), Nil)
 		End Sub
 	#tag EndMethod
 
@@ -104,7 +92,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function CurrentLine() As Integer
-		  Return SendMessage(SciHandle, SCI_GETCURLINE, Nil, Nil)
+		  Return SciMessage(SciHandle, SCI_GETCURLINE, Nil, Nil)
 		End Function
 	#tag EndMethod
 
@@ -141,117 +129,109 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub Destructor()
-		  Call SendMessage(SciHandle, WM_DESTROY, Nil, Nil)
+		  Call SciMessage(SciHandle, WM_DESTROY, Nil, Nil)
 		  UnSubclass(pHandle)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function GetLine(Line As Integer) As String
-		  Dim len As Integer = SendMessage(SciHandle, SCI_LINELENGTH, Line, 0)
+		  Dim len As Integer = SciMessage(SciHandle, SCI_LINELENGTH, Line, 0)
 		  Dim mb As New MemoryBlock(len + 1)
-		  Call SendMessage(SciHandle, SCI_GETLINE, Ptr(Line), mb)
+		  Call SciMessage(SciHandle, SCI_GETLINE, Ptr(Line), mb)
 		  Return mb.CString(0)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function IsDirty() As Boolean
-		  Return SendMessage(SciHandle, SCI_GETMODIFY, Nil, Nil) <> 0
+		  Return SciMessage(SciHandle, SCI_GETMODIFY, Nil, Nil) <> 0
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub IsDirty(Assigns NewBool As Boolean)
-		  Call SendMessage(SciHandle, SCI_SETSAVEPOINT, Nil, Nil)
+		  #pragma Warning "Fix Me"
+		  Call SciMessage(SciHandle, SCI_SETSAVEPOINT, Nil, Nil)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function LastError() As Integer
-		  Return SendMessage(SciHandle, SCI_GETSTATUS, Nil, Nil)
+		  Return SciMessage(SciHandle, SCI_GETSTATUS, Nil, Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_LINEFROMPOSITION, Ptr(Position), Nil)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function LineHasMarker(LineNumber As Integer, MarkerNumber As Integer) As Boolean
-		  Dim mb As New MemoryBlock(32)
-		  mb.Int32Value(0) = Me.AllMarkersForLine(LineNumber)
-		  Return (mb.Byte(MarkerNumber) = 1)
-		  
+		  Return SciMessage(SciHandle, SCI_LINEFROMPOSITION, Ptr(Position), Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function MarginClickable(MarginNumber As Integer) As Boolean
-		  Return SendMessage(SciHandle, SCI_GETMARGINSENSITIVEN, MarginNumber, 0) <> 0
+		  Return SciMessage(SciHandle, SCI_GETMARGINSENSITIVEN, MarginNumber, 0) <> 0
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MarginClickable(MarginNumber As Integer, Assigns NewBool As Boolean)
 		  If NewBool Then
-		    Call SendMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 1)
+		    Call SciMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 1)
 		  Else
-		    Call SendMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 0)
+		    Call SciMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 0)
 		  End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function MarginType(MarginNumber As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_GETMARGINTYPEN, MarginNumber, 0)
+		  Return SciMessage(SciHandle, SCI_GETMARGINTYPEN, MarginNumber, 0)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MarginType(MarginNumber As Integer, Assigns NewType As Integer)
-		  Call SendMessage(SciHandle, SCI_SETMARGINTYPEN, MarginNumber, NewType)
+		  Call SciMessage(SciHandle, SCI_SETMARGINTYPEN, MarginNumber, NewType)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function MarginWidth(MarginNumber As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_GETMARGINWIDTHN, MarginNumber, 0)
+		  Return SciMessage(SciHandle, SCI_GETMARGINWIDTHN, MarginNumber, 0)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub MarginWidth(MarginNumber As Integer, Assigns NewWidth As Integer)
-		  Call SendMessage(SciHandle, SCI_SETMARGINWIDTHN, MarginNumber, NewWidth)
+		  Call SciMessage(SciHandle, SCI_SETMARGINWIDTHN, MarginNumber, NewWidth)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Marker(LineNumber As Integer)
+		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function PositionFromLine(Line As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_POSITIONFROMLINE, Ptr(Line), Nil)
+		  Return SciMessage(SciHandle, SCI_POSITIONFROMLINE, Ptr(Line), Nil)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function PositionFromXY(X As Integer, Y As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_POSITIONFROMPOINTCLOSE, X, Y)
+		  Return SciMessage(SciHandle, SCI_POSITIONFROMPOINTCLOSE, X, Y)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Redo() As Boolean
 		  If CanRedo Then
-		    Return SendMessage(SciHandle, SCI_REDO, Nil, Nil) = 0
+		    Return SciMessage(SciHandle, SCI_REDO, Nil, Nil) = 0
 		  End If
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub RemoveMarker(Line As Integer, MarkerToRemove As Scintilla.Marker)
-		  Call SendMessage(SciHandle, SCI_MARKERDELETE, Line, MarkerToRemove.MarkerNumber)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -262,27 +242,27 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub ScrollToLine(Line As Integer)
-		  Call SendMessage(SciHandle, SCI_GOTOLINE, Line, 0)
+		  Call SciMessage(SciHandle, SCI_GOTOLINE, Line, 0)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub ScrollToPosition(Position As Integer)
-		  Call SendMessage(SciHandle, SCI_GOTOPOS, Position, 0)
+		  Call SciMessage(SciHandle, SCI_GOTOPOS, Position, 0)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub SelectAll()
-		  Call SendMessage(SciHandle, SCI_SELECTALL, Nil, Nil)
+		  Call SciMessage(SciHandle, SCI_SELECTALL, Nil, Nil)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function SelectedText() As String
-		  Dim sz As Integer = SendMessage(SciHandle, SCI_GETSELTEXT, 0, 0)
+		  Dim sz As Integer = SciMessage(SciHandle, SCI_GETSELTEXT, 0, 0)
 		  Dim mb As New MemoryBlock(sz + 1)
-		  Call SendMessage(SciHandle, SCI_GETSELTEXT, Nil, mb)
+		  Call SciMessage(SciHandle, SCI_GETSELTEXT, Nil, mb)
 		  Return mb.CString(0)
 		End Function
 	#tag EndMethod
@@ -290,7 +270,7 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Sub SelectRange(Start As Integer, Stop As Integer)
 		  ' Use SelectRange(-1, -1) to clear selection
-		  Call SendMessage(SciHandle, SCI_SETSEL, Start, Stop)
+		  Call SciMessage(SciHandle, SCI_SETSEL, Start, Stop)
 		End Sub
 	#tag EndMethod
 
@@ -298,21 +278,27 @@ Inherits RectControl
 		Sub SetRangeStyle(Start As Integer, Stop As Integer, Assigns NewStyle As Scintilla.Style)
 		  If NewStyle.Owner <> SciHandle Then Raise New RuntimeException
 		  
-		  Call SendMessage(SciHandle, SCI_STARTSTYLING, Start, &h1F) ' start styling
-		  Call SendMessage(SciHandle, SCI_SETSTYLING, Stop - Start, NewStyle.StyleNumber)
+		  Call SciMessage(SciHandle, SCI_STARTSTYLING, Start, &h1F) ' start styling
+		  Call SciMessage(SciHandle, SCI_SETSTYLING, Stop - Start, NewStyle.StyleNumber)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SndMsgHandler()
+		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Style(StyleNumber As Integer) As Scintilla.Style
-		  Return New Scintilla.Style(SciHandle, StyleNumber)
+		  Return New Scintilla.Style(StyleNumber, SciHandle)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function StyleAtPosition(Position As Integer) As Scintilla.Style
-		  Dim s As Integer = SendMessage(SciHandle, SCI_GETSTYLEAT, Position, 0)
-		  Return New Scintilla.Style(SciHandle, s)
+		  'Dim s As Integer = SciMessage(SciHandle, SCI_GETSTYLEAT, Position, 0)
+		  'Return New Scintilla.Style(s, SciHandle)
 		End Function
 	#tag EndMethod
 
@@ -338,7 +324,7 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Function Undo() As Boolean
 		  If CanUndo Then
-		    Return SendMessage(SciHandle, SCI_UNDO, Nil, Nil) = 0
+		    Return SciMessage(SciHandle, SCI_UNDO, Nil, Nil) = 0
 		  End If
 		End Function
 	#tag EndMethod
@@ -405,13 +391,13 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function XFromPosition(Position As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_POINTXFROMPOSITION, 0, Position)
+		  Return SciMessage(SciHandle, SCI_POINTXFROMPOSITION, 0, Position)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function YFromPosition(Position As Integer) As Integer
-		  Return SendMessage(SciHandle, SCI_POINTYFROMPOSITION, 0, Position)
+		  Return SciMessage(SciHandle, SCI_POINTYFROMPOSITION, 0, Position)
 		End Function
 	#tag EndMethod
 
@@ -1058,7 +1044,7 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciHandle, SCI_GETCURRENTPOS, Nil, Nil)
+			  Return SciMessage(SciHandle, SCI_GETCURRENTPOS, Nil, Nil)
 			  
 			  
 			End Get
@@ -1067,7 +1053,7 @@ Inherits RectControl
 			Set
 			  Dim wparam As New MemoryBlock(4)
 			  wparam.Int32Value(0) = value
-			  Call SendMessage(SciHandle, SCI_SETCURRENTPOS, wparam, Nil)
+			  Call SciMessage(SciHandle, SCI_SETCURRENTPOS, wparam, Nil)
 			  
 			  
 			End Set
@@ -1078,7 +1064,7 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim m As Integer = SendMessage(SciHandle, SCI_GETEOLMODE, Nil, Nil)
+			  Dim m As Integer = SciMessage(SciHandle, SCI_GETEOLMODE, Nil, Nil)
 			  Select Case m
 			  Case 0
 			    Return EndOfLine.Windows
@@ -1096,11 +1082,11 @@ Inherits RectControl
 			  Dim m As Integer
 			  Select Case value
 			  Case EndOfLine.Windows
-			    m = SendMessage(SciHandle, SCI_SETEOLMODE, 0, 0)
+			    m = SciMessage(SciHandle, SCI_SETEOLMODE, 0, 0)
 			  Case EndOfLine.Macintosh
-			    m = SendMessage(SciHandle, SCI_SETEOLMODE, 1, 0)
+			    m = SciMessage(SciHandle, SCI_SETEOLMODE, 1, 0)
 			  Case EndOfLine.UNIX
-			    m = SendMessage(SciHandle, SCI_SETEOLMODE, 2, 0)
+			    m = SciMessage(SciHandle, SCI_SETEOLMODE, 2, 0)
 			  Else
 			    Raise New UnsupportedFormatException
 			  End Select
@@ -1112,15 +1098,15 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciHandle, SCI_GETVIEWEOL, Nil, Nil) <> 0
+			  Return SciMessage(SciHandle, SCI_GETVIEWEOL, Nil, Nil) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SendMessage(SciHandle, SCI_SETVIEWEOL, 1, 0)
+			    Call SciMessage(SciHandle, SCI_SETVIEWEOL, 1, 0)
 			  Else
-			    Call SendMessage(SciHandle, SCI_SETVIEWEOL, 0, 0)
+			    Call SciMessage(SciHandle, SCI_SETVIEWEOL, 0, 0)
 			  End If
 			End Set
 		#tag EndSetter
@@ -1130,14 +1116,14 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  'Return SendMessage(SciHandle, SCI_GETCURRENTPOS, Nil, Nil)
+			  'Return SciMessage(SciHandle, SCI_GETCURRENTPOS, Nil, Nil)
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  Dim wparam As New MemoryBlock(4)
 			  wparam.Int32Value(0) = Integer(value)
-			  Call SendMessage(SciHandle, SCI_SETLEXER, wparam, Nil)
+			  Call SciMessage(SciHandle, SCI_SETLEXER, wparam, Nil)
 			  
 			  
 			End Set
@@ -1156,15 +1142,15 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciHandle, SCI_GETREADONLY, Nil, Nil) <> 0
+			  Return SciMessage(SciHandle, SCI_GETREADONLY, Nil, Nil) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SendMessage(SciHandle, SCI_SETREADONLY, 1, 0)
+			    Call SciMessage(SciHandle, SCI_SETREADONLY, 1, 0)
 			  Else
-			    Call SendMessage(SciHandle, SCI_SETREADONLY, 0, 0)
+			    Call SciMessage(SciHandle, SCI_SETREADONLY, 0, 0)
 			  End If
 			End Set
 		#tag EndSetter
@@ -1182,9 +1168,9 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim len As Integer = SendMessage(SciHandle, SCI_GETLENGTH, Nil, Nil)
+			  Dim len As Integer = SciMessage(SciHandle, SCI_GETLENGTH, Nil, Nil)
 			  Dim mb As New MemoryBlock(len * 2)
-			  len = SendMessage(SciHandle, SCI_GETTEXT, Ptr(mb.Size), mb)
+			  len = SciMessage(SciHandle, SCI_GETTEXT, Ptr(mb.Size), mb)
 			  Dim ret As String = mb.CString(0)
 			  Return ret
 			End Get
@@ -1193,7 +1179,7 @@ Inherits RectControl
 			Set
 			  Dim lparam As New MemoryBlock(value.LenB * 2)
 			  lparam.CString(0) = value
-			  Call SendMessage(SciHandle, SCI_SETTEXT, Nil, lparam)
+			  Call SciMessage(SciHandle, SCI_SETTEXT, Nil, lparam)
 			End Set
 		#tag EndSetter
 		Text As String
@@ -1202,7 +1188,7 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciHandle, SCI_GETFIRSTVISIBLELINE, Nil, Nil)
+			  Return SciMessage(SciHandle, SCI_GETFIRSTVISIBLELINE, Nil, Nil)
 			  
 			  
 			End Get
@@ -1211,7 +1197,7 @@ Inherits RectControl
 			Set
 			  Dim wparam As New MemoryBlock(4)
 			  wparam.Int32Value(0) = value
-			  Call SendMessage(SciHandle, SCI_SETFIRSTVISIBLELINE, wparam, Nil)
+			  Call SciMessage(SciHandle, SCI_SETFIRSTVISIBLELINE, wparam, Nil)
 			  
 			  
 			End Set
@@ -1295,9 +1281,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETSELTEXT, Type = Double, Dynamic = False, Default = \"2161", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETSTYLEAT, Type = Double, Dynamic = False, Default = \"2010", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_GETTEXT, Type = Double, Dynamic = False, Default = \"2182", Scope = Protected
 	#tag EndConstant
 
@@ -1314,15 +1297,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_LINELENGTH, Type = Double, Dynamic = False, Default = \"2350", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_MARKERADD, Type = Double, Dynamic = False, Default = \"2043", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_MARKERDELETE, Type = Double, Dynamic = False, Default = \"2044", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_MARKERGET, Type = Double, Dynamic = False, Default = \"2046", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_POINTXFROMPOSITION, Type = Double, Dynamic = False, Default = \"2164", Scope = Protected
