@@ -756,11 +756,6 @@ End
 		  'MsgBox("Changed")
 		End Sub
 	#tag EndEvent
-	#tag Event
-		Sub MarginClicked(MarginNumber As Integer, LineNumber As Integer)
-		  'Dim i As Integer = Me.AddMarker(LineNumber, Scintilla.Markers.BoxPlus)
-		End Sub
-	#tag EndEvent
 #tag EndEvents
 #tag Events CanRedo
 	#tag Event
