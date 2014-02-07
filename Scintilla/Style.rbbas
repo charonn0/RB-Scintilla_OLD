@@ -1,15 +1,15 @@
 #tag Class
 Protected Class Style
 	#tag Method, Flags = &h0
-		Sub Constructor(SciHWND As Integer, StyleNumber As Integer)
-		  SciWindow = SciHWND
+		Sub Constructor(StyleNumber As Integer, Reference As Integer)
+		  SciRef = Reference
 		  mStyleNumber = StyleNumber
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Owner() As Integer
-		  Return SciWindow
+		  Return SciRef
 		End Function
 	#tag EndMethod
 
@@ -24,7 +24,7 @@ Protected Class Style
 		#tag Getter
 			Get
 			  Dim mb As New MemoryBlock(4)
-			  Dim i As Integer = SendMessage(SciWindow, SCI_STYLEGETBACK, Me.StyleNumber, 0)
+			  Dim i As Integer = SciMessage(SciRef, SCI_STYLEGETBACK, Me.StyleNumber, 0)
 			  mb.Int32Value(0) = i
 			  Return RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
 			End Get
@@ -33,7 +33,7 @@ Protected Class Style
 			Set
 			  Dim mb As New MemoryBlock(4)
 			  mb.ColorValue(0, 32) = value
-			  Call SendMessage(SciWindow, SCI_STYLEGETBACK, Me.StyleNumber, mb.Int32Value(0))
+			  Call SciMessage(SciRef, SCI_STYLEGETBACK, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
 		Background As Color
@@ -42,15 +42,15 @@ Protected Class Style
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciWindow, SCI_STYLEGETBOLD, Me.StyleNumber, 0) <> 0
+			  Return SciMessage(SciRef, SCI_STYLEGETBOLD, Me.StyleNumber, 0) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SendMessage(SciWindow, SCI_STYLESETBOLD, Me.StyleNumber, 1)
+			    Call SciMessage(SciRef, SCI_STYLESETBOLD, Me.StyleNumber, 1)
 			  Else
-			    Call SendMessage(SciWindow, SCI_STYLESETBOLD, Me.StyleNumber, 0)
+			    Call SciMessage(SciRef, SCI_STYLESETBOLD, Me.StyleNumber, 0)
 			  End If
 			End Set
 		#tag EndSetter
@@ -60,15 +60,15 @@ Protected Class Style
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciWindow, SCI_STYLEGETITALIC, Me.StyleNumber, 0) <> 0
+			  Return SciMessage(SciRef, SCI_STYLEGETITALIC, Me.StyleNumber, 0) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SendMessage(SciWindow, SCI_STYLESETITALIC, Me.StyleNumber, 1)
+			    Call SciMessage(SciRef, SCI_STYLESETITALIC, Me.StyleNumber, 1)
 			  Else
-			    Call SendMessage(SciWindow, SCI_STYLESETITALIC, Me.StyleNumber, 0)
+			    Call SciMessage(SciRef, SCI_STYLESETITALIC, Me.StyleNumber, 0)
 			  End If
 			End Set
 		#tag EndSetter
@@ -80,14 +80,14 @@ Protected Class Style
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
-		Protected SciWindow As Integer
+		Protected SciRef As Integer
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
 			  Dim mb As New MemoryBlock(4)
-			  Dim i As Integer = SendMessage(SciWindow, SCI_STYLEGETFORE, Me.StyleNumber, 0)
+			  Dim i As Integer = SciMessage(SciRef, SCI_STYLEGETFORE, Me.StyleNumber, 0)
 			  mb.ColorValue(0, 32) = Color(i)
 			  Return mb.ColorValue(0, 32)
 			  'RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
@@ -95,12 +95,12 @@ Protected Class Style
 		#tag EndGetter
 		#tag Setter
 			Set
-			  'Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, UInt32(value))
+			  'Call SciMessage(SciRef, SCI_STYLESETFORE, Me.StyleNumber, UInt32(value))
 			  Dim mb As New MemoryBlock(4)
 			  mb.Byte(0) = value.Red
 			  mb.Byte(1) = value.Green
 			  mb.Byte(2) = value.Blue
-			  Call SendMessage(SciWindow, SCI_STYLESETFORE, Me.StyleNumber, mb.Int32Value(0))
+			  Call SciMessage(SciRef, SCI_STYLESETFORE, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
 		TextColor As Color
@@ -110,7 +110,8 @@ Protected Class Style
 		#tag Getter
 			Get
 			  Dim mb As New MemoryBlock(128)
-			  Call SendMessage(SciWindow, SCI_STYLEGETFONT, Ptr(Me.StyleNumber), mb)
+			  Dim p As Ptr = mb
+			  Call SciMessage(SciRef, SCI_STYLEGETFONT, Me.StyleNumber, Integer(p))
 			  Dim ret As String = mb.CString(0)
 			  Return ret
 			End Get
@@ -119,7 +120,8 @@ Protected Class Style
 			Set
 			  Dim mb As New MemoryBlock(value.LenB + 1)
 			  mb.CString(0) = value
-			  Call SendMessage(SciWindow, SCI_STYLESETFONT, Ptr(Me.StyleNumber), mb)
+			  Dim p As Ptr = mb
+			  Call SciMessage(SciRef, SCI_STYLESETFONT, Me.StyleNumber, Integer(p))
 			End Set
 		#tag EndSetter
 		TextFont As String
@@ -128,12 +130,12 @@ Protected Class Style
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciWindow, SCI_STYLEGETSIZE, mStyleNumber, 0)
+			  Return SciMessage(SciRef, SCI_STYLEGETSIZE, mStyleNumber, 0)
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Call SendMessage(SciWindow, SCI_STYLESETSIZEFRACTIONAL, mStyleNumber, value * 100)
+			  Call SciMessage(SciRef, SCI_STYLESETSIZEFRACTIONAL, mStyleNumber, value * 100)
 			End Set
 		#tag EndSetter
 		TextSize As Double
@@ -142,15 +144,15 @@ Protected Class Style
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SendMessage(SciWindow, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 0) <> 0
+			  Return SciMessage(SciRef, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 0) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SendMessage(SciWindow, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 1)
+			    Call SciMessage(SciRef, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 1)
 			  Else
-			    Call SendMessage(SciWindow, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 0)
+			    Call SciMessage(SciRef, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 0)
 			  End If
 			End Set
 		#tag EndSetter
