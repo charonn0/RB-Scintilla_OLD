@@ -25,6 +25,7 @@ Inherits RectControl
 		    Subclass(pHandle, Me)
 		  End If
 		  Call SciMessage(SciHandle, SCI_SETSAVEPOINT, Nil, Nil)
+		  Call SciMessage(SciHandle, SCI_USEPOPUP, 0, 0)
 		  RaiseEvent Open()
 		End Sub
 	#tag EndEvent
@@ -91,6 +92,22 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub ConvertEOL(NewEOL As String)
+		  Dim m As Integer
+		  Select Case NewEOL
+		  Case EndOfLine.Windows
+		    m = SciMessage(SciHandle, SCI_CONVERTEOLS, 0, 0)
+		  Case EndOfLine.Macintosh
+		    m = SciMessage(SciHandle, SCI_CONVERTEOLS, 1, 0)
+		  Case EndOfLine.UNIX
+		    m = SciMessage(SciHandle, SCI_CONVERTEOLS, 2, 0)
+		  Else
+		    Raise New UnsupportedFormatException
+		  End Select
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CurrentLine() As Integer
 		  Return SciMessage(SciHandle, SCI_GETCURLINE, Nil, Nil)
 		End Function
@@ -135,6 +152,24 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FindNext(SearchPattern As String, SearchType As Integer) As Integer
+		  Call SciMessage(SciHandle,SCI_SEARCHANCHOR, Nil, Nil)
+		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
+		  mb.CString(0) = SearchPattern
+		  Return SciMessage(SciHandle, SCI_SEARCHNEXT, Ptr(SearchType), mb)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function FindPrev(SearchPattern As String, SearchType As Integer) As Integer
+		  Call SciMessage(SciHandle,SCI_SEARCHANCHOR, Nil, Nil)
+		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
+		  mb.CString(0) = SearchPattern
+		  Return SciMessage(SciHandle, SCI_SEARCHPREV, Ptr(SearchType), mb)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GetLine(Line As Integer) As String
 		  Dim len As Integer = SciMessage(SciHandle, SCI_LINELENGTH, Line, 0)
 		  Dim mb As New MemoryBlock(len + 1)
@@ -169,43 +204,9 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function MarginClickable(MarginNumber As Integer) As Boolean
-		  Return SciMessage(SciHandle, SCI_GETMARGINSENSITIVEN, MarginNumber, 0) <> 0
+		Function Margin(Index As Integer) As Scintilla.Margin
+		  Return New Scintilla.Margin(Index, SciHandle)
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub MarginClickable(MarginNumber As Integer, Assigns NewBool As Boolean)
-		  If NewBool Then
-		    Call SciMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 1)
-		  Else
-		    Call SciMessage(SciHandle, SCI_SETMARGINSENSITIVEN, MarginNumber, 0)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function MarginType(MarginNumber As Integer) As Integer
-		  Return SciMessage(SciHandle, SCI_GETMARGINTYPEN, MarginNumber, 0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub MarginType(MarginNumber As Integer, Assigns NewType As Integer)
-		  Call SciMessage(SciHandle, SCI_SETMARGINTYPEN, MarginNumber, NewType)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function MarginWidth(MarginNumber As Integer) As Integer
-		  Return SciMessage(SciHandle, SCI_GETMARGINWIDTHN, MarginNumber, 0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub MarginWidth(MarginNumber As Integer, Assigns NewWidth As Integer)
-		  Call SciMessage(SciHandle, SCI_SETMARGINWIDTHN, MarginNumber, NewWidth)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -375,6 +376,14 @@ Inherits RectControl
 		      'Return True
 		    End If
 		    
+		  Case WM_RBUTTONUP, WM_LBUTTONUP
+		    Break
+		  Case WM_RBUTTONDOWN, WM_LBUTTONDOWN
+		    Dim X, Y As Integer
+		    X = BitAnd(Integer(LParam), &hFFFFFFFF)
+		    Y = ShiftRight(Integer(LParam), 32)
+		    Return RaiseEvent MouseDown(X, Y)
+		    
 		  Case WM_SIZING
 		    Dim r As Scintilla.RECT
 		    Dim s As MemoryBlock = lParam
@@ -385,6 +394,9 @@ Inherits RectControl
 		        
 		      End If
 		    End Select
+		    
+		    'Case WM_CONTEXTMENU
+		    'Return SciMessage(Me.Parent.Handle, WM_CONTEXTMENU, WParam, LParam) = 1
 		  End Select
 		End Function
 	#tag EndMethod
@@ -412,6 +424,10 @@ Inherits RectControl
 
 	#tag Hook, Flags = &h0
 		Event MarginClicked(MarginNumber As Integer, LineNumber As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event MouseDown(X As Integer, Y As Integer) As Boolean
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -1131,6 +1147,15 @@ Inherits RectControl
 		Lexer As Scintilla.Lexers
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return SciMessage(SciHandle, SCI_GETLINECOUNT, Nil, Nil)
+			End Get
+		#tag EndGetter
+		LineCount As Integer
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private Shared mWndProcs As Dictionary
 	#tag EndProperty
@@ -1161,6 +1186,35 @@ Inherits RectControl
 		Private SciHandle As Integer
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim p As Integer = Me.SelStart
+			  Return SciMessage(SciHandle, SCI_GETSELECTIONEND, Nil, Nil) - p
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call SciMessage(SciHandle, SCI_SETSELECTIONEND, value, 0)
+			End Set
+		#tag EndSetter
+		SelLength As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return SciMessage(SciHandle, SCI_GETSELECTIONSTART, Nil, Nil)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call SciMessage(SciHandle, SCI_SETSELECTIONSTART, value, 0)
+			End Set
+		#tag EndSetter
+		SelStart As Integer
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private Shared Subclasses() As Dictionary
 	#tag EndProperty
@@ -1169,10 +1223,12 @@ Inherits RectControl
 		#tag Getter
 			Get
 			  Dim len As Integer = SciMessage(SciHandle, SCI_GETLENGTH, Nil, Nil)
-			  Dim mb As New MemoryBlock(len * 2)
-			  len = SciMessage(SciHandle, SCI_GETTEXT, Ptr(mb.Size), mb)
-			  Dim ret As String = mb.CString(0)
-			  Return ret
+			  If len > 0 Then
+			    Dim mb As New MemoryBlock(len * 2)
+			    len = SciMessage(SciHandle, SCI_GETTEXT, Ptr(mb.Size), mb)
+			    Dim ret As String = mb.CString(0)
+			    Return ret
+			  End If
 			End Get
 		#tag EndGetter
 		#tag Setter
@@ -1221,6 +1277,21 @@ Inherits RectControl
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = SCFIND_MATCHCASE, Type = Double, Dynamic = False, Default = \"4", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCFIND_POSIX, Type = Double, Dynamic = False, Default = \"&h00400000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCFIND_REGEXP, Type = Double, Dynamic = False, Default = \"&h00200000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCFIND_WHOLEWORD, Type = Double, Dynamic = False, Default = \"2", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCFIND_WORDSTART, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_APPENDTEXT, Type = Double, Dynamic = False, Default = \"2282", Scope = Protected
 	#tag EndConstant
 
@@ -1236,7 +1307,13 @@ Inherits RectControl
 	#tag Constant, Name = SCI_CLEARALL, Type = Double, Dynamic = False, Default = \"2004", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_CONVERTEOLS, Type = Double, Dynamic = False, Default = \"2029", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_ENDUNDOACTION, Type = Double, Dynamic = False, Default = \"2079", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_FINDTEXT, Type = Double, Dynamic = False, Default = \"2150", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETCHARAT, Type = Double, Dynamic = False, Default = \"2007", Scope = Protected
@@ -1263,19 +1340,19 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETLINE, Type = Double, Dynamic = False, Default = \"2153", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETMARGINSENSITIVEN, Type = Double, Dynamic = False, Default = \"2247", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETMARGINTYPEN, Type = Double, Dynamic = False, Default = \"2241", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETMARGINWIDTHN, Type = Double, Dynamic = False, Default = \"2243", Scope = Protected
+	#tag Constant, Name = SCI_GETLINECOUNT, Type = Double, Dynamic = False, Default = \"2154", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETMODIFY, Type = Double, Dynamic = False, Default = \"2159", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETREADONLY, Type = Double, Dynamic = False, Default = \"2140", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETSELECTIONEND, Type = Double, Dynamic = False, Default = \"2145", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETSELECTIONSTART, Type = Double, Dynamic = False, Default = \"2143", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETSELTEXT, Type = Double, Dynamic = False, Default = \"2161", Scope = Protected
@@ -1314,6 +1391,15 @@ Inherits RectControl
 	#tag Constant, Name = SCI_REDO, Type = Double, Dynamic = False, Default = \"2011", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SEARCHANCHOR, Type = Double, Dynamic = False, Default = \"2366", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SEARCHNEXT, Type = Double, Dynamic = False, Default = \"2367", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SEARCHPREV, Type = Double, Dynamic = False, Default = \"2368", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SELECTALL, Type = Double, Dynamic = False, Default = \"2013", Scope = Protected
 	#tag EndConstant
 
@@ -1332,15 +1418,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETMARGINSENSITIVEN, Type = Double, Dynamic = False, Default = \"2246", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETMARGINTYPEN, Type = Double, Dynamic = False, Default = \"2340", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETMARGINWIDTHN, Type = Double, Dynamic = False, Default = \"2242", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SETREADONLY, Type = Double, Dynamic = False, Default = \"2171", Scope = Protected
 	#tag EndConstant
 
@@ -1348,6 +1425,12 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETSEL, Type = Double, Dynamic = False, Default = \"2160", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETSELECTIONEND, Type = Double, Dynamic = False, Default = \"2144", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETSELECTIONSTART, Type = Double, Dynamic = False, Default = \"2142", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected
@@ -1363,6 +1446,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_UNDO, Type = Double, Dynamic = False, Default = \"2176", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_USEPOPUP, Type = Double, Dynamic = False, Default = \"2371", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCN_MARGINCLICK, Type = Double, Dynamic = False, Default = \"2010", Scope = Protected

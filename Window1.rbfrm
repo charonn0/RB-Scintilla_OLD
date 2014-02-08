@@ -539,97 +539,12 @@ Begin Window Window1
       Index           =   -2147483648
       Left            =   839
       LockedInPosition=   False
-      Mode            =   1
+      Mode            =   2
       Period          =   500
       Scope           =   0
       TabPanelIndex   =   0
       Top             =   -30
       Width           =   32
-   End
-   Begin Oval Oval1
-      AutoDeactivate  =   True
-      BorderColor     =   &h000000
-      BorderWidth     =   1
-      Enabled         =   True
-      FillColor       =   &hFFFFFF
-      Height          =   28
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   457
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   18
-      TabPanelIndex   =   0
-      Top             =   171
-      Visible         =   True
-      Width           =   28
-   End
-   Begin PopupMenu textFont
-      AutoDeactivate  =   True
-      Bold            =   False
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      InitialValue    =   ""
-      Italic          =   False
-      Left            =   498
-      ListIndex       =   0
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   False
-      LockRight       =   False
-      LockTop         =   False
-      Scope           =   0
-      TabIndex        =   19
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   11.0
-      TextUnit        =   0
-      Top             =   174
-      Underline       =   False
-      Visible         =   True
-      Width           =   120
-   End
-   Begin PopupMenu textSize
-      AutoDeactivate  =   True
-      Bold            =   False
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      InitialValue    =   ""
-      Italic          =   False
-      Left            =   623
-      ListIndex       =   0
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   False
-      LockRight       =   False
-      LockTop         =   False
-      Scope           =   0
-      TabIndex        =   20
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   11.0
-      TextUnit        =   0
-      Top             =   174
-      Underline       =   False
-      Visible         =   True
-      Width           =   46
    End
    Begin PushButton PushButton2
       AutoDeactivate  =   True
@@ -658,6 +573,64 @@ Begin Window Window1
       TextSize        =   0
       TextUnit        =   0
       Top             =   -30
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
+   Begin StyleEdit StyleEdit1
+      AcceptFocus     =   ""
+      AcceptTabs      =   True
+      AutoDeactivate  =   True
+      BackColor       =   &hFFFFFF
+      Backdrop        =   ""
+      Enabled         =   True
+      EraseBackground =   True
+      HasBackColor    =   False
+      Height          =   85
+      HelpTag         =   ""
+      InitialParent   =   ""
+      Left            =   457
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   23
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   174
+      UseFocusRing    =   ""
+      Visible         =   True
+      Width           =   353
+   End
+   Begin PushButton PushButton1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   540
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   24
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   265
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -741,19 +714,49 @@ End
 #tag Events ScintillaField1
 	#tag Event
 		Sub Open()
-		  Me.MarginType(0) = 1
-		  Me.MarginWidth(0) = 15
-		  Me.MarginClickable(0) = True
+		  Me.Margin(0).Type = 1
+		  Me.Margin(0).Width = 15
+		  Me.Margin(0).Clickable = True
 		  
-		  Me.MarginType(1) = 0
-		  Me.MarginWidth(1) = 15
-		  Me.MarginClickable(1) = True
+		  Me.Margin(1).Type = 0
+		  Me.Margin(1).Width = 15
+		  Me.Margin(1).Clickable = True
 		  
 		End Sub
 	#tag EndEvent
 	#tag Event
 		Sub TextChanged()
 		  'MsgBox("Changed")
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
+		  Select Case hitItem.Text
+		  Case "Increment style"
+		    Dim s, e As Integer
+		    s = Me.SelStart
+		    e = s + Me.SelLength
+		    Dim st As Scintilla.Style = Me.Style(StyleEdit1.CurrentStyle + 1)
+		    Me.SetRangeStyle(s, e) = st
+		  End Select
+		End Function
+	#tag EndEvent
+	#tag Event
+		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
+		  base.Append(New MenuItem("Increment style"))
+		  Return True
+		End Function
+	#tag EndEvent
+	#tag Event
+		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  Break
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events ShowEOL
+	#tag Event
+		Sub Action()
+		  ScintillaField1.EOLVisible = Me.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -796,86 +799,12 @@ End
 		  CaratPos.Text = Format(ScintillaField1.CaretPosition, "###,###,###,##0")
 		  TopLine.Text = Format(ScintillaField1.TopLine, "###,###,###,##0")
 		  CurrentLine.Text = Format(ScintillaField1.CurrentLine, "###,###,###,##0")
-		  ShowEOL.Value = ScintillaField1.EOLVisible
+		  'ShowEOL.Value = ScintillaField1.EOLVisible
 		  CanRedo.Value = ScintillaField1.CanRedo
 		  CanUndo.Value = ScintillaField1.CanUndo
 		  ReadOnly.Value = ScintillaField1.ReadOnly
-		  textSize.ListIndex = ScintillaField1.Style(0).TextSize - 9
-		  Dim f As String = ScintillaField1.Style(0).TextFont.Trim
-		  For i As Integer = 0 To textFont.ListCount - 1
-		    If textFont.List(i) = f Then
-		      textFont.ListIndex = i
-		      Exit For
-		    End If
-		  Next
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events Oval1
-	#tag Event
-		Function MouseDown(X As Integer, Y As Integer) As Boolean
-		  #pragma Unused X
-		  #pragma Unused Y
-		  Dim c As Color = me.FillColor
-		  Call SelectColor(c, "Choose a Color")
-		  me.FillColor = c
-		  ScintillaField1.Style(0).TextColor = c
-		  
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub MouseEnter()
-		  me.MouseCursor = System.Cursors.FingerPointer
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseExit()
-		  me.MouseCursor = System.Cursors.StandardPointer
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events textFont
-	#tag Event
-		Sub Open()
-		  Me.AddRow("Font")
-		  Me.ListIndex = 0
-		  Dim fonts() As String
-		  For i As Integer = 1 To FontCount - 1
-		    Dim textfont As String = Font(i)
-		    fonts.Append(textfont)
-		  Next
-		  fonts.Sort
-		  For i As Integer = 0 To fonts.Ubound
-		    Me.AddRow(fonts(i))
-		  Next
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub Change()
-		  If Me.ListIndex >= 1 Then
-		    Dim s As Scintilla.Style = ScintillaField1.Style(0)
-		    s.TextFont = Me.Text
-		    ScintillaField1.SetRangeStyle(0, 5) = s
-		  End If
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events textSize
-	#tag Event
-		Sub Open()
-		  'Me.AddRow("Size")
-		  Me.ListIndex = 0
-		  For i As Integer = 1 To 54
-		    Me.AddRow(Str(i))
-		  Next
-		  
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub Change()
-		  'If Me.ListIndex >= 1 Then
-		  ScintillaField1.Style(0).TextSize = CDbl(Me.Text)
-		  'End If
+		  IsDirty.Value = ScintillaField1.IsDirty
+		  TextArea1.Text = ScintillaField1.Text
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -905,6 +834,26 @@ End
 		      x = x + 1
 		    End If
 		  Next
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events StyleEdit1
+	#tag Event
+		Function GetReference() As ScintillaField
+		  Return ScintillaField1
+		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  Dim s, e As Integer
+		  s = ScintillaField1.SelStart
+		  e = s + ScintillaField1.SelLength - 1
+		  If e > s Then
+		    Dim st As Scintilla.Style = ScintillaField1.Style(StyleEdit1.CurrentStyle + 1)
+		    ScintillaField1.SetRangeStyle(s, e) = st
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

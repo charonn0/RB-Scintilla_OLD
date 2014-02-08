@@ -1260,16 +1260,31 @@ Protected Module Scintilla
 	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = WM_CREATE, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_DESTROY, Type = Double, Dynamic = False, Default = \"&h0002", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = WM_LBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0201", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_LBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0202", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = WM_NCCREATE, Type = Double, Dynamic = False, Default = \"&h0081", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_NOTIFY, Type = Double, Dynamic = False, Default = \"&h004E", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_RBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0204", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_RBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0205", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_SIZE, Type = Double, Dynamic = False, Default = \"&h0005", Scope = Private
@@ -1332,6 +1347,12 @@ Protected Module Scintilla
 	#tag Structure, Name = TextRange, Flags = &h1
 		Range As CharacterRange
 		Text As Ptr
+	#tag EndStructure
+
+	#tag Structure, Name = TextToFind, Flags = &h1
+		Range As CharacterRange
+		  SearchPattern As Ptr
+		Result As CharacterRange
 	#tag EndStructure
 
 

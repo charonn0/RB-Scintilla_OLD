@@ -32,8 +32,10 @@ Protected Class Style
 		#tag Setter
 			Set
 			  Dim mb As New MemoryBlock(4)
-			  mb.ColorValue(0, 32) = value
-			  Call SciMessage(SciRef, SCI_STYLEGETBACK, Me.StyleNumber, mb.Int32Value(0))
+			  mb.Byte(0) = value.Red
+			  mb.Byte(1) = value.Green
+			  mb.Byte(2) = value.Blue
+			  Call SciMessage(SciRef, SCI_STYLESETBACK, Me.StyleNumber, mb.Int32Value(0))
 			End Set
 		#tag EndSetter
 		Background As Color
@@ -150,9 +152,9 @@ Protected Class Style
 		#tag Setter
 			Set
 			  If value Then
-			    Call SciMessage(SciRef, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 1)
+			    Call SciMessage(SciRef, SCI_STYLESETUNDERLINE, Me.StyleNumber, 1)
 			  Else
-			    Call SciMessage(SciRef, SCI_STYLEGETUNDERLINE, Me.StyleNumber, 0)
+			    Call SciMessage(SciRef, SCI_STYLESETUNDERLINE, Me.StyleNumber, 0)
 			  End If
 			End Set
 		#tag EndSetter

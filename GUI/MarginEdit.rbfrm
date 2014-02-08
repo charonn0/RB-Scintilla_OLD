@@ -200,9 +200,9 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Open()
-		  CheckBox1.Value = GetReference.MarginClickable(MarginNumber)
-		  ComboBox1.ListIndex = GetReference.MarginType(MarginNumber)
-		  MWidth.Text = Format(GetReference.MarginWidth(MarginNumber), "##0")
+		  CheckBox1.Value = GetReference.Margin(MarginNumber).Clickable
+		  ComboBox1.ListIndex = GetReference.Margin(MarginNumber).Type
+		  MWidth.Text = Format(GetReference.Margin(MarginNumber).Width, "##0")
 		End Sub
 	#tag EndEvent
 
@@ -222,21 +222,21 @@ End
 #tag Events CheckBox1
 	#tag Event
 		Sub Action()
-		  GetReference.MarginClickable(MarginNumber) = Me.Value
+		  GetReference.Margin(MarginNumber).Clickable = Me.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ComboBox1
 	#tag Event
 		Sub Change()
-		  GetReference.MarginType(MarginNumber) = Me.ListIndex
+		  GetReference.Margin(MarginNumber).Type = Me.ListIndex
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
-		  GetReference.MarginWidth(MarginNumber) = Val(MWidth.Text)
+		  GetReference.Margin(MarginNumber).Width = Val(MWidth.Text)
 		End Sub
 	#tag EndEvent
 #tag EndEvents
