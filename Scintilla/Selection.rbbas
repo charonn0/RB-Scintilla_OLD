@@ -46,6 +46,17 @@ Protected Class Selection
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Style(Assigns NewStyle As Scintilla.Style)
+		  If NewStyle.Owner <> SciRef Then Raise New RuntimeException
+		  Dim s, e As Integer
+		  s = SelStart
+		  e = SelEnd
+		  Call SciMessage(SciRef, SCI_STARTSTYLING, s, &h1F) ' start styling
+		  Call SciMessage(SciRef, SCI_SETSTYLING, e - s, NewStyle.StyleNumber)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Text() As String
 		  Dim sz As Integer = SciMessage(SciRef, SCI_GETSELTEXT, 0, 0)
 		  Dim mb As New MemoryBlock(sz + 1)
@@ -145,8 +156,16 @@ Protected Class Selection
 	#tag Constant, Name = SCI_SETSELECTIONSTART, Type = Double, Dynamic = False, Default = \"2142", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected
+	#tag EndConstant
+
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="AllowMultiple"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true
@@ -166,6 +185,16 @@ Protected Class Selection
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SelEnd"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SelStart"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

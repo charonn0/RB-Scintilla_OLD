@@ -7,7 +7,7 @@ Begin Window Window1
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   4.0e+2
+   Height          =   5.88e+2
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -23,7 +23,7 @@ Begin Window Window1
    Resizeable      =   True
    Title           =   "Untitled"
    Visible         =   True
-   Width           =   8.17e+2
+   Width           =   1.037e+3
    Begin ScintillaField ScintillaField1
       AcceptFocus     =   ""
       AllowUndo       =   ""
@@ -32,7 +32,7 @@ Begin Window Window1
       CaretPosition   =   ""
       DoubleBuffered  =   ""
       Enabled         =   True
-      Height          =   400
+      Height          =   588
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
@@ -46,112 +46,13 @@ Begin Window Window1
       Overtype        =   ""
       ReadOnly        =   ""
       Scope           =   0
-      SelLength       =   ""
-      SelStart        =   ""
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   0
       TopLine         =   ""
       Visible         =   True
-      Width           =   438
-   End
-   Begin Separator Separator1
-      AutoDeactivate  =   True
-      Enabled         =   True
-      Height          =   254
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   440
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   3
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   80
-      Visible         =   True
-      Width           =   11
-   End
-   Begin Label Label1
-      AutoDeactivate  =   True
-      Bold            =   ""
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   457
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Multiline       =   ""
-      Scope           =   0
-      Selectable      =   False
-      TabIndex        =   4
-      TabPanelIndex   =   0
-      Text            =   "Caret Pos:"
-      TextAlign       =   2
-      TextColor       =   &h000000
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   6
-      Transparent     =   False
-      Underline       =   ""
-      Visible         =   True
-      Width           =   62
-   End
-   Begin TextField CaratPos
-      AcceptTabs      =   ""
-      Alignment       =   0
-      AutoDeactivate  =   True
-      AutomaticallyCheckSpelling=   False
-      BackColor       =   &hFFFFFF
-      Bold            =   ""
-      Border          =   True
-      CueText         =   ""
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Format          =   ""
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      Italic          =   ""
-      Left            =   525
-      LimitText       =   0
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Mask            =   ""
-      Password        =   ""
-      ReadOnly        =   ""
-      Scope           =   0
-      TabIndex        =   5
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Text            =   ""
-      TextColor       =   &h000000
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   6
-      Underline       =   ""
-      UseFocusRing    =   True
-      Visible         =   True
-      Width           =   51
+      Width           =   658
    End
    Begin CheckBox ShowEOL
       AutoDeactivate  =   True
@@ -165,7 +66,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   581
+      Left            =   801
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -173,13 +74,13 @@ Begin Window Window1
       LockTop         =   True
       Scope           =   0
       State           =   0
-      TabIndex        =   6
+      TabIndex        =   3
       TabPanelIndex   =   0
       TabStop         =   True
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   6
+      Top             =   3
       Underline       =   ""
       Value           =   False
       Visible         =   True
@@ -197,7 +98,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   693
+      Left            =   913
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -205,13 +106,13 @@ Begin Window Window1
       LockTop         =   True
       Scope           =   0
       State           =   0
-      TabIndex        =   7
+      TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   6
+      Top             =   3
       Underline       =   ""
       Value           =   False
       Visible         =   True
@@ -234,7 +135,7 @@ Begin Window Window1
       HideSelection   =   True
       Index           =   -2147483648
       Italic          =   ""
-      Left            =   457
+      Left            =   677
       LimitText       =   0
       LockBottom      =   ""
       LockedInPosition=   False
@@ -256,11 +157,350 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   291
+      Top             =   288
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
       Width           =   353
+   End
+   Begin CheckBox CanRedo
+      AutoDeactivate  =   True
+      Bold            =   ""
+      Caption         =   "Can Redo"
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   801
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      State           =   0
+      TabIndex        =   6
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   29
+      Underline       =   ""
+      Value           =   False
+      Visible         =   True
+      Width           =   100
+   End
+   Begin CheckBox Canundo
+      AutoDeactivate  =   True
+      Bold            =   ""
+      Caption         =   "Can Undo"
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   913
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      State           =   0
+      TabIndex        =   5
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   29
+      Underline       =   ""
+      Value           =   False
+      Visible         =   True
+      Width           =   100
+   End
+   Begin CheckBox IsDirty
+      AutoDeactivate  =   True
+      Bold            =   ""
+      Caption         =   "Is dirty"
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   801
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      State           =   0
+      TabIndex        =   11
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   53
+      Underline       =   ""
+      Value           =   False
+      Visible         =   True
+      Width           =   100
+   End
+   Begin TabPanel TabPanel1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      Enabled         =   True
+      Height          =   81
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   677
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Panels          =   ""
+      Scope           =   0
+      SmallTabs       =   ""
+      TabDefinition   =   "Margin 1\rMargin 2\rMargin 3\rMargin 4"
+      TabIndex        =   12
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   85
+      Underline       =   ""
+      Value           =   0
+      Visible         =   True
+      Width           =   353
+   End
+   Begin Timer GUIUpdater
+      Height          =   32
+      Index           =   -2147483648
+      Left            =   1058
+      LockedInPosition=   False
+      Mode            =   2
+      Period          =   500
+      Scope           =   0
+      TabPanelIndex   =   0
+      Top             =   -33
+      Width           =   32
+   End
+   Begin PushButton PushButton2
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   801
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   22
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   264
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
+   Begin StyleEdit StyleEdit1
+      AcceptFocus     =   ""
+      AcceptTabs      =   True
+      AutoDeactivate  =   True
+      BackColor       =   &hFFFFFF
+      Backdrop        =   ""
+      CurrentStyle    =   ""
+      Enabled         =   True
+      EraseBackground =   True
+      HasBackColor    =   False
+      Height          =   85
+      HelpTag         =   ""
+      InitialParent   =   ""
+      Left            =   677
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   14
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   171
+      UseFocusRing    =   ""
+      Visible         =   True
+      Width           =   353
+   End
+   Begin PushButton PushButton3
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   913
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   24
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   264
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
+   Begin Timer GUIUpdater1
+      Height          =   32
+      Index           =   -2147483648
+      Left            =   1058
+      LockedInPosition=   False
+      Mode            =   1
+      Period          =   3000
+      Scope           =   0
+      TabPanelIndex   =   0
+      Top             =   47
+      Width           =   32
+   End
+   Begin Separator Separator1
+      AutoDeactivate  =   True
+      Enabled         =   True
+      Height          =   254
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   660
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   25
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   77
+      Visible         =   True
+      Width           =   11
+   End
+   Begin Label Label1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   677
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   26
+      TabPanelIndex   =   0
+      Text            =   "Caret Pos:"
+      TextAlign       =   2
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   3
+      Transparent     =   False
+      Underline       =   ""
+      Visible         =   True
+      Width           =   62
+   End
+   Begin TextField CaratPos
+      AcceptTabs      =   ""
+      Alignment       =   0
+      AutoDeactivate  =   True
+      AutomaticallyCheckSpelling=   False
+      BackColor       =   &hFFFFFF
+      Bold            =   ""
+      Border          =   True
+      CueText         =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Format          =   ""
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   745
+      LimitText       =   0
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Mask            =   ""
+      Password        =   ""
+      ReadOnly        =   ""
+      Scope           =   0
+      TabIndex        =   27
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   ""
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   3
+      Underline       =   ""
+      UseFocusRing    =   True
+      Visible         =   True
+      Width           =   51
    End
    Begin Label Label2
       AutoDeactivate  =   True
@@ -273,7 +513,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   457
+      Left            =   677
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -282,7 +522,7 @@ Begin Window Window1
       Multiline       =   ""
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   9
+      TabIndex        =   28
       TabPanelIndex   =   0
       Text            =   "Top Line:"
       TextAlign       =   2
@@ -290,7 +530,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   31
+      Top             =   28
       Transparent     =   False
       Underline       =   ""
       Visible         =   True
@@ -312,8 +552,9 @@ Begin Window Window1
       Height          =   22
       HelpTag         =   ""
       Index           =   -2147483648
+      InitialParent   =   ""
       Italic          =   ""
-      Left            =   525
+      Left            =   745
       LimitText       =   0
       LockBottom      =   ""
       LockedInPosition=   False
@@ -324,7 +565,7 @@ Begin Window Window1
       Password        =   ""
       ReadOnly        =   ""
       Scope           =   0
-      TabIndex        =   10
+      TabIndex        =   29
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   ""
@@ -332,75 +573,11 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   31
+      Top             =   28
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
       Width           =   51
-   End
-   Begin CheckBox CanRedo
-      AutoDeactivate  =   True
-      Bold            =   ""
-      Caption         =   "Can Redo"
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   581
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      State           =   0
-      TabIndex        =   11
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   32
-      Underline       =   ""
-      Value           =   False
-      Visible         =   True
-      Width           =   100
-   End
-   Begin CheckBox Canundo
-      AutoDeactivate  =   True
-      Bold            =   ""
-      Caption         =   "Can Undo"
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   693
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      State           =   0
-      TabIndex        =   12
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   32
-      Underline       =   ""
-      Value           =   False
-      Visible         =   True
-      Width           =   100
    End
    Begin Label Label3
       AutoDeactivate  =   True
@@ -413,7 +590,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   450
+      Left            =   670
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -422,7 +599,7 @@ Begin Window Window1
       Multiline       =   ""
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   13
+      TabIndex        =   30
       TabPanelIndex   =   0
       Text            =   "Current Line:"
       TextAlign       =   2
@@ -430,7 +607,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   56
+      Top             =   53
       Transparent     =   False
       Underline       =   ""
       Visible         =   True
@@ -452,8 +629,9 @@ Begin Window Window1
       Height          =   22
       HelpTag         =   ""
       Index           =   -2147483648
+      InitialParent   =   ""
       Italic          =   ""
-      Left            =   525
+      Left            =   745
       LimitText       =   0
       LockBottom      =   ""
       LockedInPosition=   False
@@ -464,7 +642,7 @@ Begin Window Window1
       Password        =   ""
       ReadOnly        =   True
       Scope           =   0
-      TabIndex        =   14
+      TabIndex        =   31
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   ""
@@ -472,176 +650,11 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   56
+      Top             =   53
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
       Width           =   51
-   End
-   Begin CheckBox IsDirty
-      AutoDeactivate  =   True
-      Bold            =   ""
-      Caption         =   "Is dirty"
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Height          =   20
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   581
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      State           =   0
-      TabIndex        =   15
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   56
-      Underline       =   ""
-      Value           =   False
-      Visible         =   True
-      Width           =   100
-   End
-   Begin TabPanel TabPanel1
-      AutoDeactivate  =   True
-      Bold            =   ""
-      Enabled         =   True
-      Height          =   81
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   457
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Panels          =   ""
-      Scope           =   0
-      SmallTabs       =   ""
-      TabDefinition   =   "Margin 1\rMargin 2\rMargin 3\rMargin 4"
-      TabIndex        =   16
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   88
-      Underline       =   ""
-      Value           =   0
-      Visible         =   True
-      Width           =   353
-   End
-   Begin Timer GUIUpdater
-      Height          =   32
-      Index           =   -2147483648
-      Left            =   838
-      LockedInPosition=   False
-      Mode            =   2
-      Period          =   500
-      Scope           =   0
-      TabPanelIndex   =   0
-      Top             =   -30
-      Width           =   32
-   End
-   Begin PushButton PushButton2
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Untitled"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   581
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   22
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   267
-      Underline       =   ""
-      Visible         =   True
-      Width           =   80
-   End
-   Begin StyleEdit StyleEdit1
-      AcceptFocus     =   ""
-      AcceptTabs      =   True
-      AutoDeactivate  =   True
-      BackColor       =   &hFFFFFF
-      Backdrop        =   ""
-      CurrentStyle    =   ""
-      Enabled         =   True
-      EraseBackground =   True
-      HasBackColor    =   False
-      Height          =   85
-      HelpTag         =   ""
-      InitialParent   =   ""
-      Left            =   457
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   23
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   174
-      UseFocusRing    =   ""
-      Visible         =   True
-      Width           =   353
-   End
-   Begin PushButton PushButton3
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Untitled"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   693
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   24
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   267
-      Underline       =   ""
-      Visible         =   True
-      Width           =   80
    End
 End
 #tag EndWindow
@@ -701,12 +714,24 @@ End
 	#tag EndMethod
 
 
+	#tag Property, Flags = &h0
+		lastline As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		LastLinestyle As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h1
 		Protected Lexer As ScintillaField
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		Marker As Scintilla.Marker
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		MarkerHandle As Integer
 	#tag EndProperty
 
 
@@ -716,6 +741,78 @@ End
 	#tag Event
 		Sub TextChanged()
 		  TextArea1.Text = Me.Text
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
+		  Dim l As Scintilla.RenderLine = Me.LineFromPosition(Me.PositionFromXY(x, y))
+		  If l <> Nil Then
+		    If l.Annotation.Text = "" Then
+		      Dim mnu As New MenuItem("Annotate line")
+		      mnu.Tag = l
+		      base.Append(mnu)
+		    Else
+		      Dim mnu As New MenuItem("Clear annotation")
+		      mnu.Tag = l
+		      base.Append(mnu)
+		    End If
+		    Return True
+		  End If
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub Open()
+		  Me.Style(1).Bold = True
+		  Me.Style(0).Italic = True
+		  Me.Style(0).Underline = True
+		  Me.Style(0).TextFont = "Consolas"
+		  Me.Style(0).TextSize = 17
+		  Me.Style(0).TextColor = &cFF000000
+		  Me.Margin(0).Width = 15
+		  Me.Margin(1).Width = 15
+		  Me.Margin(0).Type = 1
+		  Me.Margin(1).Type = 0
+		  Me.Margin(0).Clickable = True
+		  Me.Style(4).Background = &c8080FF00 ' current line
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
+		  Select Case hitItem.Text
+		  Case "Annotate line"
+		    Dim l As Scintilla.RenderLine = hitItem.Tag
+		    If l <> Nil Then
+		      l.Annotation.Style = Me.Style(3)
+		      l.Annotation.Style.Background = &cFF800000
+		      l.Annotation.Style.Italic = True
+		      l.Annotation.Text = "Syntax error----------------------------------------^"
+		      l.Annotation.Visible = True
+		    End If
+		    Return True
+		  Case "Clear annotation"
+		    Dim l As Scintilla.RenderLine = hitItem.Tag
+		    l.Annotation.Remove
+		  End Select
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub MarginClicked(MarginNumber As Integer, LineNumber As Integer)
+		  If Not Me.Line(LineNumber).HasMarker(Me.Markers(1)) Then
+		    MarkerHandle = Me.Line(LineNumber).SetMarker(Me.Markers(1))
+		  Else
+		    Me.Line(LineNumber).RemoveMarker(MarkerHandle)
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseMove(X As Integer, Y As Integer)
+		  'Dim i As Integer = Me.LineFromPosition(Me.PositionFromXY(X, Y)).LineNumber
+		  'If i <> lastline Then
+		  'Me.Line(lastline).Style = Me.Style(LastLinestyle)
+		  'lastline = i
+		  'LastLinestyle = Me.Line(lastline).Style
+		  'Me.Line(lastline).Style = Me.Style(4)
+		  'End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -777,7 +874,7 @@ End
 		Sub Action()
 		  CaratPos.Text = Format(ScintillaField1.CaretPosition, "###,###,###,##0")
 		  TopLine.Text = Format(ScintillaField1.TopLine, "###,###,###,##0")
-		  CurrentLine.Text = Format(ScintillaField1.CurrentLine, "###,###,###,##0")
+		  CurrentLine.Text = Format(ScintillaField1.Line(-1).LineNumber, "###,###,###,##0")
 		  'ShowEOL.Value = ScintillaField1.EOLVisible
 		  CanRedo.Value = ScintillaField1.History.CanRedo
 		  CanUndo.Value = ScintillaField1.History.CanUndo
@@ -790,59 +887,20 @@ End
 #tag Events PushButton2
 	#tag Event
 		Sub Action()
-		  ScintillaField1.Selection.AllowMultiple = True
-		  Call ScintillaField1.Selection.AddSelection(0, 3)
-		  Call ScintillaField1.Selection.AddSelection(5, 7)
-		  Call ScintillaField1.Selection.AddSelection(9, 11)
-		  Call ScintillaField1.Selection.AddSelection(13, 16)
-		  Call ScintillaField1.Selection.AddSelection(8, 21)
-		  Dim i As Integer = ScintillaField1.Selection.SelCount
-		  Break
-		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  'Dim rand As New Random
-		  'For i As Integer = 0 To 4
-		  'ScintillaField1.Style(i).TextColor = RGB(Rand.InRange(0, 255), Rand.InRange(0, 255), Rand.InRange(0, 255))
-		  'If Rand.InRange(0, 1) = 1 Then
-		  'ScintillaField1.Style(i).Bold = True
-		  'Else
-		  'ScintillaField1.Style(i).Bold = False
-		  'End If
-		  'If Rand.InRange(0, 1) = 1 Then
-		  'ScintillaField1.Style(i).Italic = True
-		  'Else
-		  'ScintillaField1.Style(i).Italic = False
-		  'End If
-		  'Next
-		  'Dim x As Integer
-		  'For i As Integer = 0 To ScintillaField1.Text.Len
-		  'ScintillaField1.SetRangeStyle(x, x + 1) = ScintillaField1.Style(x)
-		  'If x = 4 Then
-		  'x = 0
-		  'Else
-		  'x = x + 1
-		  'End If
-		  'Next
-		  'ScintillaField1.Selection.SelStart = 1
-		  'ScintillaField1.Selection.SelEnd = 4
-		  'Call ScintillaField1.Search.FindText("hello", 0, 0, 4)
-		  'ScintillaField1.Search.RegExMode = False
-		  'ScintillaField1.Search.MatchCase = False
-		  'ScintillaField1.Search.WholeWord = False
-		  'ScintillaField1.Search.StartPosition = 0
-		  'ScintillaField1.Search.EndPosition = ScintillaField1.Text.LenB
-		  'Dim i As Integer = ScintillaField1.Search.Find("Hello")
-		  'If i > -1 Then 
-		  'Call ScintillaField1.Search.Replace("World!")
-		  'End If
-		  
+		  'ScintillaField1.SetRangeStyle(0, 5) = ScintillaField1.Style(2)
+		  ScintillaField1.Style(2).Hotspot = True
+		  ScintillaField1.Style(2).Background = &cFFFF8000
+		  ScintillaField1.Style(2).TextSize = 15.0
+		  ScintillaField1.CharAtPos(0).Style = ScintillaField1.Style(2)
+		  ScintillaField1.CharAtPos(2).Style = ScintillaField1.Style(2)
+		  ScintillaField1.CharAtPos(4).Style = ScintillaField1.Style(2)
+		  If Not ScintillaField1.Style(2).Hotspot Then Break
 		End Sub
+	#tag EndEvent
+	#tag Event
+		Function MouseUp(X As Integer, Y As Integer) As Boolean
+		  ScintillaField1.SetFocus
+		End Function
 	#tag EndEvent
 #tag EndEvents
 #tag Events StyleEdit1
@@ -855,7 +913,14 @@ End
 #tag Events PushButton3
 	#tag Event
 		Sub Action()
-		  ScintillaField1.Selection.RemoveSelection(1)
+		  MsgBox(ScintillaField1.Line(0).Tag)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events GUIUpdater1
+	#tag Event
+		Sub Action()
+		  ScintillaField1.SetFocus
 		End Sub
 	#tag EndEvent
 #tag EndEvents

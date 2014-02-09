@@ -64,17 +64,17 @@ Protected Class Marker
 		Protected SciRef As Integer
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Setter
+			Set
+			  Call SciMessage(SciRef, SCI_MARKERDEFINE, MarkerNumber, value)
+			End Set
+		#tag EndSetter
+		Type As Integer
+	#tag EndComputedProperty
 
-	#tag Constant, Name = SCI_MARKERADD, Type = Double, Dynamic = False, Default = \"2043", Scope = Protected
-	#tag EndConstant
 
 	#tag Constant, Name = SCI_MARKERDEFINE, Type = Double, Dynamic = False, Default = \"2040", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_MARKERDELETE, Type = Double, Dynamic = False, Default = \"2044", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_MARKERGET, Type = Double, Dynamic = False, Default = \"2046", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_MARKERSETBACK, Type = Double, Dynamic = False, Default = \"2042", Scope = Protected
@@ -82,6 +82,43 @@ Protected Class Marker
 
 	#tag Constant, Name = SCI_MARKERSETFORE, Type = Double, Dynamic = False, Default = \"2041", Scope = Protected
 	#tag EndConstant
+
+
+	#tag Enum, Name = Markers, Type = Integer, Flags = &h0
+		CIRCLE
+		  ROUNDRECT
+		  ARROW
+		  SMALLRECT
+		  SHORTARROW
+		  EMPTY
+		  ARROWDOWN
+		  MINUS
+		  PLUS
+		  VLINE
+		  LCORNER
+		  TCORNER
+		  BOXPLUS
+		  BOXPLUSCONNECTED
+		  BOXMINUS
+		  BOXMINUSCONNECTED
+		  LCORNERCURVE
+		  TCORNERCURVE
+		  CIRCLEPLUS
+		  CIRCLEPLUSCONNECTED
+		  CIRCLEMINUS
+		  CIRCLEMINUSCONNECTED
+		  BACKGROUND
+		  DOTDOTDOT
+		  ARROWS
+		  PIXMAP
+		  FOLDEREND=25
+		  FOLDEROPENMID
+		  FOLDERMIDTAIL
+		  FOLDERSUB
+		  FOLDER
+		  FOLDEROPEN
+		SC_MARK_CHARACTER=1000
+	#tag EndEnum
 
 
 	#tag ViewBehavior
@@ -129,6 +166,11 @@ Protected Class Marker
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Type"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

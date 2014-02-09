@@ -125,6 +125,12 @@ Inherits RectControl
 		  End If
 		  Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
 		  Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
+		  
+		  
+		  For i As Integer = 25 To 31
+		    Me.Markers(i).Type = i - 25
+		  Next
+		  
 		  RaiseEvent Open()
 		End Sub
 	#tag EndEvent
@@ -140,24 +146,9 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CharAtPos(Position As Integer) As String
-		  Dim char As Integer = SciMessage(SciRef, SCI_GETCHARAT, Ptr(Position), Nil)
-		  If char > 0 Then
-		    Return Chr(char)
-		  End If
+		Function CharAtPos(Position As Integer) As Scintilla.CharacterCell
+		  Return New Scintilla.CharacterCell(Position, SciRef)
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub CharAtPos(Position As Integer, Assigns NewChar As String)
-		  #pragma Warning "Fix Me"
-		  'Dim mb As New MemoryBlock(NewChar.LenB + 1)
-		  'mb.CString(0) = NewChar.Trim
-		  'Call SciMessage(SciRef, SCI_SETTARGETSTART, Position, 0)
-		  'Call SciMessage(SciRef, SCI_SETTARGETEND, Position + LenB(NewChar), 0)
-		  'Call SciMessage(SciRef, SCI_REPLACETARGET, Ptr(mb.Size - 1), mb)
-		  
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -175,12 +166,6 @@ Inherits RectControl
 		  Super.Constructor
 		  
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function CurrentLine() As Integer
-		  Return SciMessage(SciRef, SCI_GETCURLINE, Nil, Nil)
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -217,15 +202,6 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function GetLine(Line As Integer) As String
-		  Dim len As Integer = SciMessage(SciRef, SCI_LINELENGTH, Line, 0)
-		  Dim mb As New MemoryBlock(len + 1)
-		  Call SciMessage(SciRef, SCI_GETLINE, Ptr(Line), mb)
-		  Return mb.CString(0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function History() As Scintilla.UndoRedo
 		  Return New Scintilla.UndoRedo(SciRef)
 		End Function
@@ -251,8 +227,15 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function LineFromPosition(Position As Integer) As Integer
-		  Return SciMessage(SciRef, SCI_LINEFROMPOSITION, Ptr(Position), Nil)
+		Function Line(LineNumber As Integer) As Scintilla.RenderLine
+		  If LineNumber = -1 Then LineNumber = SciMessage(SciRef, SCI_GETCURLINE, Nil, Nil)
+		  Return New Scintilla.RenderLine(LineNumber, SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LineFromPosition(Position As Integer) As Scintilla.RenderLine
+		  Return New Scintilla.RenderLine(SciMessage(SciRef, SCI_LINEFROMPOSITION, Position, 0) - 3, SciRef)
 		End Function
 	#tag EndMethod
 
@@ -263,9 +246,9 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Marker(LineNumber As Integer)
-		  
-		End Sub
+		Function Markers(MarkerNumber As Integer) As Scintilla.Marker
+		  Return New Scintilla.Marker(MarkerNumber, SciRef)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -276,7 +259,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function PositionFromXY(X As Integer, Y As Integer) As Integer
-		  Return SciMessage(SciRef, SCI_POSITIONFROMPOINTCLOSE, X, Y)
+		  Return SciMessage(SciRef, SCI_CHARPOSITIONFROMPOINT, X, Y)
 		End Function
 	#tag EndMethod
 
@@ -311,9 +294,13 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SetFocus()
+		  Call Scintilla.SetFocus(SciRef)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SetRangeStyle(Start As Integer, Stop As Integer, Assigns NewStyle As Scintilla.Style)
-		  If NewStyle.Owner <> SciRef Then Raise New RuntimeException
-		  
 		  Call SciMessage(SciRef, SCI_STARTSTYLING, Start, &h1F) ' start styling
 		  Call SciMessage(SciRef, SCI_SETSTYLING, Stop - Start, NewStyle.StyleNumber)
 		End Sub
@@ -342,6 +329,12 @@ Inherits RectControl
 		    Subclasses.Append(d)
 		  #endif
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Shared Function TestModType(Type As Integer, ParamArray Queries() As Integer) As Boolean
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -416,6 +409,12 @@ Inherits RectControl
 		      'Case WM_MOUSEWHEEL
 		      'Dim delta As Int16 = Bitwise.ShiftRight(Integer(wParam), 16)
 		      'Break
+		    Case WM_SETFOCUS
+		      RaiseEvent GotFocus()
+		      
+		    Case WM_KILLFOCUS
+		      RaiseEvent LostFocus()
+		      
 		    Case WM_CONTEXTMENU
 		      Dim base As New MenuItem("")
 		      Dim X, Y, Z As Integer
@@ -432,6 +431,9 @@ Inherits RectControl
 		    End Select
 		  Else ' Message to the container window
 		    Select Case msg
+		      
+		    Case WM_SETFOCUS
+		      RaiseEvent GotFocus()
 		      
 		    Case WM_SIZING
 		      'Dim r As Scintilla.RECT
@@ -456,22 +458,42 @@ Inherits RectControl
 		      If notification.HWND = Me.SciRef Then
 		        Select Case notification.Code
 		          
+		        Case SCN_UPDATEUI
+		          Super.Invalidate(False)
+		          
+		        Case SCN_STYLENEEDED
+		          Dim s As Integer = SciMessage(SciRef, SCI_GETENDSTYLED, Nil, Nil)
+		          s = PositionFromLine(LineFromPosition(s).LineNumber)
+		          RaiseEvent StyleNeeded(s, notification.Position)
+		          
 		        Case SCN_SAVEPOINTREACHED
 		          
+		        Case SCN_HOTSPOTCLICK
+		          RaiseEvent HotspotClicked(notification.Position)
+		          
+		        Case SCN_HOTSPOTDOUBLECLICK
+		          RaiseEvent HotspotDoubleClicked(notification.Position)
 		          
 		        Case SCN_MARGINCLICK
-		          Dim l As Integer = LineFromPosition(notification.Position)
-		          RaiseEvent MarginClicked(notification.Margin, l)
+		          Dim l As RenderLine = LineFromPosition(notification.Position)
+		          RaiseEvent MarginClicked(notification.Margin, l.LineNumber)
 		          
-		        Case SCN_MODIFIED, SCN_SAVEPOINTLEFT
-		          RaiseEvent TextChanged()
-		        Else
-		          RaiseEvent ScintillaEvent(notification.Code)
+		        Case SCN_MODIFIED
+		          Dim mt As Integer = notification.ModificationType
+		          If TestModType(mt, &h01) Or TestModType(mt, &h02) Or TestModType(mt, &h20) Or TestModType(mt, &h40) Or TestModType(mt, &h400) Or TestModType(mt, &h800) Or TestModType(mt, &h1000) Then
+		            'Case SCN_SAVEPOINTLEFT
+		            RaiseEvent TextChanged()
+		          End If
 		        End Select
-		        'Return True
+		        
+		        
+		      Else
+		        RaiseEvent ScintillaEvent(notification.Code)
 		      End If
+		      'Return True
 		    End Select
 		  End If
+		  
 		End Function
 	#tag EndMethod
 
@@ -501,11 +523,27 @@ Inherits RectControl
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
+		Event GotFocus()
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event HotspotClicked(Position As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event HotspotDoubleClicked(Position As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
 		Event KeyDown(key As String)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event KeyUp(key As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event LostFocus()
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -546,6 +584,10 @@ Inherits RectControl
 
 	#tag Hook, Flags = &h0
 		Event ScintillaEvent(EventCode As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event StyleNeeded(StartPosition As Integer, EndPosition As Integer)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -1400,6 +1442,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_APPENDTEXT, Type = Double, Dynamic = False, Default = \"2282", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_CHARPOSITIONFROMPOINT, Type = Double, Dynamic = False, Default = \"2561", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_CLEARALL, Type = Double, Dynamic = False, Default = \"2004", Scope = Protected
 	#tag EndConstant
 
@@ -1412,13 +1457,13 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETCARETPERIOD, Type = Double, Dynamic = False, Default = \"2075", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETCHARAT, Type = Double, Dynamic = False, Default = \"2007", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_GETCURLINE, Type = Double, Dynamic = False, Default = \"2027", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETCURRENTPOS, Type = Double, Dynamic = False, Default = \"2008", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETENDSTYLED, Type = Double, Dynamic = False, Default = \"2028", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2152", Scope = Protected
@@ -1428,9 +1473,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETLEXER, Type = Double, Dynamic = False, Default = \"4002", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETLINE, Type = Double, Dynamic = False, Default = \"2153", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETLINECOUNT, Type = Double, Dynamic = False, Default = \"2154", Scope = Protected
@@ -1466,9 +1508,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_LINEFROMPOSITION, Type = Double, Dynamic = False, Default = \"2166", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_LINELENGTH, Type = Double, Dynamic = False, Default = \"2350", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_POINTXFROMPOSITION, Type = Double, Dynamic = False, Default = \"2164", Scope = Protected
 	#tag EndConstant
 
@@ -1476,6 +1515,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_POSITIONFROMLINE, Type = Double, Dynamic = False, Default = \"2167", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_POSITIONFROMPOINT, Type = Double, Dynamic = False, Default = \"2022", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_POSITIONFROMPOINTCLOSE, Type = Double, Dynamic = False, Default = \"2023", Scope = Protected
@@ -1508,31 +1550,37 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETSAVEPOINT, Type = Double, Dynamic = False, Default = \"2014", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETUNDOCOLLECTION, Type = Double, Dynamic = False, Default = \"2012", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_STARTSTYLING, Type = Double, Dynamic = False, Default = \"2032", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_USEPOPUP, Type = Double, Dynamic = False, Default = \"2371", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCN_MARGINCLICK, Type = Double, Dynamic = False, Default = \"2010", Scope = Protected
+	#tag Constant, Name = SCN_HOTSPOTCLICK, Type = Double, Dynamic = False, Default = \"2019", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = SCN_MODIFIED, Type = Double, Dynamic = False, Default = \"2008", Scope = Protected
+	#tag Constant, Name = SCN_HOTSPOTDOUBLECLICK, Type = Double, Dynamic = False, Default = \"2020", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = SCN_SAVEPOINTLEFT, Type = Double, Dynamic = False, Default = \"2003", Scope = Protected
+	#tag Constant, Name = SCN_MARGINCLICK, Type = Double, Dynamic = False, Default = \"2010", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = SCN_SAVEPOINTREACHED, Type = Double, Dynamic = False, Default = \"2002", Scope = Protected
+	#tag Constant, Name = SCN_MODIFIED, Type = Double, Dynamic = False, Default = \"2008", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_SAVEPOINTLEFT, Type = Double, Dynamic = False, Default = \"2003", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_SAVEPOINTREACHED, Type = Double, Dynamic = False, Default = \"2002", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_STYLENEEDED, Type = Double, Dynamic = False, Default = \"2000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_UPDATEUI, Type = Double, Dynamic = False, Default = \"2007", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
@@ -1542,6 +1590,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = WM_KEYUP, Type = Double, Dynamic = False, Default = \"&h0101", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_KILLFOCUS, Type = Double, Dynamic = False, Default = \"&h0008", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_LBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0201", Scope = Private
@@ -1569,6 +1620,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = WM_RBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0205", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_SETFOCUS, Type = Double, Dynamic = False, Default = \"&h0007", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_SIZE, Type = Double, Dynamic = False, Default = \"&h0005", Scope = Private
@@ -1717,16 +1771,6 @@ Inherits RectControl
 			Name="ReadOnly"
 			Group="Behavior"
 			Type="Boolean"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="SelLength"
-			Group="Behavior"
-			Type="Integer"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="SelStart"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

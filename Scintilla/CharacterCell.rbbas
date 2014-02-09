@@ -2,13 +2,17 @@
 Protected Class CharacterCell
 	#tag Method, Flags = &h0
 		Sub Constructor(Position As Integer, Reference As Integer)
-		  
+		  CharPosition = Position
+		  SciRef = Reference
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Operator_Convert() As String
-		  
+		  Dim char As Integer = SciMessage(SciRef, SCI_GETCHARAT, Ptr(CharPosition), Nil)
+		  If char > 0 Then
+		    Return Chr(char)
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -21,7 +25,8 @@ Protected Class CharacterCell
 
 	#tag Method, Flags = &h0
 		Sub Style(Assigns NewStyle As Scintilla.Style)
-		  
+		  Call SciMessage(SciRef, SCI_STARTSTYLING, CharPosition, &h1F) ' start styling
+		  Call SciMessage(SciRef, SCI_SETSTYLING, 1, NewStyle.StyleNumber)
 		End Sub
 	#tag EndMethod
 
@@ -34,6 +39,9 @@ Protected Class CharacterCell
 		Protected SciRef As Integer
 	#tag EndProperty
 
+
+	#tag Constant, Name = SCI_GETCHARAT, Type = Double, Dynamic = False, Default = \"2007", Scope = Protected
+	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETSTYLEAT, Type = Double, Dynamic = False, Default = \"2010", Scope = Protected
 	#tag EndConstant

@@ -18,6 +18,7 @@ Class=ScintillaField;Scintilla/ScintillaField.rbbas;&hFC81FFF;&h516A1FFF;false
 Folder=GUI;GUI;&h450137FF;&h0;false
 Window=StyleEdit;GUI/StyleEdit.rbfrm;&h6B75CFFF;&h450137FF;false
 Window=MarginEdit;GUI/MarginEdit.rbfrm;&hE2467FF;&h450137FF;false
+Class=Annotation;Scintilla/Annotation.rbbas;&h5687DFFF;&h516A1FFF;false
 DefaultWindow=Window1
 MajorVersion=1
 MinorVersion=0

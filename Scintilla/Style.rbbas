@@ -62,6 +62,24 @@ Protected Class Style
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  Return SciMessage(SciRef, SCI_STYLEGETHOTSPOT, Me.StyleNumber, 0) <> 0
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If value Then
+			    Call SciMessage(SciRef, SCI_STYLESETHOTSPOT, Me.StyleNumber, 1)
+			  Else
+			    Call SciMessage(SciRef, SCI_STYLESETHOTSPOT, Me.StyleNumber, 0)
+			  End If
+			End Set
+		#tag EndSetter
+		Hotspot As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Return SciMessage(SciRef, SCI_STYLEGETITALIC, Me.StyleNumber, 0) <> 0
 			End Get
 		#tag EndGetter
@@ -174,6 +192,9 @@ Protected Class Style
 	#tag Constant, Name = SCI_STYLEGETFORE, Type = Double, Dynamic = False, Default = \"2481", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_STYLEGETHOTSPOT, Type = Double, Dynamic = False, Default = \"2493", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_STYLEGETITALIC, Type = Double, Dynamic = False, Default = \"2484", Scope = Protected
 	#tag EndConstant
 
@@ -195,6 +216,9 @@ Protected Class Style
 	#tag Constant, Name = SCI_STYLESETFORE, Type = Double, Dynamic = False, Default = \"2051", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_STYLESETHOTSPOT, Type = Double, Dynamic = False, Default = \"2409", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_STYLESETITALIC, Type = Double, Dynamic = False, Default = \"2054", Scope = Protected
 	#tag EndConstant
 
@@ -207,6 +231,30 @@ Protected Class Style
 	#tag Constant, Name = SCI_STYLESETUNDERLINE, Type = Double, Dynamic = False, Default = \"2059", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = STYLE_BRACEBAD, Type = Double, Dynamic = False, Default = \"35", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_BRACELIGHT, Type = Double, Dynamic = False, Default = \"34", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_CONTROLCHAR, Type = Double, Dynamic = False, Default = \"36", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_DEFAULT, Type = Double, Dynamic = False, Default = \"32", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_INDENTGUIDE, Type = Double, Dynamic = False, Default = \"37", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_LASTPREDEFINED, Type = Double, Dynamic = False, Default = \"39", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_LINENUMBER, Type = Double, Dynamic = False, Default = \"33", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = STYLE_MAX, Type = Double, Dynamic = False, Default = \"127", Scope = Protected
+	#tag EndConstant
+
 
 	#tag ViewBehavior
 		#tag ViewProperty
@@ -217,6 +265,11 @@ Protected Class Style
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Bold"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Hotspot"
 			Group="Behavior"
 			Type="Boolean"
 		#tag EndViewProperty

@@ -69,6 +69,20 @@ Protected Class Margin
 		Clickable As Boolean
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h1
+		#tag Getter
+			Get
+			  Return SciMessage(SciRef, SCI_GETMARGINMASKN, MarginNumber, 0)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call SciMessage(SciRef, SCI_GETMARGINMASKN, MarginNumber, value)
+			End Set
+		#tag EndSetter
+		Protected MarkerMask As Integer
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h1
 		Protected mMarginNumber As Integer
 	#tag EndProperty
@@ -80,12 +94,12 @@ Protected Class Margin
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return SciMessage(SciRef, SCI_GETMARGINWIDTHN, MarginNumber, 0)
+			  Return SciMessage(SciRef, SCI_GETMARGINTYPEN, MarginNumber, 0)
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Call SciMessage(SciRef, SCI_SETMARGINWIDTHN, MarginNumber, value)
+			  Call SciMessage(SciRef, SCI_SETMARGINTYPEN, MarginNumber, value)
 			End Set
 		#tag EndSetter
 		Type As Integer
@@ -106,6 +120,9 @@ Protected Class Margin
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = SCI_GETMARGINMASKN, Type = Double, Dynamic = False, Default = \"2245", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETMARGINSENSITIVEN, Type = Double, Dynamic = False, Default = \"2247", Scope = Protected
 	#tag EndConstant
 
@@ -125,6 +142,9 @@ Protected Class Margin
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_MARGINSETTEXT, Type = Double, Dynamic = False, Default = \"2530", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETMARGINMASKN, Type = Double, Dynamic = False, Default = \"2244", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETMARGINSENSITIVEN, Type = Double, Dynamic = False, Default = \"2246", Scope = Protected

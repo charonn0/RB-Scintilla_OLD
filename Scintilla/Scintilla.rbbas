@@ -1247,8 +1247,19 @@ Protected Module Scintilla
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Declare Function SetFocus Lib "User32" (HWND As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SetWindowLong Lib "User32" Alias "SetWindowLongW" (HWND As Integer, Index As Integer, NewLong As Ptr) As Integer
 	#tag EndExternalMethod
+
+
+	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_STARTSTYLING, Type = Double, Dynamic = False, Default = \"2032", Scope = Private
+	#tag EndConstant
 
 
 	#tag Structure, Name = CharacterRange, Flags = &h1
@@ -1402,41 +1413,6 @@ Protected Module Scintilla
 		  TXT2TAGS
 		  A68K
 		AUTOMATIC
-	#tag EndEnum
-
-	#tag Enum, Name = Markers, Type = Integer, Flags = &h1
-		CIRCLE
-		  ROUNDRECT
-		  ARROW
-		  SMALLRECT
-		  SHORTARROW
-		  EMPTY
-		  ARROWDOWN
-		  MINUS
-		  PLUS
-		  VLINE
-		  LCORNER
-		  TCORNER
-		  BOXPLUS
-		  BOXPLUSCONNECTED
-		  BOXMINUS
-		  BOXMINUSCONNECTED
-		  LCORNERCURVE
-		  TCORNERCURVE
-		  CIRCLEPLUS
-		  CIRCLEPLUSCONNECTED
-		  CIRCLEMINUS
-		  CIRCLEMINUSCONNECTED
-		  BACKGROUND
-		  DOTDOTDOT
-		  ARROWS
-		  PIXMAP
-		  FOLDEREND=25
-		  FOLDEROPENMID
-		  FOLDERMIDTAIL
-		  FOLDERSUB
-		  FOLDER
-		FOLDEROPEN
 	#tag EndEnum
 
 

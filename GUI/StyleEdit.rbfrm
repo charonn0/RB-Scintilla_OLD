@@ -409,7 +409,7 @@ End
 		Sub Open()
 		  'Me.AddRow("Size")
 		  Me.ListIndex = 0
-		  For i As Integer = 1 To 54
+		  For i As Integer = 8 To 54
 		    Me.AddRow(Str(i))
 		  Next
 		  
