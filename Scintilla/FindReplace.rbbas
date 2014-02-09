@@ -6,6 +6,14 @@ Protected Class FindReplace
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Find(Pattern As String) As Integer
+		  Dim mb As New MemoryBlock(Pattern.LenB + 1)
+		  mb.CString(0) = Pattern
+		  Return SciMessage(SciRef, SCI_SEARCHINTARGET, Ptr(mb.Size), mb)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Function FindNext(SearchPattern As String, SearchType As Integer) As Integer
 		  Call SciMessage(SciRef,SCI_SEARCHANCHOR, Nil, Nil)
@@ -29,14 +37,6 @@ Protected Class FindReplace
 		  Dim mb As New MemoryBlock(ReplaceWith.LenB + 1)
 		  mb.CString(0) = ReplaceWith
 		  Return SciMessage(SciRef, SCI_REPLACETARGET, Ptr(mb.Size - 1), mb)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function Search(Pattern As String) As Integer
-		  Dim mb As New MemoryBlock(Pattern.LenB + 1)
-		  mb.CString(0) = Pattern
-		  Return SciMessage(SciRef, SCI_SEARCHINTARGET, Ptr(mb.Size), mb)
 		End Function
 	#tag EndMethod
 

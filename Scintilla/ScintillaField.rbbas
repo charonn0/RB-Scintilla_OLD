@@ -166,13 +166,6 @@ Inherits RectControl
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub ClearSelection(NewCaretPosition As Integer = - 1)
-		  If NewCaretPosition <= -1 Then NewCaretPosition = 0
-		  Call SciMessage(SciRef, SCI_SETEMPTYSELECTION, Ptr(NewCaretPosition), Nil)
-		End Sub
-	#tag EndMethod
-
 	#tag Method, Flags = &h1000
 		Sub Constructor()
 		  // Calling the overridden superclass constructor.
@@ -312,25 +305,9 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SelectAll()
-		  Call SciMessage(SciRef, SCI_SELECTALL, Nil, Nil)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SelectedText() As String
-		  Dim sz As Integer = SciMessage(SciRef, SCI_GETSELTEXT, 0, 0)
-		  Dim mb As New MemoryBlock(sz + 1)
-		  Call SciMessage(SciRef, SCI_GETSELTEXT, Nil, mb)
-		  Return mb.CString(0)
+		Function Selection() As Scintilla.Selection
+		  Return New Scintilla.Selection(SciRef)
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub SelectRange(Start As Integer, Stop As Integer)
-		  ' Use SelectRange(-1, -1) to clear selection
-		  Call SciMessage(SciRef, SCI_SETSEL, Start, Stop)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1352,35 +1329,6 @@ Inherits RectControl
 		Private SciRef As Integer
 	#tag EndProperty
 
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Dim p As Integer = Me.SelStart
-			  Return SciMessage(SciRef, SCI_GETSELECTIONEND, Nil, Nil) - p
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  Call SciMessage(SciRef, SCI_SETSELECTIONEND, value, 0)
-			End Set
-		#tag EndSetter
-		SelLength As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Return SciMessage(SciRef, SCI_GETSELECTIONSTART, Nil, Nil)
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  Call SciMessage(SciRef, SCI_SETSELECTIONSTART, value, 0)
-			End Set
-		#tag EndSetter
-		SelStart As Integer
-	#tag EndComputedProperty
-
 	#tag Property, Flags = &h21
 		Private Shared Subclasses() As Dictionary
 	#tag EndProperty
@@ -1500,15 +1448,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETREADONLY, Type = Double, Dynamic = False, Default = \"2140", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETSELECTIONEND, Type = Double, Dynamic = False, Default = \"2145", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETSELECTIONSTART, Type = Double, Dynamic = False, Default = \"2143", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETSELTEXT, Type = Double, Dynamic = False, Default = \"2161", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Protected
 	#tag EndConstant
 
@@ -1542,9 +1481,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_POSITIONFROMPOINTCLOSE, Type = Double, Dynamic = False, Default = \"2023", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SELECTALL, Type = Double, Dynamic = False, Default = \"2013", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SETBUFFEREDDRAW, Type = Double, Dynamic = False, Default = \"2035", Scope = Protected
 	#tag EndConstant
 
@@ -1552,9 +1488,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETCURRENTPOS, Type = Double, Dynamic = False, Default = \"2041", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETEMPTYSELECTION, Type = Double, Dynamic = False, Default = \"2147", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2613", Scope = Protected
@@ -1573,15 +1506,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETSAVEPOINT, Type = Double, Dynamic = False, Default = \"2014", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETSEL, Type = Double, Dynamic = False, Default = \"2160", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETSELECTIONEND, Type = Double, Dynamic = False, Default = \"2144", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETSELECTIONSTART, Type = Double, Dynamic = False, Default = \"2142", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected

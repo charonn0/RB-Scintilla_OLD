@@ -30,8 +30,8 @@ Begin Window Window1
       AutoDeactivate  =   True
       CaretPeriod     =   ""
       CaretPosition   =   ""
+      DoubleBuffered  =   ""
       Enabled         =   True
-      EOLVisible      =   ""
       Height          =   400
       HelpTag         =   ""
       Index           =   -2147483648
@@ -99,7 +99,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   4
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Caret Pos:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -285,7 +284,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   9
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Top Line:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -426,7 +424,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   13
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Current Line:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -545,7 +542,6 @@ Begin Window Window1
       Width           =   353
    End
    Begin Timer GUIUpdater
-      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   838
@@ -553,11 +549,8 @@ Begin Window Window1
       Mode            =   2
       Period          =   500
       Scope           =   0
-      TabIndex        =   15
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   -30
-      Visible         =   True
       Width           =   32
    End
    Begin PushButton PushButton2
@@ -603,7 +596,6 @@ Begin Window Window1
       HasBackColor    =   False
       Height          =   85
       HelpTag         =   ""
-      Index           =   -2147483648
       InitialParent   =   ""
       Left            =   457
       LockBottom      =   ""
@@ -619,6 +611,37 @@ Begin Window Window1
       UseFocusRing    =   ""
       Visible         =   True
       Width           =   353
+   End
+   Begin PushButton PushButton3
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   693
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   24
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   267
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
    End
 End
 #tag EndWindow
@@ -655,7 +678,7 @@ End
 
 	#tag MenuHandler
 		Function EditSelectAll() As Boolean Handles EditSelectAll.Action
-			ScintillaField1.SelectAll
+			ScintillaField1.Selection.SelectAll
 			Return True
 			
 		End Function
@@ -767,6 +790,22 @@ End
 #tag Events PushButton2
 	#tag Event
 		Sub Action()
+		  ScintillaField1.Selection.AllowMultiple = True
+		  Call ScintillaField1.Selection.AddSelection(0, 3)
+		  Call ScintillaField1.Selection.AddSelection(5, 7)
+		  Call ScintillaField1.Selection.AddSelection(9, 11)
+		  Call ScintillaField1.Selection.AddSelection(13, 16)
+		  Call ScintillaField1.Selection.AddSelection(8, 21)
+		  Dim i As Integer = ScintillaField1.Selection.SelCount
+		  Break
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
 		  'Dim rand As New Random
 		  'For i As Integer = 0 To 4
 		  'ScintillaField1.Style(i).TextColor = RGB(Rand.InRange(0, 255), Rand.InRange(0, 255), Rand.InRange(0, 255))
@@ -790,17 +829,18 @@ End
 		  'x = x + 1
 		  'End If
 		  'Next
-		  
+		  'ScintillaField1.Selection.SelStart = 1
+		  'ScintillaField1.Selection.SelEnd = 4
 		  'Call ScintillaField1.Search.FindText("hello", 0, 0, 4)
-		  ScintillaField1.Search.RegExMode = False
-		  ScintillaField1.Search.MatchCase = False
-		  ScintillaField1.Search.WholeWord = False
-		  ScintillaField1.Search.StartPosition = 0
-		  ScintillaField1.Search.EndPosition = ScintillaField1.Text.LenB
-		  Dim i As Integer = ScintillaField1.Search.Search("Hello")
-		  If i > -1 Then 
-		    Call ScintillaField1.Search.Replace("World!")
-		  End If
+		  'ScintillaField1.Search.RegExMode = False
+		  'ScintillaField1.Search.MatchCase = False
+		  'ScintillaField1.Search.WholeWord = False
+		  'ScintillaField1.Search.StartPosition = 0
+		  'ScintillaField1.Search.EndPosition = ScintillaField1.Text.LenB
+		  'Dim i As Integer = ScintillaField1.Search.Find("Hello")
+		  'If i > -1 Then 
+		  'Call ScintillaField1.Search.Replace("World!")
+		  'End If
 		  
 		End Sub
 	#tag EndEvent
@@ -810,5 +850,12 @@ End
 		Function GetReference() As ScintillaField
 		  Return ScintillaField1
 		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton3
+	#tag Event
+		Sub Action()
+		  ScintillaField1.Selection.RemoveSelection(1)
+		End Sub
 	#tag EndEvent
 #tag EndEvents
