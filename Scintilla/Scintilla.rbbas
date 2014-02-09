@@ -8,8 +8,8 @@ Protected Module Scintilla
 		Private Declare Function CreateWindowEx Lib "User32" Alias "CreateWindowExW" (ExStyle As Integer, ClassName As WString, WindowName As WString, Style As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer, Parent As Integer, Menu As Integer, Instance As Integer, Param As Ptr) As Integer
 	#tag EndExternalMethod
 
-	#tag Method, Flags = &h0
-		Function FormatCode(code As Integer) As String
+	#tag Method, Flags = &h1
+		Protected Function FormatCode(code As Integer) As String
 		  Select Case code
 		  Case -1
 		    Return "INVALID_POSITION"
@@ -1221,8 +1221,8 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function IsAvailable() As Boolean
+	#tag Method, Flags = &h1
+		Protected Function IsAvailable() As Boolean
 		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
 		  ' Calling System.IsFunctionAvailable is equivalent to calling LoadLibrary and GetProcAddress
 		  ' which is how Scintilla initializes itself
@@ -1249,61 +1249,6 @@ Protected Module Scintilla
 	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SetWindowLong Lib "User32" Alias "SetWindowLongW" (HWND As Integer, Index As Integer, NewLong As Ptr) As Integer
 	#tag EndExternalMethod
-
-
-	#tag Constant, Name = GWL_WNDPROC, Type = Double, Dynamic = False, Default = \"-4", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_CREATE, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_DESTROY, Type = Double, Dynamic = False, Default = \"&h0002", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_LBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0201", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_LBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0202", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_NCCREATE, Type = Double, Dynamic = False, Default = \"&h0081", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_NOTIFY, Type = Double, Dynamic = False, Default = \"&h004E", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_RBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0204", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_RBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0205", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_SIZE, Type = Double, Dynamic = False, Default = \"&h0005", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_SIZING, Type = Double, Dynamic = False, Default = \"&h0214", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WS_CHILD, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WS_CLIPCHILDREN, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WS_TABSTOP, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WS_VISIBLE, Type = Double, Dynamic = False, Default = \"&h10000000", Scope = Private
-	#tag EndConstant
 
 
 	#tag Structure, Name = CharacterRange, Flags = &h1

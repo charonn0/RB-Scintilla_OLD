@@ -4,23 +4,77 @@ Inherits RectControl
 	#tag Event
 		Sub Close()
 		  UnSubclass(pHandle)
+		  UnSubclass(SciRef)
+		  RaiseEvent Close()
 		End Sub
 	#tag EndEvent
 
 	#tag Event
+		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
+		  ' RealStudio does not raise this event.
+		  #pragma Unused base
+		  #pragma Unused x
+		  #pragma Unused y
+		  Break
+		End Function
+	#tag EndEvent
+
+	#tag Event
+		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
+		  ' RealStudio does not raise this event.
+		  #pragma Unused hitItem
+		  Break
+		End Function
+	#tag EndEvent
+
+	#tag Event
 		Function KeyDown(Key As String) As Boolean
-		  If Not RaiseEvent KeyDown(key) Then
-		    UndoableStart()
-		    Return True
-		  End If
+		  ' RealStudio does not raise this event.
+		  #pragma Unused Key
+		  Break
 		End Function
 	#tag EndEvent
 
 	#tag Event
 		Sub KeyUp(Key As String)
-		  UndoableEnd()
-		  RaiseEvent KeyUp(key)
+		  ' RealStudio does not raise this event.
+		  #pragma Unused Key
+		  Break
 		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub MouseEnter()
+		  ' RealStudio does not raise this event.
+		  Break
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub MouseExit()
+		  ' RealStudio does not raise this event.
+		  Break
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub MouseMove(X As Integer, Y As Integer)
+		  ' RealStudio does not raise this event.
+		  #pragma Unused X
+		  #pragma Unused Y
+		  Break
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Function MouseWheel(X As Integer, Y As Integer, deltaX as Integer, deltaY as Integer) As Boolean
+		  ' RealStudio does not raise this event.
+		  #pragma Unused X
+		  #pragma Unused Y
+		  #pragma Unused deltaX
+		  #pragma Unused deltaY
+		  Break
+		End Function
 	#tag EndEvent
 
 	#tag Event
@@ -29,6 +83,7 @@ Inherits RectControl
 		  pHandle = Me.Window.Handle
 		  If SciRef > 0 Then
 		    Subclass(pHandle, Me)
+		    Subclass(SciRef, Me)
 		  End If
 		  Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
 		  Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
@@ -366,54 +421,114 @@ Inherits RectControl
 
 	#tag Method, Flags = &h1
 		Attributes( hidden ) Protected Function WndProc(HWND as Integer, msg as Integer, wParam as Ptr, lParam as Ptr) As Boolean
-		  #pragma Unused HWND
-		  #pragma Unused wParam
-		  
-		  Select Case msg
-		  Case WM_NOTIFY
-		    Dim notification As SCNotification
-		    Dim data As MemoryBlock = lParam
-		    notification.StringValue(TargetLittleEndian) = data.StringValue(0, SCNotification.Size)
-		    If notification.HWND = Me.SciRef Then
-		      Select Case notification.Code
-		        
-		      Case SCN_SAVEPOINTREACHED
-		        
-		        
-		      Case SCN_MARGINCLICK
-		        Dim l As Integer = LineFromPosition(notification.Position)
-		        RaiseEvent MarginClicked(notification.Margin, l)
-		        
-		      Case SCN_MODIFIED, SCN_SAVEPOINTLEFT
-		        RaiseEvent TextChanged()
-		      Else
-		        RaiseEvent ScintillaEvent(notification.Code)
-		      End Select
-		      'Return True
-		    End If
-		    
-		  Case WM_RBUTTONUP, WM_LBUTTONUP
-		    Break
-		  Case WM_RBUTTONDOWN, WM_LBUTTONDOWN
-		    Dim X, Y As Integer
-		    X = BitAnd(Integer(LParam), &hFFFFFFFF)
-		    Y = ShiftRight(Integer(LParam), 32)
-		    Return RaiseEvent MouseDown(X, Y)
-		    
-		  Case WM_SIZING
-		    Dim r As Scintilla.RECT
-		    Dim s As MemoryBlock = lParam
-		    r.StringValue(TargetLittleEndian) = s.StringValue(0, 15)
-		    Select Case Integer(wParam)
-		    Case 6 'bottom
-		      If Me.LockBottom Then
-		        
+		  If HWND = SciRef Then ' Message to the Scintilla window
+		    Select Case msg
+		    Case WM_KEYUP
+		      Dim s As String = Chr(Integer(wParam))
+		      If s <> "" Then
+		        RaiseEvent KeyUp(s)
+		        UndoableEnd()
+		      End If
+		      
+		    Case WM_KEYDOWN
+		      Dim s As String = Chr(Integer(wParam))
+		      If s <> "" Then
+		        RaiseEvent KeyDown(s)
+		        UndoableStart()
+		      End If
+		      
+		    Case WM_RBUTTONUP, WM_LBUTTONUP
+		      Dim X, Y, Z As Integer
+		      Z = Integer(lParam)
+		      X = BitAnd(Z, &hFFFF)
+		      Y = ShiftRight(Z, 16)
+		      RaiseEvent MouseUp(X, Y)
+		      
+		    Case WM_RBUTTONDOWN, WM_LBUTTONDOWN
+		      Dim X, Y, Z As Integer
+		      Z = Integer(lParam)
+		      X = BitAnd(Z, &hFFFF)
+		      Y = ShiftRight(Z, 16)
+		      RaiseEvent MouseDown(X, Y)
+		      
+		    Case WM_MOUSEMOVE
+		      Dim X, Y, Z As Integer
+		      Z = Integer(lParam)
+		      X = BitAnd(Z, &hFFFF)
+		      Y = ShiftRight(Z, 16)
+		      Dim r As New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
+		      Dim p As New REALbasic.Point(X, Y)
+		      If r.Contains(p) Then
+		        If Not CursorEntered Then
+		          CursorEntered = True
+		          RaiseEvent MouseEnter()
+		        End If
+		        RaiseEvent MouseMove(X, Y)
+		      End If
+		      
+		    Case WM_MOUSELEAVE
+		      CursorEntered = False
+		      RaiseEvent MouseExit()
+		      
+		      'Case WM_MOUSEWHEEL
+		      'Dim delta As Int16 = Bitwise.ShiftRight(Integer(wParam), 16)
+		      'Break
+		    Case WM_CONTEXTMENU
+		      Dim base As New MenuItem("")
+		      Dim X, Y, Z As Integer
+		      Z = Integer(lParam)
+		      X = BitAnd(Z, &hFFFF)
+		      Y = ShiftRight(Z, 16)
+		      If RaiseEvent ConstructContextualMenu(base, X, Y) Then
+		        base = base.PopUp
+		        If base <> Nil Then
+		          Return RaiseEvent ContextualMenuAction(base)
+		        End If
+		      End If
+		      
+		    End Select
+		  Else ' Message to the container window
+		    Select Case msg
+		      
+		    Case WM_SIZING
+		      'Dim r As Scintilla.RECT
+		      'Dim s As MemoryBlock = lParam
+		      'r.StringValue(TargetLittleEndian) = s.StringValue(0, 15)
+		      'Select Case Integer(wParam)
+		      'Case 6 'bottom
+		      'If Me.LockBottom Then
+		      '
+		      'End If
+		      'End Select
+		      RaiseEvent Resizing()
+		      
+		    Case WM_SIZE
+		      RaiseEvent Resized()
+		      
+		      
+		    Case WM_NOTIFY
+		      Dim notification As SCNotification
+		      Dim data As MemoryBlock = lParam
+		      notification.StringValue(TargetLittleEndian) = data.StringValue(0, SCNotification.Size)
+		      If notification.HWND = Me.SciRef Then
+		        Select Case notification.Code
+		          
+		        Case SCN_SAVEPOINTREACHED
+		          
+		          
+		        Case SCN_MARGINCLICK
+		          Dim l As Integer = LineFromPosition(notification.Position)
+		          RaiseEvent MarginClicked(notification.Margin, l)
+		          
+		        Case SCN_MODIFIED, SCN_SAVEPOINTLEFT
+		          RaiseEvent TextChanged()
+		        Else
+		          RaiseEvent ScintillaEvent(notification.Code)
+		        End Select
+		        'Return True
 		      End If
 		    End Select
-		    
-		    'Case WM_CONTEXTMENU
-		    'Return SciMessage(Me.Parent.Handle, WM_CONTEXTMENU, WParam, LParam) = 1
-		  End Select
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -431,7 +546,19 @@ Inherits RectControl
 
 
 	#tag Hook, Flags = &h0
-		Event KeyDown(key As String) As Boolean
+		Event Close()
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event ContextualMenuAction(hitItem as MenuItem) As Boolean
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event KeyDown(key As String)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -443,7 +570,23 @@ Inherits RectControl
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event MouseDown(X As Integer, Y As Integer) As Boolean
+		Event MouseDown(X As Integer, Y As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event MouseEnter()
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event MouseExit()
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event MouseMove(X As Integer, Y As Integer)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event MouseUp(X As Integer, Y As Integer)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -1146,6 +1289,10 @@ Inherits RectControl
 		CaretPosition As Integer
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h21
+		Private CursorEntered As Boolean
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -1364,6 +1511,12 @@ Inherits RectControl
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = GWL_WNDPROC, Type = Double, Dynamic = False, Default = \"-4", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCFIND_MATCHCASE, Type = Double, Dynamic = False, Default = \"4", Scope = Protected
 	#tag EndConstant
 
@@ -1455,6 +1608,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETSELTEXT, Type = Double, Dynamic = False, Default = \"2161", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETTEXT, Type = Double, Dynamic = False, Default = \"2182", Scope = Protected
@@ -1553,7 +1709,7 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETTARGETEND, Type = Double, Dynamic = False, Default = \"2192", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETTARGETSTART, Type = Double, Dynamic = False, Default = \"2190", Scope = Public
+	#tag Constant, Name = SCI_SETTARGETSTART, Type = Double, Dynamic = False, Default = \"2190", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
@@ -1586,8 +1742,81 @@ Inherits RectControl
 	#tag Constant, Name = SCN_SAVEPOINTREACHED, Type = Double, Dynamic = False, Default = \"2002", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_CREATE, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_DESTROY, Type = Double, Dynamic = False, Default = \"&h0002", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_KEYDOWN, Type = Double, Dynamic = False, Default = \"&h0100", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_KEYUP, Type = Double, Dynamic = False, Default = \"&h0101", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_LBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0201", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_LBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0202", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_LBUTTONUP1, Type = Double, Dynamic = False, Default = \"&h0202", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_MOUSELEAVE, Type = Double, Dynamic = False, Default = \"&h02A3", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_MOUSEMOVE, Type = Double, Dynamic = False, Default = \"&h0200", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_MOUSEWHEEL, Type = Double, Dynamic = False, Default = \"&h020A", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_NCCREATE, Type = Double, Dynamic = False, Default = \"&h0081", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_NOTIFY, Type = Double, Dynamic = False, Default = \"&h004E", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_RBUTTONDOWN, Type = Double, Dynamic = False, Default = \"&h0204", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_RBUTTONUP, Type = Double, Dynamic = False, Default = \"&h0205", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_SIZE, Type = Double, Dynamic = False, Default = \"&h0005", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WM_SIZING, Type = Double, Dynamic = False, Default = \"&h0214", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WS_CHILD, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WS_CLIPCHILDREN, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WS_TABSTOP, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WS_VISIBLE, Type = Double, Dynamic = False, Default = \"&h10000000", Scope = Private
+	#tag EndConstant
+
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="AcceptFocus"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AllowUndo"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="AutoDeactivate"
 			Visible=true
@@ -1595,6 +1824,11 @@ Inherits RectControl
 			InitialValue="True"
 			Type="Boolean"
 			InheritedFrom="RectControl"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CaretPeriod"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="CaretPosition"
@@ -1695,6 +1929,11 @@ Inherits RectControl
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Overtype"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="ReadOnly"

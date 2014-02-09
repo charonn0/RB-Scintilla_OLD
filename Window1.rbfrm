@@ -25,7 +25,10 @@ Begin Window Window1
    Visible         =   True
    Width           =   8.17e+2
    Begin ScintillaField ScintillaField1
+      AcceptFocus     =   ""
+      AllowUndo       =   ""
       AutoDeactivate  =   True
+      CaretPeriod     =   ""
       CaretPosition   =   ""
       Enabled         =   True
       EOLVisible      =   ""
@@ -40,6 +43,7 @@ Begin Window Window1
       LockLeft        =   True
       LockRight       =   True
       LockTop         =   True
+      Overtype        =   ""
       ReadOnly        =   ""
       Scope           =   0
       SelLength       =   ""
@@ -540,7 +544,7 @@ Begin Window Window1
    Begin Timer GUIUpdater
       Height          =   32
       Index           =   -2147483648
-      Left            =   839
+      Left            =   838
       LockedInPosition=   False
       Mode            =   2
       Period          =   500
@@ -655,13 +659,6 @@ End
 		End Sub
 	#tag EndEvent
 
-	#tag Event
-		Sub Resized()
-		  'Dim i As Integer = ScintillaField1.Height
-		  'Break
-		End Sub
-	#tag EndEvent
-
 
 	#tag MenuHandler
 		Function EditClear() As Boolean Handles EditClear.Action
@@ -730,37 +727,41 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub TextChanged()
-		  'MsgBox("Changed")
+		  TextArea1.Text = Me.Text
 		End Sub
 	#tag EndEvent
 	#tag Event
-		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
-		  Select Case hitItem.Text
-		  Case "Increment style"
-		    Dim s, e As Integer
-		    s = Me.SelStart
-		    e = s + Me.SelLength
-		    Dim st As Scintilla.Style = Me.Style(StyleEdit1.CurrentStyle + 1)
-		    Me.SetRangeStyle(s, e) = st
-		  End Select
-		End Function
-	#tag EndEvent
-	#tag Event
-		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
-		  base.Append(New MenuItem("Increment style"))
-		  Return True
-		End Function
-	#tag EndEvent
-	#tag Event
-		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		Function DragEnter(obj As DragItem, action As Integer) As Boolean
 		  Break
 		End Function
+	#tag EndEvent
+	#tag Event
+		Sub DragExit(obj As DragItem, action As Integer)
+		  Break
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function DragOver(x As Integer, y As Integer, obj As DragItem, action As Integer) As Boolean
+		  Break
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub DropObject(obj As DragItem, action As Integer)
+		  Break
+		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ShowEOL
 	#tag Event
 		Sub Action()
 		  ScintillaField1.EOLVisible = Me.Value
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ReadOnly
+	#tag Event
+		Sub Action()
+		  ScintillaField1.ReadOnly = Me.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -806,9 +807,9 @@ End
 		  'ShowEOL.Value = ScintillaField1.EOLVisible
 		  CanRedo.Value = ScintillaField1.CanRedo
 		  CanUndo.Value = ScintillaField1.CanUndo
-		  ReadOnly.Value = ScintillaField1.ReadOnly
+		  'ReadOnly.Value = ScintillaField1.ReadOnly
 		  IsDirty.Value = ScintillaField1.IsDirty
-		  TextArea1.Text = ScintillaField1.Text
+		  'TextArea1.Text = ScintillaField1.Text
 		End Sub
 	#tag EndEvent
 #tag EndEvents
