@@ -99,6 +99,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   4
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Caret Pos:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -284,6 +285,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   9
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Top Line:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -424,6 +426,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   13
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Current Line:"
       TextAlign       =   2
       TextColor       =   &h000000
@@ -542,6 +545,7 @@ Begin Window Window1
       Width           =   353
    End
    Begin Timer GUIUpdater
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   838
@@ -549,8 +553,11 @@ Begin Window Window1
       Mode            =   2
       Period          =   500
       Scope           =   0
+      TabIndex        =   15
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   -30
+      Visible         =   True
       Width           =   32
    End
    Begin PushButton PushButton2
@@ -566,7 +573,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   926
+      Left            =   581
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -579,7 +586,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   -30
+      Top             =   267
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -596,6 +603,7 @@ Begin Window Window1
       HasBackColor    =   False
       Height          =   85
       HelpTag         =   ""
+      Index           =   -2147483648
       InitialParent   =   ""
       Left            =   457
       LockBottom      =   ""
@@ -611,37 +619,6 @@ Begin Window Window1
       UseFocusRing    =   ""
       Visible         =   True
       Width           =   353
-   End
-   Begin PushButton PushButton1
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Untitled"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   540
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   24
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   265
-      Underline       =   ""
-      Visible         =   True
-      Width           =   80
    End
 End
 #tag EndWindow
@@ -670,7 +647,7 @@ End
 
 	#tag MenuHandler
 		Function EditRedo() As Boolean Handles EditRedo.Action
-			Call ScintillaField1.Redo
+			Call ScintillaField1.History.Redo
 			Return True
 			
 		End Function
@@ -686,7 +663,7 @@ End
 
 	#tag MenuHandler
 		Function EditUndo() As Boolean Handles EditUndo.Action
-			Call ScintillaField1.Undo
+			Call ScintillaField1.History.Undo
 			Return True
 			
 		End Function
@@ -714,47 +691,15 @@ End
 
 #tag Events ScintillaField1
 	#tag Event
-		Sub Open()
-		  Me.Margin(0).Type = 1
-		  Me.Margin(0).Width = 15
-		  Me.Margin(0).Clickable = True
-		  
-		  Me.Margin(1).Type = 0
-		  Me.Margin(1).Width = 15
-		  Me.Margin(1).Clickable = True
-		  
-		End Sub
-	#tag EndEvent
-	#tag Event
 		Sub TextChanged()
 		  TextArea1.Text = Me.Text
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Function DragEnter(obj As DragItem, action As Integer) As Boolean
-		  Break
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub DragExit(obj As DragItem, action As Integer)
-		  Break
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Function DragOver(x As Integer, y As Integer, obj As DragItem, action As Integer) As Boolean
-		  Break
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub DropObject(obj As DragItem, action As Integer)
-		  Break
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events ShowEOL
 	#tag Event
 		Sub Action()
-		  ScintillaField1.EOLVisible = Me.Value
+		  ScintillaField1.EOL.Visible = Me.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -768,6 +713,8 @@ End
 #tag Events CanRedo
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  #pragma Unused X
+		  #pragma Unused Y
 		  Return True
 		End Function
 	#tag EndEvent
@@ -775,6 +722,8 @@ End
 #tag Events Canundo
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  #pragma Unused X
+		  #pragma Unused Y
 		  Return True
 		End Function
 	#tag EndEvent
@@ -782,6 +731,8 @@ End
 #tag Events IsDirty
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  #pragma Unused X
+		  #pragma Unused Y
 		  Return True
 		End Function
 	#tag EndEvent
@@ -805,8 +756,8 @@ End
 		  TopLine.Text = Format(ScintillaField1.TopLine, "###,###,###,##0")
 		  CurrentLine.Text = Format(ScintillaField1.CurrentLine, "###,###,###,##0")
 		  'ShowEOL.Value = ScintillaField1.EOLVisible
-		  CanRedo.Value = ScintillaField1.CanRedo
-		  CanUndo.Value = ScintillaField1.CanUndo
+		  CanRedo.Value = ScintillaField1.History.CanRedo
+		  CanUndo.Value = ScintillaField1.History.CanUndo
 		  'ReadOnly.Value = ScintillaField1.ReadOnly
 		  IsDirty.Value = ScintillaField1.IsDirty
 		  'TextArea1.Text = ScintillaField1.Text
@@ -816,29 +767,41 @@ End
 #tag Events PushButton2
 	#tag Event
 		Sub Action()
-		  Dim rand As New Random
-		  For i As Integer = 0 To 4
-		    ScintillaField1.Style(i).TextColor = RGB(Rand.InRange(0, 255), Rand.InRange(0, 255), Rand.InRange(0, 255))
-		    If Rand.InRange(0, 1) = 1 Then
-		      ScintillaField1.Style(i).Bold = True
-		    Else
-		      ScintillaField1.Style(i).Bold = False
-		    End If
-		    If Rand.InRange(0, 1) = 1 Then
-		      ScintillaField1.Style(i).Italic = True
-		    Else
-		      ScintillaField1.Style(i).Italic = False
-		    End If
-		  Next
-		  Dim x As Integer
-		  For i As Integer = 0 To ScintillaField1.Text.Len
-		    ScintillaField1.SetRangeStyle(x, x + 1) = ScintillaField1.Style(x)
-		    If x = 4 Then
-		      x = 0
-		    Else
-		      x = x + 1
-		    End If
-		  Next
+		  'Dim rand As New Random
+		  'For i As Integer = 0 To 4
+		  'ScintillaField1.Style(i).TextColor = RGB(Rand.InRange(0, 255), Rand.InRange(0, 255), Rand.InRange(0, 255))
+		  'If Rand.InRange(0, 1) = 1 Then
+		  'ScintillaField1.Style(i).Bold = True
+		  'Else
+		  'ScintillaField1.Style(i).Bold = False
+		  'End If
+		  'If Rand.InRange(0, 1) = 1 Then
+		  'ScintillaField1.Style(i).Italic = True
+		  'Else
+		  'ScintillaField1.Style(i).Italic = False
+		  'End If
+		  'Next
+		  'Dim x As Integer
+		  'For i As Integer = 0 To ScintillaField1.Text.Len
+		  'ScintillaField1.SetRangeStyle(x, x + 1) = ScintillaField1.Style(x)
+		  'If x = 4 Then
+		  'x = 0
+		  'Else
+		  'x = x + 1
+		  'End If
+		  'Next
+		  
+		  'Call ScintillaField1.Search.FindText("hello", 0, 0, 4)
+		  ScintillaField1.Search.RegExMode = False
+		  ScintillaField1.Search.MatchCase = False
+		  ScintillaField1.Search.WholeWord = False
+		  ScintillaField1.Search.StartPosition = 0
+		  ScintillaField1.Search.EndPosition = ScintillaField1.Text.LenB
+		  Dim i As Integer = ScintillaField1.Search.Search("Hello")
+		  If i > -1 Then 
+		    Call ScintillaField1.Search.Replace("World!")
+		  End If
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -847,21 +810,5 @@ End
 		Function GetReference() As ScintillaField
 		  Return ScintillaField1
 		End Function
-	#tag EndEvent
-#tag EndEvents
-#tag Events PushButton1
-	#tag Event
-		Sub Action()
-		  'Dim s, e As Integer
-		  's = ScintillaField1.SelStart
-		  'e = s + ScintillaField1.SelLength - 1
-		  'If e > s Then
-		  'Dim st As Scintilla.Style = ScintillaField1.Style(StyleEdit1.CurrentStyle + 1)
-		  'ScintillaField1.SetRangeStyle(s, e) = st
-		  'End If
-		  Dim s As String = ScintillaField1.CharAtPos(0)
-		  ScintillaField1.CharAtPos(0) = ScintillaField1.CharAtPos(1)
-		  ScintillaField1.CharAtPos(1) = s
-		End Sub
 	#tag EndEvent
 #tag EndEvents

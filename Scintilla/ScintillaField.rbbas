@@ -28,6 +28,44 @@ Inherits RectControl
 	#tag EndEvent
 
 	#tag Event
+		Function DragEnter(obj As DragItem, action As Integer) As Boolean
+		  ' RealStudio does not raise this event.
+		  #pragma Unused obj
+		  #pragma Unused action
+		  Break
+		End Function
+	#tag EndEvent
+
+	#tag Event
+		Sub DragExit(obj As DragItem, action As Integer)
+		  ' RealStudio does not raise this event.
+		  #pragma Unused obj
+		  #pragma Unused action
+		  Break
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Function DragOver(x As Integer, y As Integer, obj As DragItem, action As Integer) As Boolean
+		  ' RealStudio does not raise this event.
+		  #pragma Unused obj
+		  #pragma Unused action
+		  #pragma Unused x
+		  #pragma Unused y
+		  Break
+		End Function
+	#tag EndEvent
+
+	#tag Event
+		Sub DropObject(obj As DragItem, action As Integer)
+		  ' RealStudio does not raise this event.
+		  #pragma Unused obj
+		  #pragma Unused action
+		  Break
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Function KeyDown(Key As String) As Boolean
 		  ' RealStudio does not raise this event.
 		  #pragma Unused Key
@@ -102,18 +140,6 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CanRedo() As Boolean
-		  Return SciMessage(SciRef, SCI_CANREDO, Nil, Nil) = 1
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function CanUndo() As Boolean
-		  Return SciMessage(SciRef, SCI_CANUNDO, Nil, Nil) = 1
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function CharAtPos(Position As Integer) As String
 		  Dim char As Integer = SciMessage(SciRef, SCI_GETCHARAT, Ptr(Position), Nil)
 		  If char > 0 Then
@@ -124,11 +150,12 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub CharAtPos(Position As Integer, Assigns NewChar As String)
-		  Dim mb As New MemoryBlock(NewChar.LenB + 1)
-		  mb.CString(0) = NewChar.Trim
-		  Call SciMessage(SciRef, SCI_SETTARGETSTART, Position, 0)
-		  Call SciMessage(SciRef, SCI_SETTARGETEND, Position + LenB(NewChar), 0)
-		  Call SciMessage(SciRef, SCI_REPLACETARGET, Ptr(mb.Size - 1), mb)
+		  #pragma Warning "Fix Me"
+		  'Dim mb As New MemoryBlock(NewChar.LenB + 1)
+		  'mb.CString(0) = NewChar.Trim
+		  'Call SciMessage(SciRef, SCI_SETTARGETSTART, Position, 0)
+		  'Call SciMessage(SciRef, SCI_SETTARGETEND, Position + LenB(NewChar), 0)
+		  'Call SciMessage(SciRef, SCI_REPLACETARGET, Ptr(mb.Size - 1), mb)
 		  
 		End Sub
 	#tag EndMethod
@@ -158,22 +185,6 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub ConvertEOL(NewEOL As String)
-		  Dim m As Integer
-		  Select Case NewEOL
-		  Case EndOfLine.Windows
-		    m = SciMessage(SciRef, SCI_CONVERTEOLS, 0, 0)
-		  Case EndOfLine.Macintosh
-		    m = SciMessage(SciRef, SCI_CONVERTEOLS, 1, 0)
-		  Case EndOfLine.UNIX
-		    m = SciMessage(SciRef, SCI_CONVERTEOLS, 2, 0)
-		  Else
-		    Raise New UnsupportedFormatException
-		  End Select
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function CurrentLine() As Integer
 		  Return SciMessage(SciRef, SCI_GETCURLINE, Nil, Nil)
 		End Function
@@ -196,16 +207,6 @@ Inherits RectControl
 		    If nextWndProc <> INVALID_HANDLE_VALUE Then
 		      Return CallWindowProc(nextWndProc, HWND, msg, wParam, lParam)
 		    End If
-		    Select Case msg
-		    Case WM_CREATE, WM_NCCREATE
-		      ' Windows sends these messages when the window is first created, but before this class is fully initialized.
-		      ' We must return success else Windows will consider the creation to have failed.
-		      Return 1
-		    Else
-		      #If DebugBuild Then
-		        Break ' !!!
-		      #endif
-		    End Select
 		  #endif
 		End Function
 	#tag EndMethod
@@ -217,20 +218,8 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FindNext(SearchPattern As String, SearchType As Integer) As Integer
-		  Call SciMessage(SciRef,SCI_SEARCHANCHOR, Nil, Nil)
-		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
-		  mb.CString(0) = SearchPattern
-		  Return SciMessage(SciRef, SCI_SEARCHNEXT, Ptr(SearchType), mb)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function FindPrev(SearchPattern As String, SearchType As Integer) As Integer
-		  Call SciMessage(SciRef,SCI_SEARCHANCHOR, Nil, Nil)
-		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
-		  mb.CString(0) = SearchPattern
-		  Return SciMessage(SciRef, SCI_SEARCHPREV, Ptr(SearchType), mb)
+		Function EOL() As Scintilla.EOL
+		  Return New Scintilla.EOL(SciRef)
 		End Function
 	#tag EndMethod
 
@@ -240,6 +229,12 @@ Inherits RectControl
 		  Dim mb As New MemoryBlock(len + 1)
 		  Call SciMessage(SciRef, SCI_GETLINE, Ptr(Line), mb)
 		  Return mb.CString(0)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function History() As Scintilla.UndoRedo
+		  Return New Scintilla.UndoRedo(SciRef)
 		End Function
 	#tag EndMethod
 
@@ -293,14 +288,6 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Redo() As Boolean
-		  If CanRedo Then
-		    Return SciMessage(SciRef, SCI_REDO, Nil, Nil) = 0
-		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function ScintillaHWND() As Integer
 		  Return SciRef
 		End Function
@@ -316,6 +303,12 @@ Inherits RectControl
 		Sub ScrollToPosition(Position As Integer)
 		  Call SciMessage(SciRef, SCI_GOTOPOS, Position, 0)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Search() As Scintilla.FindReplace
+		  Return New Scintilla.FindReplace(SciRef)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -355,13 +348,6 @@ Inherits RectControl
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function StyleAtPosition(Position As Integer) As Scintilla.Style
-		  'Dim s As Integer = SciMessage(SciRef, SCI_GETSTYLEAT, Position, 0)
-		  'Return New Scintilla.Style(s, SciRef)
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As ScintillaField)
 		  #If TargetWin32 Then
@@ -378,26 +364,6 @@ Inherits RectControl
 		    d.Value(SuperWin) = SubWin
 		    Subclasses.Append(d)
 		  #endif
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function Undo() As Boolean
-		  If CanUndo Then
-		    Return SciMessage(SciRef, SCI_UNDO, Nil, Nil) = 0
-		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub UndoableEnd()
-		  Call SciMessage(SciRef, SCI_ENDUNDOACTION, Nil, Nil)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub UndoableStart()
-		  Call SciMessage(SciRef, SCI_BEGINUNDOACTION, Nil, Nil)
 		End Sub
 	#tag EndMethod
 
@@ -427,14 +393,14 @@ Inherits RectControl
 		      Dim s As String = Chr(Integer(wParam))
 		      If s <> "" Then
 		        RaiseEvent KeyUp(s)
-		        UndoableEnd()
+		        Me.History.EndAction()
 		      End If
 		      
 		    Case WM_KEYDOWN
 		      Dim s As String = Chr(Integer(wParam))
 		      If s <> "" Then
 		        RaiseEvent KeyDown(s)
-		        UndoableStart()
+		        Me.History.BeginAction()
 		      End If
 		      
 		    Case WM_RBUTTONUP, WM_LBUTTONUP
@@ -1296,53 +1262,19 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim m As Integer = SciMessage(SciRef, SCI_GETEOLMODE, Nil, Nil)
-			  Select Case m
-			  Case 0
-			    Return EndOfLine.Windows
-			  Case 1
-			    Return EndOfLine.Macintosh
-			  Case 2
-			    Return EndOfLine.UNIX
-			  Else
-			    Raise New UnsupportedFormatException
-			  End Select
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  Dim m As Integer
-			  Select Case value
-			  Case EndOfLine.Windows
-			    m = SciMessage(SciRef, SCI_SETEOLMODE, 0, 0)
-			  Case EndOfLine.Macintosh
-			    m = SciMessage(SciRef, SCI_SETEOLMODE, 1, 0)
-			  Case EndOfLine.UNIX
-			    m = SciMessage(SciRef, SCI_SETEOLMODE, 2, 0)
-			  Else
-			    Raise New UnsupportedFormatException
-			  End Select
-			End Set
-		#tag EndSetter
-		EOL As String
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Return SciMessage(SciRef, SCI_GETVIEWEOL, Nil, Nil) <> 0
+			  Return SciMessage(SciRef, SCI_GETBUFFEREDDRAW, Nil, Nil) <> 0
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  If value Then
-			    Call SciMessage(SciRef, SCI_SETVIEWEOL, 1, 0)
+			    Call SciMessage(SciRef, SCI_GETBUFFEREDDRAW, 1, 0)
 			  Else
-			    Call SciMessage(SciRef, SCI_SETVIEWEOL, 0, 0)
+			    Call SciMessage(SciRef, SCI_GETBUFFEREDDRAW, 0, 0)
 			  End If
 			End Set
 		#tag EndSetter
-		EOLVisible As Boolean
+		DoubleBuffered As Boolean
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -1517,46 +1449,16 @@ Inherits RectControl
 	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCFIND_MATCHCASE, Type = Double, Dynamic = False, Default = \"4", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCFIND_POSIX, Type = Double, Dynamic = False, Default = \"&h00400000", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCFIND_REGEXP, Type = Double, Dynamic = False, Default = \"&h00200000", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCFIND_WHOLEWORD, Type = Double, Dynamic = False, Default = \"2", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCFIND_WORDSTART, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_APPENDTEXT, Type = Double, Dynamic = False, Default = \"2282", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_BEGINUNDOACTION, Type = Double, Dynamic = False, Default = \"2078", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_CANREDO, Type = Double, Dynamic = False, Default = \"2016", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_CANUNDO, Type = Double, Dynamic = False, Default = \"2174", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_CLEARALL, Type = Double, Dynamic = False, Default = \"2004", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_CONVERTEOLS, Type = Double, Dynamic = False, Default = \"2029", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_EMPTYUNDOBUFFER, Type = Double, Dynamic = False, Default = \"2175", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_ENDUNDOACTION, Type = Double, Dynamic = False, Default = \"2079", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_FINDTEXT, Type = Double, Dynamic = False, Default = \"2150", Scope = Protected
+	#tag Constant, Name = SCI_GETBUFFEREDDRAW, Type = Double, Dynamic = False, Default = \"2034", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETCARETPERIOD, Type = Double, Dynamic = False, Default = \"2075", Scope = Protected
@@ -1569,9 +1471,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETCURRENTPOS, Type = Double, Dynamic = False, Default = \"2008", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_GETEOLMODE, Type = Double, Dynamic = False, Default = \"2030", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2152", Scope = Protected
@@ -1619,9 +1518,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETUNDOCOLLECTION, Type = Double, Dynamic = False, Default = \"2019", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETVIEWEOL, Type = Double, Dynamic = False, Default = \"2355", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_GOTOLINE, Type = Double, Dynamic = False, Default = \"2024", Scope = Protected
 	#tag EndConstant
 
@@ -1646,22 +1542,10 @@ Inherits RectControl
 	#tag Constant, Name = SCI_POSITIONFROMPOINTCLOSE, Type = Double, Dynamic = False, Default = \"2023", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_REDO, Type = Double, Dynamic = False, Default = \"2011", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_REPLACETARGET, Type = Double, Dynamic = False, Default = \"2194", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SEARCHANCHOR, Type = Double, Dynamic = False, Default = \"2366", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SEARCHNEXT, Type = Double, Dynamic = False, Default = \"2367", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SEARCHPREV, Type = Double, Dynamic = False, Default = \"2368", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SELECTALL, Type = Double, Dynamic = False, Default = \"2013", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETBUFFEREDDRAW, Type = Double, Dynamic = False, Default = \"2035", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETCARETPERIOD, Type = Double, Dynamic = False, Default = \"2076", Scope = Protected
@@ -1671,9 +1555,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETEMPTYSELECTION, Type = Double, Dynamic = False, Default = \"2147", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETEOLMODE, Type = Double, Dynamic = False, Default = \"2031", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2613", Scope = Protected
@@ -1706,25 +1587,13 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETSTYLING, Type = Double, Dynamic = False, Default = \"2033", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETTARGETEND, Type = Double, Dynamic = False, Default = \"2192", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_SETTARGETSTART, Type = Double, Dynamic = False, Default = \"2190", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SETTEXT, Type = Double, Dynamic = False, Default = \"2181", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETUNDOCOLLECTION, Type = Double, Dynamic = False, Default = \"2012", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETVIEWEOL, Type = Double, Dynamic = False, Default = \"2356", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_STARTSTYLING, Type = Double, Dynamic = False, Default = \"2032", Scope = Protected
-	#tag EndConstant
-
-	#tag Constant, Name = SCI_UNDO, Type = Double, Dynamic = False, Default = \"2176", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_USEPOPUP, Type = Double, Dynamic = False, Default = \"2371", Scope = Protected
@@ -1743,12 +1612,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_CREATE, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_DESTROY, Type = Double, Dynamic = False, Default = \"&h0002", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_KEYDOWN, Type = Double, Dynamic = False, Default = \"&h0100", Scope = Private
@@ -1773,9 +1636,6 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = WM_MOUSEWHEEL, Type = Double, Dynamic = False, Default = \"&h020A", Scope = Private
-	#tag EndConstant
-
-	#tag Constant, Name = WM_NCCREATE, Type = Double, Dynamic = False, Default = \"&h0081", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_NOTIFY, Type = Double, Dynamic = False, Default = \"&h004E", Scope = Private
@@ -1836,23 +1696,17 @@ Inherits RectControl
 			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="DoubleBuffered"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Enabled"
 			Visible=true
 			Group="Appearance"
 			InitialValue="True"
 			Type="Boolean"
 			InheritedFrom="RectControl"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="EOL"
-			Group="Behavior"
-			Type="String"
-			EditorType="MultiLineEditor"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="EOLVisible"
-			Group="Behavior"
-			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Height"

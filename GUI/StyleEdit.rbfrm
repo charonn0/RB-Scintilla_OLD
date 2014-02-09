@@ -11,7 +11,7 @@ Begin ContainerControl StyleEdit
    Height          =   85
    HelpTag         =   ""
    InitialParent   =   ""
-   Left            =   3.2e+1
+   Left            =   32
    LockBottom      =   ""
    LockLeft        =   ""
    LockRight       =   ""
@@ -19,7 +19,7 @@ Begin ContainerControl StyleEdit
    TabIndex        =   0
    TabPanelIndex   =   0
    TabStop         =   True
-   Top             =   3.2e+1
+   Top             =   32
    UseFocusRing    =   ""
    Visible         =   True
    Width           =   325

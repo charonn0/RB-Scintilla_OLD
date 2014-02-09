@@ -1,26 +1,10 @@
 #tag Class
 Protected Class Margin
 	#tag Method, Flags = &h0
-		Sub Clickable(MarginNumber As Integer, Assigns NewBool As Boolean)
-		  If NewBool Then
-		    Call SciMessage(SciRef, SCI_SETMARGINSENSITIVEN, MarginNumber, 1)
-		  Else
-		    Call SciMessage(SciRef, SCI_SETMARGINSENSITIVEN, MarginNumber, 0)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub Constructor(MarginNumber As Integer, Reference As Integer)
 		  SciRef = Reference
 		  mMarginNumber = MarginNumber
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function MarginClickable(MarginNumber As Integer) As Boolean
-		  
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -33,6 +17,37 @@ Protected Class Margin
 		Function Owner() As Integer
 		  Return SciRef
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Style(LineNumber As Integer) As Scintilla.Style
+		  Dim nm As Integer = SciMessage(SciRef, SCI_MARGINGETSTYLE, LineNumber, 0)
+		  Return New Scintilla.Style(nm, SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Style(LineNumber As Integer, Assigns NewStyle As Scintilla.Style)
+		  If NewStyle.Owner <> Me.Owner Then Raise New RuntimeException ' styles are instance-specific
+		  Call SciMessage(SciRef, SCI_MARGINSETSTYLE, LineNumber, NewStyle.StyleNumber)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Text(LineNumber As Integer) As String
+		  Dim mb As MemoryBlock
+		  Dim sz As Integer = SciMessage(SciRef, SCI_MARGINGETTEXT, Nil, Nil)
+		  mb = New MemoryBlock(sz + 1)
+		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, Ptr(LineNumber), mb)
+		  Return mb.CString(0)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Text(LineNumber As Integer, Assigns NewText As String)
+		  Dim mb As MemoryBlock = NewText
+		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, Ptr(LineNumber), mb)
+		End Sub
 	#tag EndMethod
 
 
@@ -98,6 +113,18 @@ Protected Class Margin
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETMARGINWIDTHN, Type = Double, Dynamic = False, Default = \"2243", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARGINGETSTYLE, Type = Double, Dynamic = False, Default = \"2533", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARGINGETTEXT, Type = Double, Dynamic = False, Default = \"2531", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARGINSETSTYLE, Type = Double, Dynamic = False, Default = \"2532", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARGINSETTEXT, Type = Double, Dynamic = False, Default = \"2530", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETMARGINSENSITIVEN, Type = Double, Dynamic = False, Default = \"2246", Scope = Protected
