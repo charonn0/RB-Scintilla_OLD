@@ -1076,6 +1076,24 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  Return SciMessage(SciRef, SCI_GETMOUSEDOWNCAPTURES, Nil, Nil) <> 0
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If value Then
+			    Call SciMessage(SciRef, SCI_SETMOUSEDOWNCAPTURES, 1, 0)
+			  Else
+			    Call SciMessage(SciRef, SCI_SETMOUSEDOWNCAPTURES, 0, 0)
+			  End If
+			End Set
+		#tag EndSetter
+		AcceptFocus As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Return SciMessage(SciRef, SCI_GETUNDOCOLLECTION, Nil, Nil) <> 0
 			End Get
 		#tag EndGetter
@@ -1090,6 +1108,22 @@ Inherits RectControl
 			End Set
 		#tag EndSetter
 		AllowUndo As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' in millisecs
+			  Return SciMessage(SciRef, SCI_GETCARETPERIOD, Nil, Nil)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' in millisecs
+			  Call SciMessage(SciRef, SCI_SETCARETPERIOD, value, 0)
+			End Set
+		#tag EndSetter
+		CaretPeriod As Integer
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -1194,6 +1228,24 @@ Inherits RectControl
 	#tag Property, Flags = &h21
 		Private Shared mWndProcs As Dictionary
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return SciMessage(SciRef, SCI_GETOVERTYPE, Nil, Nil) <> 0
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If value Then
+			    Call SciMessage(SciRef, SCI_SETOVERTYPE, 1, 0)
+			  Else
+			    Call SciMessage(SciRef, SCI_SETOVERTYPE, 0, 0)
+			  End If
+			End Set
+		#tag EndSetter
+		Overtype As Boolean
+	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
 		Private pHandle As Integer
@@ -1354,6 +1406,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_FINDTEXT, Type = Double, Dynamic = False, Default = \"2150", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_GETCARETPERIOD, Type = Double, Dynamic = False, Default = \"2075", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_GETCHARAT, Type = Double, Dynamic = False, Default = \"2007", Scope = Protected
 	#tag EndConstant
 
@@ -1382,6 +1437,12 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETMODIFY, Type = Double, Dynamic = False, Default = \"2159", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETMOUSEDOWNCAPTURES, Type = Double, Dynamic = False, Default = \"2385", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETOVERTYPE, Type = Double, Dynamic = False, Default = \"2187", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETREADONLY, Type = Double, Dynamic = False, Default = \"2140", Scope = Protected
@@ -1447,6 +1508,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SELECTALL, Type = Double, Dynamic = False, Default = \"2013", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETCARETPERIOD, Type = Double, Dynamic = False, Default = \"2076", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SETCURRENTPOS, Type = Double, Dynamic = False, Default = \"2041", Scope = Protected
 	#tag EndConstant
 
@@ -1460,6 +1524,12 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETMOUSEDOWNCAPTURES, Type = Double, Dynamic = False, Default = \"2384", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETOVERTYPE, Type = Double, Dynamic = False, Default = \"2186", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETREADONLY, Type = Double, Dynamic = False, Default = \"2171", Scope = Protected
