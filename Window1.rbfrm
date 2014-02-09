@@ -34,6 +34,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Left            =   0
+      LineCount       =   ""
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
@@ -41,6 +42,8 @@ Begin Window Window1
       LockTop         =   True
       ReadOnly        =   ""
       Scope           =   0
+      SelLength       =   ""
+      SelStart        =   ""
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
@@ -583,6 +586,7 @@ Begin Window Window1
       AutoDeactivate  =   True
       BackColor       =   &hFFFFFF
       Backdrop        =   ""
+      CurrentStyle    =   ""
       Enabled         =   True
       EraseBackground =   True
       HasBackColor    =   False
@@ -847,13 +851,16 @@ End
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
-		  Dim s, e As Integer
-		  s = ScintillaField1.SelStart
-		  e = s + ScintillaField1.SelLength - 1
-		  If e > s Then
-		    Dim st As Scintilla.Style = ScintillaField1.Style(StyleEdit1.CurrentStyle + 1)
-		    ScintillaField1.SetRangeStyle(s, e) = st
-		  End If
+		  'Dim s, e As Integer
+		  's = ScintillaField1.SelStart
+		  'e = s + ScintillaField1.SelLength - 1
+		  'If e > s Then
+		  'Dim st As Scintilla.Style = ScintillaField1.Style(StyleEdit1.CurrentStyle + 1)
+		  'ScintillaField1.SetRangeStyle(s, e) = st
+		  'End If
+		  Dim s As String = ScintillaField1.CharAtPos(0)
+		  ScintillaField1.CharAtPos(0) = ScintillaField1.CharAtPos(1)
+		  ScintillaField1.CharAtPos(1) = s
 		End Sub
 	#tag EndEvent
 #tag EndEvents
