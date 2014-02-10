@@ -247,6 +247,11 @@ Protected Class FindReplace
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="EndPosition"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"
@@ -261,10 +266,25 @@ Protected Class FindReplace
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="MatchCase"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="POSIXmode"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="RegExMode"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="StartPosition"
@@ -283,6 +303,16 @@ Protected Class FindReplace
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="WholeWord"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="WordStart"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

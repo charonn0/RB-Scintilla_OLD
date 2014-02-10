@@ -5,6 +5,7 @@ Class=App;App.rbbas;&h59DC47FF;&h0;false
 Window=Window1;Window1.rbfrm;&h77B45FFF;&h0;false
 BuildSteps=Build Automation;Build Automation.rbbas;&h1D37AFFF;&h0;false
 Module=Scintilla;Scintilla/Scintilla.rbbas;&h516A1FFF;&h0;false
+Class=AutoComplete;Scintilla/AutoComplete.rbbas;&h5C311FFF;&h516A1FFF;false
 Class=Lexer;Scintilla/Lexer.rbbas;&h652C7FFF;&h516A1FFF;false
 Class=Selection;Scintilla/Selection.rbbas;&h75636FFF;&h516A1FFF;false
 Class=FindReplace;Scintilla/FindReplace.rbbas;&h4E44E7FF;&h516A1FFF;false

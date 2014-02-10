@@ -151,6 +151,12 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Autocomplete() As Scintilla.AutoComplete
+		  Return New Scintilla.AutoComplete(SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CharAtPos(Position As Integer) As Scintilla.CharacterCell
 		  Return New Scintilla.CharacterCell(Position, SciRef)
 		End Function
@@ -469,6 +475,13 @@ Inherits RectControl
 		        If notification.HWND = Me.SciRef Then
 		          Select Case notification.Code
 		            
+		          Case SCN_AUTOCCANCELLED
+		            RaiseEvent AutoCompletionCancel
+		            
+		          Case SCN_AUTOCSELECTION 'SCN_AUTOCCHARDELETED
+		            Dim mb As MemoryBlock = notification.text
+		            RaiseEvent AutocompleteSelection(mb.CString(0))
+		            
 		          Case SCN_UPDATEUI
 		            Super.Invalidate(False)
 		            
@@ -541,6 +554,14 @@ Inherits RectControl
 		End Function
 	#tag EndMethod
 
+
+	#tag Hook, Flags = &h0
+		Event AutocompleteSelection(SelectedText As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event AutoCompletionCancel()
+	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event Close()
@@ -1574,6 +1595,15 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_USEPOPUP, Type = Double, Dynamic = False, Default = \"2371", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_AUTOCCANCELLED, Type = Double, Dynamic = False, Default = \"2025", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_AUTOCCHARDELETED, Type = Double, Dynamic = False, Default = \"2026", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCN_AUTOCSELECTION, Type = Double, Dynamic = False, Default = \"2022", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCN_HOTSPOTCLICK, Type = Double, Dynamic = False, Default = \"2019", Scope = Private

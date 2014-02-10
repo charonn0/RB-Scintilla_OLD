@@ -965,6 +965,9 @@ End
 		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
 		  Listbox1.ScrollPosition = Listbox1.LastIndex
 		  
+		  If Key = "F" Then
+		    ScintillaField1.Autocomplete.ShowList("F", Split("Fred Frog Fork Fuck Fail Free", " "))
+		  End If
 		End Sub
 	#tag EndEvent
 	#tag Event
@@ -1006,6 +1009,16 @@ End
 		  Next
 		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
 		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub AutocompleteSelection(SelectedText As String)
+		  Break
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub AutoCompletionCancel()
+		  'Break
 		End Sub
 	#tag EndEvent
 #tag EndEvents

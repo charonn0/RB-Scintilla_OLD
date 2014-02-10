@@ -1324,7 +1324,7 @@ Protected Module Scintilla
 		cpMax As Integer
 	#tag EndStructure
 
-	#tag Structure, Name = SCNotification, Flags = &h21
+	#tag Structure, Name = SCNotification, Flags = &h1
 		HWND As Integer
 		  ID As Integer
 		  Code As Integer
