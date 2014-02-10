@@ -1221,6 +1221,37 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function GetPixMap(Extends Image As Picture) As String
+		  Dim colors As New Dictionary
+		  Dim cols(), Pixels() As String
+		  Dim surf As RGBSurface = Image.RGBSurface
+		  For Y As Integer = 0 To Image.Height
+		    Pixels.Append("""")
+		    For X As Integer = 0 To Image.Width
+		      Dim c As Color = surf.Pixel(X, Y)
+		      Dim nm As String
+		      If Colors.HasKey(c) Then
+		        nm = Colors.Value(c)
+		      Else
+		        nm = Format(Colors.Count + 1, "000")
+		        Colors.Value(c) = nm
+		        cols.Append("""" + nm + " c #" + Left(Hex(c.Red) + "00", 2) + Left(Hex(c.Red) + "00", 2) + Left(Hex(c.Red) + "00", 2) + """" + "," + EndOfLine.Windows)
+		      End If
+		      Pixels.Append(nm)
+		    Next
+		    Pixels.Append("""" + "," + EndOfLine.Windows)
+		  Next
+		  
+		  Dim vls As String = Str(Image.Width) + " " + Str(Image.Height) + " " + Str(Colors.Count) + " 3"
+		  
+		  Return "/* XPM */" + EndOfLine.Windows + "static char *Pixmap[] = {" + _
+		  EndOfLine.Windows + """" + vls + """" + "," + EndOfLine.Windows + Join(cols, "") + Join(Pixels, "") + "};" + EndOfLine.Windows
+		  
+		  
+		End Function
+	#tag EndMethod
+
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function GetSystemMetrics Lib "User32" (nIndex As Integer) As Integer
 	#tag EndExternalMethod
@@ -1260,7 +1291,7 @@ Protected Module Scintilla
 		  Dim i As Integer = Integer(lParam)
 		  p.Int32Value(0) = BitAnd(i, &hFFFF)
 		  p.Int32Value(4) = ShiftRight(i, 16)
-		  If Not ScreenToClient(SciRef, p) Then 
+		  If Not ScreenToClient(SciRef, p) Then
 		    p.Int32Value(0) = -1
 		    p.Int32Value(4) = -1
 		  End If
@@ -1331,8 +1362,8 @@ Protected Module Scintilla
 	#tag EndStructure
 
 
-	#tag Enum, Name = Lexers, Type = Integer, Flags = &h1
-		CONTAINER
+	#tag Enum, Name = LexerTypes, Type = Integer, Flags = &h1
+		CONTAINER=0
 		  NULL
 		  PYTHON
 		  CPP

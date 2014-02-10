@@ -235,6 +235,19 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Lexer() As Scintilla.Lexer
+		  Return New Scintilla.Lexer(SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Lexer(Assigns LexNum As Scintilla.LexerTypes)
+		  Dim l As Scintilla.Lexer = Me.Lexer
+		  l = LexNum
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Line(LineNumber As Integer) As Scintilla.RenderLine
 		  If LineNumber = -1 Then LineNumber = SciMessage(SciRef, SCI_GETCURLINE, Nil, Nil)
 		  Return New Scintilla.RenderLine(LineNumber, SciRef)
@@ -386,7 +399,7 @@ Inherits RectControl
 		        
 		      Case WM_RBUTTONUP, WM_LBUTTONUP
 		        Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
-		        If Not IsContextualClick Then 
+		        If Not IsContextualClick Then
 		          RaiseEvent MouseUp(p.X, p.Y)
 		        Else
 		          Break
@@ -1318,25 +1331,6 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  #pragma Warning "Fix Me"
-			  'Return SciMessage(SciRef, SCI_GETCURRENTPOS, Nil, Nil)
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  Dim wparam As New MemoryBlock(4)
-			  wparam.Int32Value(0) = Integer(value)
-			  Call SciMessage(SciRef, SCI_SETLEXER, wparam, Nil)
-			  
-			  
-			End Set
-		#tag EndSetter
-		Lexer As Scintilla.Lexers
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
 			  Return SciMessage(SciRef, SCI_GETLINECOUNT, Nil, Nil)
 			End Get
 		#tag EndGetter
@@ -1489,9 +1483,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_GETLENGTH, Type = Double, Dynamic = False, Default = \"2006", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_GETLEXER, Type = Double, Dynamic = False, Default = \"4002", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_GETLINECOUNT, Type = Double, Dynamic = False, Default = \"2154", Scope = Protected
 	#tag EndConstant
 
@@ -1508,6 +1499,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETREADONLY, Type = Double, Dynamic = False, Default = \"2140", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETREPRESENTATION, Type = Double, Dynamic = False, Default = \"2666", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETSTATUS, Type = Double, Dynamic = False, Default = \"2383", Scope = Protected
@@ -1555,9 +1549,6 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETFIRSTVISIBLELINE, Type = Double, Dynamic = False, Default = \"2613", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
-	#tag EndConstant
-
 	#tag Constant, Name = SCI_SETMODEVENTMASK, Type = Double, Dynamic = False, Default = \"2359", Scope = Protected
 	#tag EndConstant
 
@@ -1568,6 +1559,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETREADONLY, Type = Double, Dynamic = False, Default = \"2171", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_SETREPRESENTATION, Type = Double, Dynamic = False, Default = \"2665", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_SETSAVEPOINT, Type = Double, Dynamic = False, Default = \"2014", Scope = Protected

@@ -13,6 +13,14 @@ Protected Class Marker
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub PixMap(Assigns RawPixMapData As String)
+		  Dim mb As New MemoryBlock(RawPixMapData.LenB + 1)
+		  mb.CString(0) = RawPixMapData
+		  Call SciMessage(SciRef, SCI_MARKERDEFINEPIXMAP, Ptr(MarkerNumber), mb)
+		End Sub
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -75,6 +83,9 @@ Protected Class Marker
 
 
 	#tag Constant, Name = SCI_MARKERDEFINE, Type = Double, Dynamic = False, Default = \"2040", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_MARKERDEFINEPIXMAP, Type = Double, Dynamic = False, Default = \"2049", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_MARKERSETBACK, Type = Double, Dynamic = False, Default = \"2042", Scope = Protected

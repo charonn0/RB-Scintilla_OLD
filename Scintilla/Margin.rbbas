@@ -94,6 +94,20 @@ Protected Class Margin
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  Return SciMessage(SciRef, SCI_GETMARGINMASKN, MarginNumber, 0)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call SciMessage(SciRef, SCI_SETMARGINMASKN, MarginNumber, value)
+			End Set
+		#tag EndSetter
+		SymbolMask As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Return SciMessage(SciRef, SCI_GETMARGINTYPEN, MarginNumber, 0)
 			End Get
 		#tag EndGetter
@@ -188,6 +202,11 @@ Protected Class Margin
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SymbolMask"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"

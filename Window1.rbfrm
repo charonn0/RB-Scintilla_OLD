@@ -295,7 +295,7 @@ Begin Window Window1
       Index           =   -2147483648
       Left            =   1058
       LockedInPosition=   False
-      Mode            =   0
+      Mode            =   2
       Period          =   500
       Scope           =   0
       TabPanelIndex   =   0
@@ -329,18 +329,6 @@ Begin Window Window1
       UseFocusRing    =   ""
       Visible         =   True
       Width           =   353
-   End
-   Begin Timer GUIUpdater1
-      Height          =   32
-      Index           =   -2147483648
-      Left            =   1058
-      LockedInPosition=   False
-      Mode            =   0
-      Period          =   3000
-      Scope           =   0
-      TabPanelIndex   =   0
-      Top             =   47
-      Width           =   32
    End
    Begin Separator Separator1
       AutoDeactivate  =   True
@@ -677,6 +665,37 @@ Begin Window Window1
       Width           =   347
       _ScrollWidth    =   -1
    End
+   Begin PopupMenu ComboBox1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      InitialValue    =   ""
+      Italic          =   ""
+      Left            =   722
+      ListIndex       =   0
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   34
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   262
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndWindow
 
@@ -756,6 +775,10 @@ End
 	#tag EndProperty
 
 
+	#tag Constant, Name = Pix, Type = String, Dynamic = False, Default = \"/* XPM */\\\rstatic char *right_xpm[] \x3D {\\\r\"15 16 11 1\"\x2C\\\r\" c None\"\x2C\\\r\". c #B6B6B6\"\x2C\\\r\"+ c #828282\"\x2C\\\r\"@ c #404040\"\x2C\\\r\"# c #8EFFD4\"\x2C\\\r\"$ c #B1FFE2\"\x2C\\\r\"% c #48FFB8\"\x2C\\\r\"& c #FFFFFF\"\x2C\\\r\"* c #25FFAA\"\x2C\\\r\"\x3D c #00DC92\"\x2C\\\r\"- c #00B97A\"\x2C\\\r\" .. \"\x2C\\\r\" .++. \"\x2C\\\r\" .+@@+. \"\x2C\\\r\" .....+@#@+. \"\x2C\\\r\".++++++@$#@+. \"\x2C\\\r\"+@@@@@@@%$#@+. \"\x2C\\\r\"+@*####%%%&#@+.\"\x2C\\\r\"+@\x3D%%%%%%%%&#@+\"\x2C\\\r\"+@\x3D%%%%%%%%*-@+\"\x2C\\\r\"+@\x3D\x3D\x3D\x3D\x3D\x3D*%-*@+.\"\x2C\\\r\"+@@@@@@@**-@+. \"\x2C\\\r\".++++++@*-@+. \"\x2C\\\r\" .....+@-@+. \"\x2C\\\r\" .+@@+. \"\x2C\\\r\" .++. \"\x2C\\\r\" .. \"};", Scope = Public
+	#tag EndConstant
+
+
 #tag EndWindowCode
 
 #tag Events ScintillaField1
@@ -816,13 +839,25 @@ End
 		  Me.Style(4).Background = &c8080FF00 ' current line
 		  
 		  
-		  
+		  'Me.Lexer = Scintilla.LexerTypes.AUTOMATIC
+		  Me.Lexer.Name = "AUTOMATIC"
+		  MsgBox(Me.Lexer.Name)
 		  Me.Margin(0).Width = 15
 		  Me.Margin(1).Width = 15
 		  Me.Margin(0).Type = 1
 		  Me.Margin(1).Type = 0
+		  Me.Margin(1).SymbolMask = -33554432
 		  Me.Margin(0).Clickable = True
 		  
+		  For i As Integer = 0 To 31
+		    Me.AppendText(Chr(i))
+		    Me.Markers(i).Type = 0
+		    Call Me.Line(i).SetMarker(Me.Markers(i))
+		  Next
+		  'Dim p As Picture
+		  'Dim f As FolderItem = GetOpenFolderItem("")
+		  'p = Picture.Open(f)
+		  'Me.Markers(27).PixMap = p.GetPixMap
 		End Sub
 	#tag EndEvent
 	#tag Event
@@ -929,6 +964,7 @@ End
 		  Next
 		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
 		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
 		End Sub
 	#tag EndEvent
 	#tag Event
@@ -1048,10 +1084,17 @@ End
 		End Function
 	#tag EndEvent
 #tag EndEvents
-#tag Events GUIUpdater1
+#tag Events ComboBox1
 	#tag Event
-		Sub Action()
-		  ScintillaField1.SetFocus
+		Sub Change()
+		  ScintillaField1.Lexer = Scintilla.LexerTypes(Me.ListIndex)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Open()
+		  For i As Integer = 0 To 99
+		    Me.AddRow(Str(i))
+		  Next
 		End Sub
 	#tag EndEvent
 #tag EndEvents
