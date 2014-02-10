@@ -117,22 +117,23 @@ Inherits RectControl
 
 	#tag Event
 		Sub Open()
-		  SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
-		  If SciRef <= 0 Then Raise New PlatformNotSupportedException
-		  pHandle = Me.Window.Handle
-		  
-		  Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
-		  
-		  Subclass(pHandle, Me)
-		  Subclass(SciRef, Me)
-		  Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
-		  Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
-		  
-		  
-		  For i As Integer = 25 To 31
-		    Me.Markers(i).Type = i - 25
-		  Next
-		  
+		  #If TargetWin32 Then
+		    SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
+		    If SciRef <= 0 Then Raise New PlatformNotSupportedException
+		    pHandle = Me.Window.Handle
+		    
+		    Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
+		    
+		    Subclass(pHandle, Me)
+		    Subclass(SciRef, Me)
+		    Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
+		    Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
+		    
+		    
+		    For i As Integer = 25 To 31
+		      Me.Markers(i).Type = i - 25
+		    Next
+		  #endif
 		  RaiseEvent Open()
 		End Sub
 	#tag EndEvent
@@ -140,10 +141,12 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub AppendText(Text As String)
-		  Dim wparam As Integer = Text.LenB
-		  Dim lparam As New MemoryBlock(Text.LenB * 2)
-		  lparam.CString(0) = Text
-		  Call SciMessage(SciRef, SCI_APPENDTEXT, Ptr(wparam), lparam)
+		  If Text <> "" Then
+		    Dim wparam As Integer = Text.LenB
+		    Dim lparam As New MemoryBlock(Text.LenB * 2)
+		    lparam.CString(0) = Text
+		    Call SciMessage(SciRef, SCI_APPENDTEXT, Ptr(wparam), lparam)
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -163,7 +166,9 @@ Inherits RectControl
 		Sub Constructor()
 		  // Calling the overridden superclass constructor.
 		  If Not Scintilla.IsAvailable Then
-		    Raise New PlatformNotSupportedException
+		    Dim err As New PlatformNotSupportedException
+		    err.Message = "SciLexer.dll is not available."
+		    Raise err
 		  End If
 		  Super.Constructor
 		  
@@ -172,8 +177,8 @@ Inherits RectControl
 
 	#tag Method, Flags = &h1
 		Attributes( hidden ) Protected Shared Function DefWindowProc(HWND as Integer, msg as Integer, wParam as Ptr, lParam as Ptr) As Integer
-		  #pragma X86CallingConvention StdCall
 		  #If TargetWin32 Then
+		    #pragma X86CallingConvention StdCall
 		    For Each wndclass As Dictionary In Subclasses
 		      If wndclass.HasKey(HWND) Then
 		        Dim subclass As ScintillaField = wndclass.Value(HWND)
@@ -217,8 +222,9 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub IsDirty(Assigns NewBool As Boolean)
+		  #pragma Unused NewBool
 		  #pragma Warning "Fix Me"
-		  Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
+		  'Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
 		End Sub
 	#tag EndMethod
 
@@ -255,19 +261,13 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function PositionFromLine(Line As Integer) As Integer
-		  Return SciMessage(SciRef, SCI_POSITIONFROMLINE, Ptr(Line), Nil)
+		  Return SciMessage(SciRef, SCI_POSITIONFROMLINE, Line, 0)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function PositionFromXY(X As Integer, Y As Integer) As Integer
 		  Return SciMessage(SciRef, SCI_CHARPOSITIONFROMPOINT, X, Y)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function ScintillaHWND() As Integer
-		  Return SciRef
 		End Function
 	#tag EndMethod
 
@@ -314,6 +314,20 @@ Inherits RectControl
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Style(StyleNumber As Integer, Assigns CopyStyle As Scintilla.Style)
+		  Dim s As Scintilla.Style = Me.Style(StyleNumber)
+		  s.Background = CopyStyle.Background
+		  s.Bold = CopyStyle.Bold
+		  s.Hotspot = CopyStyle.Hotspot
+		  s.Italic = CopyStyle.Italic
+		  s.TextColor = CopyStyle.TextColor
+		  s.TextFont = CopyStyle.TextFont
+		  s.TextSize = CopyStyle.TextSize
+		  s.Underline = CopyStyle.Underline
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Shared Sub Subclass(SuperWin As Integer, SubWin As ScintillaField)
 		  #If TargetWin32 Then
@@ -353,132 +367,152 @@ Inherits RectControl
 
 	#tag Method, Flags = &h1
 		Attributes( hidden ) Protected Function WndProc(HWND as Integer, msg as Integer, wParam as Ptr, lParam as Ptr) As Boolean
-		  If HWND = SciRef Then ' Message to the Scintilla window
-		    Select Case msg
-		    Case WM_KEYUP
-		      Dim s As String = Chr(Integer(wParam))
-		      If s <> "" Then
-		        RaiseEvent KeyUp(s)
-		        Me.History.EndAction()
-		      End If
-		      
-		    Case WM_KEYDOWN
-		      Dim s As String = Chr(Integer(wParam))
-		      If s <> "" Then
-		        RaiseEvent KeyDown(s)
-		        Me.History.BeginAction()
-		      End If
-		      
-		    Case WM_RBUTTONUP, WM_LBUTTONUP
-		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
-		      RaiseEvent MouseUp(p.X, p.Y)
-		      
-		    Case WM_RBUTTONDOWN, WM_LBUTTONDOWN
-		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
-		      RaiseEvent MouseDown(p.X, p.Y)
-		      
-		    Case WM_MOUSEMOVE
-		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
-		      Dim r As New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
-		      If r.Contains(p) Then
-		        If Not CursorEntered Then
-		          CursorEntered = True
-		          RaiseEvent MouseEnter()
+		  #If TargetWin32 Then
+		    If HWND = SciRef Then ' Message to the Scintilla window
+		      Select Case msg
+		      Case WM_KEYUP
+		        Dim s As String = Chr(Integer(wParam))
+		        If s <> "" Then
+		          RaiseEvent KeyUp(s)
+		          Me.History.EndAction()
 		        End If
-		        RaiseEvent MouseMove(p.X, p.Y)
-		      End If
-		      
-		    Case WM_MOUSELEAVE
-		      CursorEntered = False
-		      RaiseEvent MouseExit()
-		      
-		      'Case WM_MOUSEWHEEL
-		      'Dim delta As Int16 = Bitwise.ShiftRight(Integer(wParam), 16)
-		      'Break
-		    Case WM_SETFOCUS
-		      RaiseEvent GotFocus()
-		      
-		    Case WM_KILLFOCUS
-		      RaiseEvent LostFocus()
-		      
-		    Case WM_CONTEXTMENU
-		      Dim base As New MenuItem("")
-		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
-		      If RaiseEvent ConstructContextualMenu(base, p.X, p.Y) Then
-		        base = base.PopUp
-		        If base <> Nil Then
-		          Return RaiseEvent ContextualMenuAction(base)
+		        
+		      Case WM_KEYDOWN
+		        Dim s As String = Chr(Integer(wParam))
+		        If s <> "" Then
+		          RaiseEvent KeyDown(s)
+		          Me.History.BeginAction()
 		        End If
-		      End If
-		      
-		    End Select
-		  Else ' Message to the container window
-		    Select Case msg
-		      
-		    Case WM_SETFOCUS
-		      RaiseEvent GotFocus()
-		      
-		    Case WM_SIZING
-		      RaiseEvent Resizing()
-		      
-		    Case WM_SIZE
-		      RaiseEvent Resized()
-		      
-		      
-		    Case WM_NOTIFY
-		      Dim notification As SCNotification
-		      Dim data As MemoryBlock = lParam
-		      notification.StringValue(TargetLittleEndian) = data.StringValue(0, SCNotification.Size)
-		      If notification.HWND = Me.SciRef Then
-		        Select Case notification.Code
-		          
-		        Case SCN_UPDATEUI
-		          Super.Invalidate(False)
-		          
-		        Case SCN_STYLENEEDED
-		          Dim s As Integer = SciMessage(SciRef, SCI_GETENDSTYLED, Nil, Nil)
-		          s = PositionFromLine(LineFromPosition(s).LineNumber)
-		          RaiseEvent StyleNeeded(s, notification.Position)
-		          
-		        Case SCN_SAVEPOINTREACHED
-		          
-		        Case SCN_HOTSPOTCLICK
-		          RaiseEvent HotspotClicked(notification.Position)
-		          
-		        Case SCN_HOTSPOTDOUBLECLICK
-		          RaiseEvent HotspotDoubleClicked(notification.Position)
-		          
-		        Case SCN_MARGINCLICK
-		          Dim l As RenderLine = LineFromPosition(notification.Position)
-		          RaiseEvent MarginClicked(notification.Margin, l.LineNumber)
-		          
-		        Case SCN_MODIFIED
-		          Dim mt As Integer = notification.ModificationType
-		          If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
-		            BitAnd(mt, SCEN_CHANGE) = SCEN_CHANGE Or _
-		            BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
-		            BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
-		            BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
-		            Then RaiseEvent TextChanged()
-		            
-		            'If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
-		            'BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
-		            'BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
-		            'BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
-		            'Then RaiseEvent TextChanged()
-		            
-		            
-		            
-		        End Select
+		        
+		      Case WM_RBUTTONUP, WM_LBUTTONUP
+		        Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		        If Not IsContextualClick Then 
+		          RaiseEvent MouseUp(p.X, p.Y)
+		        Else
+		          Break
+		        End If
+		        
+		      Case WM_LBUTTONDOWN, WM_RBUTTONDOWN
+		        Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		        Dim swap As Boolean = (GetSystemMetrics(SM_SWAPBUTTON) <> 0)
+		        If msg = WM_LBUTTONDOWN Then
+		          RaiseEvent MouseDown(p.X, p.Y, swap)
+		        Else
+		          RaiseEvent MouseDown(p.X, p.Y, Not swap)
+		        End If
+		        
+		      Case WM_MOUSEMOVE
+		        Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		        Dim r As New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
+		        If r.Contains(p) Then
+		          If Not CursorEntered Then
+		            CursorEntered = True
+		            RaiseEvent MouseEnter()
+		          End If
+		          RaiseEvent MouseMove(p.X, p.Y)
+		        End If
+		        
+		      Case WM_MOUSELEAVE
+		        CursorEntered = False
+		        RaiseEvent MouseExit()
+		        
+		        'Case WM_MOUSEWHEEL
+		        'Dim delta As Int16 = Bitwise.ShiftRight(Integer(wParam), 16)
+		        'Break
+		      Case WM_SETFOCUS
+		        RaiseEvent GotFocus()
+		        
+		      Case WM_KILLFOCUS
+		        RaiseEvent LostFocus()
+		        
+		      Case WM_CONTEXTMENU
+		        Dim base As New MenuItem("")
+		        Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		        If RaiseEvent ConstructContextualMenu(base, p.X, p.Y) Then
+		          base = base.PopUp
+		          If base <> Nil Then
+		            Return RaiseEvent ContextualMenuAction(base)
+		          End If
+		        End If
+		        
+		      End Select
+		    Else ' Message to the container window
+		      Select Case msg
+		        
+		      Case WM_SETFOCUS
+		        RaiseEvent GotFocus()
+		        
+		      Case WM_SIZING
+		        RaiseEvent Resizing()
+		        
+		      Case WM_SIZE
+		        RaiseEvent Resized()
 		        
 		        
-		      Else
-		        RaiseEvent ScintillaEvent(notification.Code)
-		      End If
-		      'Return True
-		    End Select
-		  End If
-		  
+		      Case WM_NOTIFY
+		        Dim notification As SCNotification
+		        Dim data As MemoryBlock = lParam
+		        notification.StringValue(TargetLittleEndian) = data.StringValue(0, SCNotification.Size)
+		        If notification.HWND = Me.SciRef Then
+		          Select Case notification.Code
+		            
+		          Case SCN_UPDATEUI
+		            Super.Invalidate(False)
+		            
+		          Case SCN_STYLENEEDED
+		            Dim s As Integer = SciMessage(SciRef, SCI_GETENDSTYLED, Nil, Nil)
+		            s = PositionFromLine(LineFromPosition(s).LineNumber)
+		            RaiseEvent StyleNeeded(s, notification.Position)
+		            
+		          Case SCN_SAVEPOINTREACHED
+		            
+		          Case SCN_HOTSPOTCLICK
+		            RaiseEvent HotspotClicked(notification.Position)
+		            
+		          Case SCN_HOTSPOTDOUBLECLICK
+		            RaiseEvent HotspotDoubleClicked(notification.Position)
+		            
+		          Case SCN_MARGINCLICK
+		            Dim l As RenderLine = LineFromPosition(notification.Position)
+		            RaiseEvent MarginClicked(notification.Margin, l.LineNumber)
+		            
+		          Case SCN_MODIFIED
+		            Dim mt As Integer = notification.ModificationType
+		            If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
+		              BitAnd(mt, SCEN_CHANGE) = SCEN_CHANGE Or _
+		              BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
+		              BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
+		              BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
+		              Then RaiseEvent TextChanged()
+		              
+		              'If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
+		              'BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
+		              'BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
+		              'BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
+		              'Then RaiseEvent TextChanged()
+		              
+		              
+		              
+		          End Select
+		          
+		          
+		        Else
+		          RaiseEvent ScintillaEvent(notification.Code)
+		        End If
+		        'Return True
+		      End Select
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Shared Function WndProcs() As Dictionary
+		  #If TargetWin32 Then
+		    Static mWndProcs As Dictionary
+		    If mWndProcs = Nil Then mWndProcs = New Dictionary
+		    Return mWndProcs
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -536,7 +570,7 @@ Inherits RectControl
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event MouseDown(X As Integer, Y As Integer)
+		Event MouseDown(X As Integer, Y As Integer, IsContextualClick As Boolean)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -1284,6 +1318,7 @@ Inherits RectControl
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  #pragma Warning "Fix Me"
 			  'Return SciMessage(SciRef, SCI_GETCURRENTPOS, Nil, Nil)
 			End Get
 		#tag EndGetter
@@ -1307,10 +1342,6 @@ Inherits RectControl
 		#tag EndGetter
 		LineCount As Integer
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private Shared mWndProcs As Dictionary
-	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -1404,21 +1435,6 @@ Inherits RectControl
 			End Set
 		#tag EndSetter
 		TopLine As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h1
-		#tag Getter
-			Get
-			  If mWndProcs = Nil Then mWndProcs = New Dictionary
-			  return mWndProcs
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  mWndProcs = value
-			End Set
-		#tag EndSetter
-		Protected Shared WndProcs As Dictionary
 	#tag EndComputedProperty
 
 
@@ -1645,6 +1661,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SC_STARTACTION, Type = Double, Dynamic = False, Default = \"&h2000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SM_SWAPBUTTON, Type = Double, Dynamic = False, Default = \"23", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private

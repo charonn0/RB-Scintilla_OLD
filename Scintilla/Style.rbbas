@@ -133,15 +133,19 @@ Protected Class Style
 			  Dim p As Ptr = mb
 			  Call SciMessage(SciRef, SCI_STYLEGETFONT, Me.StyleNumber, Integer(p))
 			  Dim ret As String = mb.CString(0)
-			  Return ret
+			  Return ret.Trim
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Dim mb As New MemoryBlock(value.LenB + 1)
-			  mb.CString(0) = value
-			  Dim p As Ptr = mb
-			  Call SciMessage(SciRef, SCI_STYLESETFONT, Me.StyleNumber, Integer(p))
+			  Dim mb As MemoryBlock
+			  Dim p As Ptr
+			  If value <> "" Then
+			    mb = New MemoryBlock(value.LenB + 1)
+			    mb.CString(0) = value
+			    p = mb
+			  End If
+			  Call SciMessage(SciRef, SCI_STYLESETFONT, Ptr(Me.StyleNumber), p)
 			End Set
 		#tag EndSetter
 		TextFont As String

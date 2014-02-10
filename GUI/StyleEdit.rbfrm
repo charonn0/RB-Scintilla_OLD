@@ -417,9 +417,9 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub Change()
-		  'If Me.ListIndex >= 1 Then
-		  GetReference.Style(CurrentStyle).TextSize = CDbl(Me.Text)
-		  'End If
+		  If Me.ListIndex >= 1 Then
+		    GetReference.Style(CurrentStyle).TextSize = CDbl(Me.Text)
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -480,9 +480,9 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub Change()
-		  'If Me.ListIndex >= 1 Then
-		  CurrentStyle = Me.ListIndex
-		  'End If
+		  If Me.ListIndex >= 1 Then
+		    CurrentStyle = Me.ListIndex
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

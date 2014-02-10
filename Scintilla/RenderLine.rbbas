@@ -59,8 +59,8 @@ Protected Class RenderLine
 
 	#tag Method, Flags = &h0
 		Sub Style(Assigns NewStyle As Scintilla.Style)
-		  'If NewStyle.Owner <> Me.Owner Then Raise New RuntimeException ' styles are instance-specific
-		  'Call SciMessage(SciRef, SCI_ANNOTATIONSETSTYLE, LineNumber, NewStyle.StyleNumber)
+		  #pragma Unused NewStyle
+		  #pragma Warning "Fix Me"
 		End Sub
 	#tag EndMethod
 

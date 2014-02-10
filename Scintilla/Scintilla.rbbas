@@ -1,11 +1,11 @@
 #tag Module
 Protected Module Scintilla
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function CallWindowProc Lib "User32" Alias "CallWindowProcW" (WindowProc As Integer, HWND As Integer, msg As Integer, wParam As Ptr, lParam As Ptr) As Integer
+		Private Soft Declare Function CallWindowProc Lib "User32" Alias "CallWindowProcW" (WindowProc As Integer, HWND As Integer, msg As Integer, wParam As Ptr, lParam As Ptr) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function CreateWindowEx Lib "User32" Alias "CreateWindowExW" (ExStyle As Integer, ClassName As WString, WindowName As WString, Style As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer, Parent As Integer, Menu As Integer, Instance As Integer, Param As Ptr) As Integer
+		Private Soft Declare Function CreateWindowEx Lib "User32" Alias "CreateWindowExW" (ExStyle As Integer, ClassName As WString, WindowName As WString, Style As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer, Parent As Integer, Menu As Integer, Instance As Integer, Param As Ptr) As Integer
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h1
@@ -1221,29 +1221,37 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function GetSystemMetrics Lib "User32" (nIndex As Integer) As Integer
+	#tag EndExternalMethod
+
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
 		  ' Calling System.IsFunctionAvailable is equivalent to calling LoadLibrary and GetProcAddress
 		  ' which is how Scintilla initializes itself
-		  Return System.IsFunctionAvailable("Scintilla_DirectFunction", "SciLexer")
+		  #If TargetWin32 And TargetHasGUI Then
+		    Return System.IsFunctionAvailable("Scintilla_DirectFunction", "SciLexer")
+		  #else
+		    #pragma Error "This control is for Win32 GUI targets only"
+		  #endif
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Integer, LParam As Integer) As Integer
-		  Return SendMessage(HWND, Command, Ptr(WParam), Ptr(LParam))
+		  #If TargetWin32 Then Return SendMessage(HWND, Command, Ptr(WParam), Ptr(LParam))
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Ptr, LParam As Ptr) As Integer
-		  Return SendMessage(HWND, Command, WParam, LParam)
+		  #If TargetWin32 Then Return SendMessage(HWND, Command, WParam, LParam)
 		End Function
 	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function ScreenToClient Lib "User32" (HWND As Integer, Point As Ptr) As Boolean
+		Private Soft Declare Function ScreenToClient Lib "User32" (HWND As Integer, Point As Ptr) As Boolean
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h21
@@ -1261,15 +1269,15 @@ Protected Module Scintilla
 	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
+		Private Soft Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SetFocus Lib "User32" (HWND As Integer) As Integer
+		Private Soft Declare Function SetFocus Lib "User32" (HWND As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Declare Function SetWindowLong Lib "User32" Alias "SetWindowLongW" (HWND As Integer, Index As Integer, NewLong As Ptr) As Integer
+		Private Soft Declare Function SetWindowLong Lib "User32" Alias "SetWindowLongW" (HWND As Integer, Index As Integer, NewLong As Ptr) As Integer
 	#tag EndExternalMethod
 
 
