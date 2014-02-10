@@ -295,7 +295,7 @@ Begin Window Window1
       Index           =   -2147483648
       Left            =   1058
       LockedInPosition=   False
-      Mode            =   2
+      Mode            =   0
       Period          =   500
       Scope           =   0
       TabPanelIndex   =   0
@@ -397,7 +397,7 @@ Begin Window Window1
       Index           =   -2147483648
       Left            =   1058
       LockedInPosition=   False
-      Mode            =   1
+      Mode            =   0
       Period          =   3000
       Scope           =   0
       TabPanelIndex   =   0
@@ -656,6 +656,40 @@ Begin Window Window1
       Visible         =   True
       Width           =   51
    End
+   Begin Label Position
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   872
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   32
+      TabPanelIndex   =   0
+      Text            =   ""
+      TextAlign       =   0
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   568
+      Transparent     =   False
+      Underline       =   ""
+      Visible         =   True
+      Width           =   165
+   End
 End
 #tag EndWindow
 
@@ -762,12 +796,10 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub Open()
-		  Me.Style(1).Bold = True
-		  Me.Style(0).Italic = True
-		  Me.Style(0).Underline = True
+		  Me.Text = ""
 		  Me.Style(0).TextFont = "Consolas"
 		  Me.Style(0).TextSize = 17
-		  Me.Style(0).TextColor = &cFF000000
+		  Me.Style(0).TextColor = &c00000000
 		  Me.Margin(0).Width = 15
 		  Me.Margin(1).Width = 15
 		  Me.Margin(0).Type = 1
@@ -813,6 +845,8 @@ End
 		  'LastLinestyle = Me.Line(lastline).Style
 		  'Me.Line(lastline).Style = Me.Style(4)
 		  'End If
+		  Dim p As Integer = Me.PositionFromXY(X, Y)
+		  Position.Text = "Line: " + Str(Me.LineFromPosition(p).LineNumber) + "; Pos: " + Str(p)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

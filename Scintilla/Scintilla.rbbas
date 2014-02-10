@@ -1243,6 +1243,24 @@ Protected Module Scintilla
 	#tag EndMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Declare Function ScreenToClient Lib "User32" (HWND As Integer, Point As Ptr) As Boolean
+	#tag EndExternalMethod
+
+	#tag Method, Flags = &h21
+		Private Function ScreenToClient(LParam As Ptr, SciRef As Integer) As REALbasic.Point
+		  Dim p As New MemoryBlock(8)
+		  Dim i As Integer = Integer(lParam)
+		  p.Int32Value(0) = BitAnd(i, &hFFFF)
+		  p.Int32Value(4) = ShiftRight(i, 16)
+		  If Not ScreenToClient(SciRef, p) Then 
+		    p.Int32Value(0) = -1
+		    p.Int32Value(4) = -1
+		  End If
+		  Return New REALbasic.Point(p.Int32Value(0), p.Int32Value(4))
+		End Function
+	#tag EndMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
 	#tag EndExternalMethod
 
@@ -1262,19 +1280,12 @@ Protected Module Scintilla
 	#tag EndConstant
 
 
-	#tag Structure, Name = CharacterRange, Flags = &h1
+	#tag Structure, Name = CharacterRange, Flags = &h21
 		cpMin As Integer
 		cpMax As Integer
 	#tag EndStructure
 
-	#tag Structure, Name = RECT, Flags = &h1
-		left As Integer
-		  top As Integer
-		  right As Integer
-		bottom As Integer
-	#tag EndStructure
-
-	#tag Structure, Name = SCNotification, Flags = &h1
+	#tag Structure, Name = SCNotification, Flags = &h21
 		HWND As Integer
 		  ID As Integer
 		  Code As Integer
@@ -1300,12 +1311,12 @@ Protected Module Scintilla
 		Updated As Integer
 	#tag EndStructure
 
-	#tag Structure, Name = TextRange, Flags = &h1
+	#tag Structure, Name = TextRange, Flags = &h21
 		Range As CharacterRange
 		Text As Ptr
 	#tag EndStructure
 
-	#tag Structure, Name = TextToFind, Flags = &h1
+	#tag Structure, Name = TextToFind, Flags = &h21
 		Range As CharacterRange
 		  SearchPattern As Ptr
 		Result As CharacterRange

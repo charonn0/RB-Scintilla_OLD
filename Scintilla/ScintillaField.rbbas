@@ -117,12 +117,14 @@ Inherits RectControl
 
 	#tag Event
 		Sub Open()
-		  SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
+		  SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
+		  If SciRef <= 0 Then Raise New PlatformNotSupportedException
 		  pHandle = Me.Window.Handle
-		  If SciRef > 0 Then
-		    Subclass(pHandle, Me)
-		    Subclass(SciRef, Me)
-		  End If
+		  
+		  Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
+		  
+		  Subclass(pHandle, Me)
+		  Subclass(SciRef, Me)
 		  Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
 		  Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
 		  
@@ -235,7 +237,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Function LineFromPosition(Position As Integer) As Scintilla.RenderLine
-		  Return New Scintilla.RenderLine(SciMessage(SciRef, SCI_LINEFROMPOSITION, Position, 0) - 3, SciRef)
+		  Return New Scintilla.RenderLine(SciMessage(SciRef, SCI_LINEFROMPOSITION, Position, 0), SciRef)
 		End Function
 	#tag EndMethod
 
@@ -331,12 +333,6 @@ Inherits RectControl
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Shared Function TestModType(Type As Integer, ParamArray Queries() As Integer) As Boolean
-		  
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Shared Sub UnSubclass(SuperWin As Integer)
 		  #If TargetWin32 Then
@@ -374,32 +370,22 @@ Inherits RectControl
 		      End If
 		      
 		    Case WM_RBUTTONUP, WM_LBUTTONUP
-		      Dim X, Y, Z As Integer
-		      Z = Integer(lParam)
-		      X = BitAnd(Z, &hFFFF)
-		      Y = ShiftRight(Z, 16)
-		      RaiseEvent MouseUp(X, Y)
+		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		      RaiseEvent MouseUp(p.X, p.Y)
 		      
 		    Case WM_RBUTTONDOWN, WM_LBUTTONDOWN
-		      Dim X, Y, Z As Integer
-		      Z = Integer(lParam)
-		      X = BitAnd(Z, &hFFFF)
-		      Y = ShiftRight(Z, 16)
-		      RaiseEvent MouseDown(X, Y)
+		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		      RaiseEvent MouseDown(p.X, p.Y)
 		      
 		    Case WM_MOUSEMOVE
-		      Dim X, Y, Z As Integer
-		      Z = Integer(lParam)
-		      X = BitAnd(Z, &hFFFF)
-		      Y = ShiftRight(Z, 16)
+		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
 		      Dim r As New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
-		      Dim p As New REALbasic.Point(X, Y)
 		      If r.Contains(p) Then
 		        If Not CursorEntered Then
 		          CursorEntered = True
 		          RaiseEvent MouseEnter()
 		        End If
-		        RaiseEvent MouseMove(X, Y)
+		        RaiseEvent MouseMove(p.X, p.Y)
 		      End If
 		      
 		    Case WM_MOUSELEAVE
@@ -417,11 +403,8 @@ Inherits RectControl
 		      
 		    Case WM_CONTEXTMENU
 		      Dim base As New MenuItem("")
-		      Dim X, Y, Z As Integer
-		      Z = Integer(lParam)
-		      X = BitAnd(Z, &hFFFF)
-		      Y = ShiftRight(Z, 16)
-		      If RaiseEvent ConstructContextualMenu(base, X, Y) Then
+		      Dim p As RealBasic.POINT = ScreenToClient(lParam, SciRef)
+		      If RaiseEvent ConstructContextualMenu(base, p.X, p.Y) Then
 		        base = base.PopUp
 		        If base <> Nil Then
 		          Return RaiseEvent ContextualMenuAction(base)
@@ -436,15 +419,6 @@ Inherits RectControl
 		      RaiseEvent GotFocus()
 		      
 		    Case WM_SIZING
-		      'Dim r As Scintilla.RECT
-		      'Dim s As MemoryBlock = lParam
-		      'r.StringValue(TargetLittleEndian) = s.StringValue(0, 15)
-		      'Select Case Integer(wParam)
-		      'Case 6 'bottom
-		      'If Me.LockBottom Then
-		      '
-		      'End If
-		      'End Select
 		      RaiseEvent Resizing()
 		      
 		    Case WM_SIZE
@@ -480,10 +454,21 @@ Inherits RectControl
 		          
 		        Case SCN_MODIFIED
 		          Dim mt As Integer = notification.ModificationType
-		          If TestModType(mt, &h01) Or TestModType(mt, &h02) Or TestModType(mt, &h20) Or TestModType(mt, &h40) Or TestModType(mt, &h400) Or TestModType(mt, &h800) Or TestModType(mt, &h1000) Then
-		            'Case SCN_SAVEPOINTLEFT
-		            RaiseEvent TextChanged()
-		          End If
+		          If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
+		            BitAnd(mt, SCEN_CHANGE) = SCEN_CHANGE Or _
+		            BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
+		            BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
+		            BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
+		            Then RaiseEvent TextChanged()
+		            
+		            'If BitAnd(mt, SC_MOD_DELETETEXT) = SC_MOD_DELETETEXT Or _
+		            'BitAnd(mt, SC_MOD_INSERTTEXT) = SC_MOD_INSERTTEXT Or _
+		            'BitAnd(mt, SC_PERFORMED_UNDO) = SC_PERFORMED_UNDO Or _
+		            'BitAnd(mt, SC_PERFORMED_REDO) = SC_PERFORMED_REDO _
+		            'Then RaiseEvent TextChanged()
+		            
+		            
+		            
 		        End Select
 		        
 		        
@@ -1389,8 +1374,12 @@ Inherits RectControl
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Dim lparam As New MemoryBlock(value.LenB * 2)
-			  lparam.CString(0) = value
+			  Dim lparam As Ptr
+			  If value <> "" Then
+			    lparam = New MemoryBlock(value.LenB * 2)
+			    lparam.CString(0) = value
+			  End If
+			  #pragma NilObjectChecking Off
 			  Call SciMessage(SciRef, SCI_SETTEXT, Nil, lparam)
 			End Set
 		#tag EndSetter
@@ -1439,10 +1428,22 @@ Inherits RectControl
 	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCEN_CHANGE, Type = Double, Dynamic = False, Default = \"768", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCEN_KILLFOCUS, Type = Double, Dynamic = False, Default = \"256", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SCEN_SETFOCUS, Type = Double, Dynamic = False, Default = \"512", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_APPENDTEXT, Type = Double, Dynamic = False, Default = \"2282", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_CHARPOSITIONFROMPOINT, Type = Double, Dynamic = False, Default = \"2561", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_CHARPOSITIONFROMPOINTCLOSE, Type = Double, Dynamic = False, Default = \"2562", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_CLEARALL, Type = Double, Dynamic = False, Default = \"2004", Scope = Protected
@@ -1476,6 +1477,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETLINECOUNT, Type = Double, Dynamic = False, Default = \"2154", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = SCI_GETMODEVENTMASK, Type = Double, Dynamic = False, Default = \"2378", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = SCI_GETMODIFY, Type = Double, Dynamic = False, Default = \"2159", Scope = Protected
@@ -1538,6 +1542,9 @@ Inherits RectControl
 	#tag Constant, Name = SCI_SETLEXER, Type = Double, Dynamic = False, Default = \"4001", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = SCI_SETMODEVENTMASK, Type = Double, Dynamic = False, Default = \"2359", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = SCI_SETMOUSEDOWNCAPTURES, Type = Double, Dynamic = False, Default = \"2384", Scope = Protected
 	#tag EndConstant
 
@@ -1581,6 +1588,63 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = SCN_UPDATEUI, Type = Double, Dynamic = False, Default = \"2007", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_LASTSTEPINUNDOREDO, Type = Double, Dynamic = False, Default = \"&h100", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MODEVENTMASKALL, Type = Double, Dynamic = False, Default = \"&h7FFFF", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_BEFOREDELETE, Type = Double, Dynamic = False, Default = \"&h800", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_BEFOREINSERT, Type = Double, Dynamic = False, Default = \"&h400", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGEANNOTATION, Type = Double, Dynamic = False, Default = \"&h20000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGEFOLD, Type = Double, Dynamic = False, Default = \"&h8", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGEINDICATOR, Type = Double, Dynamic = False, Default = \"&h4000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGELINESTATE, Type = Double, Dynamic = False, Default = \"&h8000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGEMARGIN, Type = Double, Dynamic = False, Default = \"&h10000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGEMARKER, Type = Double, Dynamic = False, Default = \"&h200", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_CHANGESTYLE, Type = Double, Dynamic = False, Default = \"&h4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_DELETETEXT, Type = Double, Dynamic = False, Default = \"&h2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_INSERTTEXT, Type = Double, Dynamic = False, Default = \"&h1", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MOD_LEXERSTATE, Type = Double, Dynamic = False, Default = \"&h80000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_MULTILINEUNDOREDO, Type = Double, Dynamic = False, Default = \"&h1000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_PERFORMED_REDO, Type = Double, Dynamic = False, Default = \"&h40", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_PERFORMED_UNDO, Type = Double, Dynamic = False, Default = \"&h20", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_PERFORMED_USER, Type = Double, Dynamic = False, Default = \"&h10", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = SC_STARTACTION, Type = Double, Dynamic = False, Default = \"&h2000", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WM_CONTEXTMENU, Type = Double, Dynamic = False, Default = \"&h007B", Scope = Private
@@ -1635,6 +1699,9 @@ Inherits RectControl
 	#tag EndConstant
 
 	#tag Constant, Name = WS_CLIPCHILDREN, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = WS_EX_CONTROLPARENT, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = WS_TABSTOP, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Private
