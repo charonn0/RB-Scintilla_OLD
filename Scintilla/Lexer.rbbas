@@ -29,7 +29,7 @@ Protected Class Lexer
 			Set
 			  Dim v As Integer = Integer(value)
 			  Call SciMessage(SciRef, SCI_SETLEXER, v, 0)
-			  Call SciMessage(SciRef, SCI_COLORISE, 0, -1)
+			  Call SciMessage(SciRef, SCI_COLORISE, 1, -1)
 			  
 			  
 			End Set

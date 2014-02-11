@@ -10,7 +10,7 @@ Protected Class AutoComplete
 		Sub ShowList(PartialString As String, Matches() As String)
 		  Dim i As Integer = PartialString.Len
 		  Dim mb As MemoryBlock = Join(Matches, " ")
-		  Call SciMessage(SciRef, SCI_AUTOCSHOW, Ptr(i), mb)
+		  Call SciMessage(SciRef, SCI_AUTOCSHOW, i, mb)
 		End Sub
 	#tag EndMethod
 

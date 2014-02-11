@@ -10,7 +10,7 @@ Protected Class FindReplace
 		Function Find(Pattern As String) As Integer
 		  Dim mb As New MemoryBlock(Pattern.LenB + 1)
 		  mb.CString(0) = Pattern
-		  Return SciMessage(SciRef, SCI_SEARCHINTARGET, Ptr(mb.Size), mb)
+		  Return SciMessage(SciRef, SCI_SEARCHINTARGET, mb.Size, mb)
 		End Function
 	#tag EndMethod
 
@@ -19,7 +19,7 @@ Protected Class FindReplace
 		  Call SciMessage(SciRef,SCI_SEARCHANCHOR, Nil, Nil)
 		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
 		  mb.CString(0) = SearchPattern
-		  Return SciMessage(SciRef, SCI_SEARCHNEXT, Ptr(SearchType), mb)
+		  Return SciMessage(SciRef, SCI_SEARCHNEXT, SearchType, mb)
 		End Function
 	#tag EndMethod
 
@@ -28,7 +28,7 @@ Protected Class FindReplace
 		  Call SciMessage(SciRef,SCI_SEARCHANCHOR, Nil, Nil)
 		  Dim mb As New MemoryBlock(SearchPattern.LenB + 1)
 		  mb.CString(0) = SearchPattern
-		  Return SciMessage(SciRef, SCI_SEARCHPREV, Ptr(SearchType), mb)
+		  Return SciMessage(SciRef, SCI_SEARCHPREV, SearchType, mb)
 		End Function
 	#tag EndMethod
 
@@ -36,7 +36,7 @@ Protected Class FindReplace
 		Function Replace(ReplaceWith As String) As Integer
 		  Dim mb As New MemoryBlock(ReplaceWith.LenB + 1)
 		  mb.CString(0) = ReplaceWith
-		  Return SciMessage(SciRef, SCI_REPLACETARGET, Ptr(mb.Size - 1), mb)
+		  Return SciMessage(SciRef, SCI_REPLACETARGET, mb.Size - 1, mb)
 		End Function
 	#tag EndMethod
 

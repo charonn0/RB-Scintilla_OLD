@@ -38,7 +38,7 @@ Protected Class Margin
 		  Dim mb As MemoryBlock
 		  Dim sz As Integer = SciMessage(SciRef, SCI_MARGINGETTEXT, Nil, Nil)
 		  mb = New MemoryBlock(sz + 1)
-		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, Ptr(LineNumber), mb)
+		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, LineNumber, mb)
 		  Return mb.CString(0)
 		End Function
 	#tag EndMethod
@@ -46,7 +46,7 @@ Protected Class Margin
 	#tag Method, Flags = &h0
 		Sub Text(LineNumber As Integer, Assigns NewText As String)
 		  Dim mb As MemoryBlock = NewText
-		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, Ptr(LineNumber), mb)
+		  Call SciMessage(SciRef, SCI_MARGINSETTEXT, LineNumber, mb)
 		End Sub
 	#tag EndMethod
 

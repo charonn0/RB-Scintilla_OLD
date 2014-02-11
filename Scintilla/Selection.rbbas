@@ -10,7 +10,7 @@ Protected Class Selection
 	#tag Method, Flags = &h0
 		Sub ClearSelection(NewCaretPosition As Integer = - 1)
 		  If NewCaretPosition <= -1 Then NewCaretPosition = 0
-		  Call SciMessage(SciRef, SCI_SETEMPTYSELECTION, Ptr(NewCaretPosition), Nil)
+		  Call SciMessage(SciRef, SCI_SETEMPTYSELECTION, NewCaretPosition, 0)
 		End Sub
 	#tag EndMethod
 

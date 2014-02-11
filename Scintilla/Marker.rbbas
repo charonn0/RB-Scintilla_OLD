@@ -17,7 +17,7 @@ Protected Class Marker
 		Sub PixMap(Assigns RawPixMapData As String)
 		  Dim mb As New MemoryBlock(RawPixMapData.LenB + 1)
 		  mb.CString(0) = RawPixMapData
-		  Call SciMessage(SciRef, SCI_MARKERDEFINEPIXMAP, Ptr(MarkerNumber), mb)
+		  Call SciMessage(SciRef, SCI_MARKERDEFINEPIXMAP, MarkerNumber, mb)
 		End Sub
 	#tag EndMethod
 

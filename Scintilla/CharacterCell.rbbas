@@ -9,7 +9,7 @@ Protected Class CharacterCell
 
 	#tag Method, Flags = &h0
 		Function Operator_Convert() As String
-		  Dim char As Integer = SciMessage(SciRef, SCI_GETCHARAT, Ptr(CharPosition), Nil)
+		  Dim char As Integer = SciMessage(SciRef, SCI_GETCHARAT, CharPosition, 0)
 		  If char > 0 Then
 		    Return Chr(char)
 		  End If

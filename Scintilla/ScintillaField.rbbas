@@ -122,6 +122,8 @@ Inherits RectControl
 		    If SciRef <= 0 Then Raise New PlatformNotSupportedException
 		    pHandle = Me.Window.Handle
 		    
+		    Me.Lexer = Scintilla.LexerTypes.NULL
+		    
 		    Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
 		    
 		    Subclass(pHandle, Me)
@@ -145,7 +147,7 @@ Inherits RectControl
 		    Dim wparam As Integer = Text.LenB
 		    Dim lparam As New MemoryBlock(Text.LenB * 2)
 		    lparam.CString(0) = Text
-		    Call SciMessage(SciRef, SCI_APPENDTEXT, Ptr(wparam), lparam)
+		    Call SciMessage(SciRef, SCI_APPENDTEXT, wparam, lparam)
 		  End If
 		End Sub
 	#tag EndMethod
@@ -1423,7 +1425,7 @@ Inherits RectControl
 			  Dim len As Integer = SciMessage(SciRef, SCI_GETLENGTH, Nil, Nil)
 			  If len > 0 Then
 			    Dim mb As New MemoryBlock(len * 2)
-			    len = SciMessage(SciRef, SCI_GETTEXT, Ptr(mb.Size), mb)
+			    len = SciMessage(SciRef, SCI_GETTEXT, mb.Size, mb)
 			    Dim ret As String = mb.CString(0)
 			    Return ret
 			  End If

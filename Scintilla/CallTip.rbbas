@@ -22,7 +22,7 @@ Protected Class CallTip
 		Sub ShowTip(Position As Integer, TipText As String)
 		  Dim mb As New MemoryBlock(TipText.LenB + 1)
 		  mb.CString(0) = TipText
-		  Call SciMessage(SciRef, SCI_CALLTIPSHOW, Ptr(Position), mb)
+		  Call SciMessage(SciRef, SCI_CALLTIPSHOW, Position, mb)
 		End Sub
 	#tag EndMethod
 

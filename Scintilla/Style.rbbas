@@ -145,7 +145,7 @@ Protected Class Style
 			    mb.CString(0) = value
 			    p = mb
 			  End If
-			  Call SciMessage(SciRef, SCI_STYLESETFONT, Ptr(Me.StyleNumber), p)
+			  Call SciMessage(SciRef, SCI_STYLESETFONT, Me.StyleNumber, p)
 			End Set
 		#tag EndSetter
 		TextFont As String

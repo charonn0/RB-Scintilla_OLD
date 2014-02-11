@@ -21,7 +21,7 @@ Protected Class Annotation
 
 	#tag Method, Flags = &h0
 		Sub Remove()
-		  Call SciMessage(SciRef, SCI_ANNOTATIONSETTEXT, Ptr(LineNumber), Nil)
+		  Call SciMessage(SciRef, SCI_ANNOTATIONSETTEXT, LineNumber, Nil)
 		End Sub
 	#tag EndMethod
 
@@ -71,7 +71,7 @@ Protected Class Annotation
 			Get
 			  Dim len As Integer = SciMessage(SciRef, SCI_ANNOTATIONGETTEXT, LineNumber, 0)
 			  Dim mb As New MemoryBlock(len + 1)
-			  Call SciMessage(SciRef, SCI_ANNOTATIONGETTEXT, Ptr(LineNumber), mb)
+			  Call SciMessage(SciRef, SCI_ANNOTATIONGETTEXT, LineNumber, mb)
 			  Return mb.CString(0)
 			End Get
 		#tag EndGetter
@@ -79,7 +79,7 @@ Protected Class Annotation
 			Set
 			  Dim mb As New MemoryBlock(value.LenB + 1)
 			  mb.CString(0) = value
-			  Call SciMessage(SciRef, SCI_ANNOTATIONSETTEXT, Ptr(LineNumber), mb)
+			  Call SciMessage(SciRef, SCI_ANNOTATIONSETTEXT, LineNumber, mb)
 			End Set
 		#tag EndSetter
 		Text As String

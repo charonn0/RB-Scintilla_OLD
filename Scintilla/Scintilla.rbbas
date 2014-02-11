@@ -1269,17 +1269,17 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Integer, LParam As Integer) As Integer
-		  #If TargetWin32 Then Return SendMessage(HWND, Command, Ptr(WParam), Ptr(LParam))
-		End Function
-	#tag EndMethod
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function SciMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Integer, LParam As Integer) As Integer
+	#tag EndExternalMethod
 
-	#tag Method, Flags = &h1
-		Protected Function SciMessage(HWND As Integer, Command As Integer, WParam As Ptr, LParam As Ptr) As Integer
-		  #If TargetWin32 Then Return SendMessage(HWND, Command, WParam, LParam)
-		End Function
-	#tag EndMethod
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function SciMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Integer, LParam As Ptr) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function SciMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
+	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function ScreenToClient Lib "User32" (HWND As Integer, Point As Ptr) As Boolean
@@ -1298,10 +1298,6 @@ Protected Module Scintilla
 		  Return New REALbasic.Point(p.Int32Value(0), p.Int32Value(4))
 		End Function
 	#tag EndMethod
-
-	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function SendMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
-	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function SetFocus Lib "User32" (HWND As Integer) As Integer

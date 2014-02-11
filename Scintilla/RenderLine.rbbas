@@ -89,7 +89,7 @@ Protected Class RenderLine
 		Function Text() As String
 		  Dim len As Integer = SciMessage(SciRef, SCI_LINELENGTH, mLineNumber, 0)
 		  Dim mb As New MemoryBlock(len + 1)
-		  Call SciMessage(SciRef, SCI_GETLINE, Ptr(mLineNumber), mb)
+		  Call SciMessage(SciRef, SCI_GETLINE, mLineNumber, mb)
 		  Return mb.CString(0)
 		End Function
 	#tag EndMethod
