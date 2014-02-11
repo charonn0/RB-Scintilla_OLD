@@ -7,24 +7,35 @@ Protected Class Lexer
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Operator_Compare(Lex As Scintilla.LexerTypes) As Integer
-		  Dim i As Integer = SciMessage(SciRef, SCI_GETLEXER, Nil, Nil)
-		  If i = Integer(Lex) Then Return 0
-		  If i > Integer(Lex) Then Return 1
-		  Return -1
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub Operator_Convert(NewLex As Scintilla.LexerTypes)
-		  Dim v As Integer = Integer(NewLex)
-		  Call SciMessage(SciRef, SCI_SETLEXER, v, 0)
-		  Call SciMessage(SciRef, SCI_COLORISE, 0, -1)
-		  
+		Sub Keywords(Assigns NewWordList() As String)
 		  
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Operator_Compare(Lex As Scintilla.LexerTypes) As Integer
+		  
+		End Function
+	#tag EndMethod
+
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return LexerTypes(SciMessage(SciRef, SCI_GETLEXER, Nil, Nil))
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Dim v As Integer = Integer(value)
+			  Call SciMessage(SciRef, SCI_SETLEXER, v, 0)
+			  Call SciMessage(SciRef, SCI_COLORISE, 0, -1)
+			  
+			  
+			End Set
+		#tag EndSetter
+		Language As Scintilla.LexerTypes
+	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter

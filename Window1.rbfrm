@@ -696,6 +696,37 @@ Begin Window Window1
       Visible         =   True
       Width           =   80
    End
+   Begin PushButton PushButton1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Untitled"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   830
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   35
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   262
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndWindow
 
@@ -841,7 +872,7 @@ End
 		  
 		  'Me.Lexer = Scintilla.LexerTypes.AUTOMATIC
 		  Me.Lexer.Name = "AUTOMATIC"
-		  MsgBox(Me.Lexer.Name)
+		  'MsgBox(Me.Lexer.Name)
 		  Me.Margin(0).Width = 15
 		  Me.Margin(1).Width = 15
 		  Me.Margin(0).Type = 1
@@ -1108,6 +1139,17 @@ End
 		  For i As Integer = 0 To 99
 		    Me.AddRow(Str(i))
 		  Next
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  If Not ScintillaField1.CallTip.IsActive Then
+		    ScintillaField1.CallTip.ShowTip(ScintillaField1.CaretPosition, "Hello, world!")
+		  Else
+		    ScintillaField1.CallTip.HideTip
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

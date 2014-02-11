@@ -157,6 +157,12 @@ Inherits RectControl
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CallTip() As Scintilla.CallTip
+		  Return New Scintilla.CallTip(SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CharAtPos(Position As Integer) As Scintilla.CharacterCell
 		  Return New Scintilla.CharacterCell(Position, SciRef)
 		End Function
@@ -248,8 +254,7 @@ Inherits RectControl
 
 	#tag Method, Flags = &h0
 		Sub Lexer(Assigns LexNum As Scintilla.LexerTypes)
-		  Dim l As Scintilla.Lexer = Me.Lexer
-		  l = LexNum
+		  Me.Lexer.Language = LexNum
 		End Sub
 	#tag EndMethod
 
@@ -287,6 +292,12 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Function PositionFromXY(X As Integer, Y As Integer) As Integer
 		  Return SciMessage(SciRef, SCI_CHARPOSITIONFROMPOINT, X, Y)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ScintillaHandle() As Integer
+		  Return SciRef
 		End Function
 	#tag EndMethod
 
