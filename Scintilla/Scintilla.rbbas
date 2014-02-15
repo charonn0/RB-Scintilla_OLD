@@ -1221,6 +1221,14 @@ Protected Module Scintilla
 		End Function
 	#tag EndMethod
 
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function GetLastError Lib "Kernel32" () As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function GetModuleHandle Lib "Kernel32" Alias "GetModuleHandleW" (ModuleName As WString) As Integer
+	#tag EndExternalMethod
+
 	#tag Method, Flags = &h0
 		Function GetPixMap(Extends Image As Picture) As String
 		  Dim colors As New Dictionary
@@ -1256,6 +1264,10 @@ Protected Module Scintilla
 		Private Soft Declare Function GetSystemMetrics Lib "User32" (nIndex As Integer) As Integer
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function GetWindowRect Lib "User32" (HWND As Integer, ByRef WinRECT As RECT) As Boolean
+	#tag EndExternalMethod
+
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  ' IMPORTANT: THIS METHOD MUST BE CALLED IN ORDER TO INITIALIZE SCINTILLA.
@@ -1268,6 +1280,10 @@ Protected Module Scintilla
 		  #endif
 		End Function
 	#tag EndMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function MoveWindow Lib "User32" (HWND As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer, Repaint As Boolean) As Boolean
+	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function SciMessage Lib "User32" Alias "SendMessageA" (HWND As Integer, Message As UInt32, WParam As Integer, LParam As Integer) As Integer
@@ -1304,6 +1320,10 @@ Protected Module Scintilla
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function SetParent Lib "User32" (HWNDChild As Integer, HWNDNewParent As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function SetWindowLong Lib "User32" Alias "SetWindowLongW" (HWND As Integer, Index As Integer, NewLong As Ptr) As Integer
 	#tag EndExternalMethod
 
@@ -1318,6 +1338,13 @@ Protected Module Scintilla
 	#tag Structure, Name = CharacterRange, Flags = &h21
 		cpMin As Integer
 		cpMax As Integer
+	#tag EndStructure
+
+	#tag Structure, Name = RECT, Flags = &h21
+		left As Integer
+		  top As Integer
+		  right As Integer
+		bottom As Integer
 	#tag EndStructure
 
 	#tag Structure, Name = SCNotification, Flags = &h1

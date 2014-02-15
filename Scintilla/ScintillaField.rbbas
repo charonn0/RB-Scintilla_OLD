@@ -3,7 +3,7 @@ Class ScintillaField
 Inherits RectControl
 	#tag Event
 		Sub Close()
-		  UnSubclass(pHandle)
+		  UnSubclass(ParentHandle)
 		  UnSubclass(SciRef)
 		  RaiseEvent Close()
 		End Sub
@@ -118,23 +118,31 @@ Inherits RectControl
 	#tag Event
 		Sub Open()
 		  #If TargetWin32 Then
+		    ParentHandle = CreateWindowEx(0, "RB_Pane", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
 		    SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
-		    If SciRef <= 0 Then Raise New PlatformNotSupportedException
-		    pHandle = Me.Window.Handle
+		    Dim h As Integer = SetParent(SciRef, ParentHandle)
+		    If h = Me.Window.Handle Then
+		      LockRect = New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
+		      If SciRef <= 0 Then Raise New PlatformNotSupportedException
+		      
+		      Me.Lexer = Scintilla.LexerTypes.NULL
+		      
+		      Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
+		      
+		      Subclass(ParentHandle, Me)
+		      Subclass(SciRef, Me)
+		      Subclass(h, Me)
+		      Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
+		      Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
+		      
+		      
+		      For i As Integer = 25 To 31
+		        Me.Markers(i).Type = i - 25
+		      Next
+		    Else
+		      Raise New RuntimeException
+		    End If
 		    
-		    Me.Lexer = Scintilla.LexerTypes.NULL
-		    
-		    Call SciMessage(SciRef, SCI_SETMODEVENTMASK, SC_MODEVENTMASKALL, 0)
-		    
-		    Subclass(pHandle, Me)
-		    Subclass(SciRef, Me)
-		    Call SciMessage(SciRef, SCI_SETSAVEPOINT, Nil, Nil)
-		    Call SciMessage(SciRef, SCI_USEPOPUP, 0, 0)
-		    
-		    
-		    For i As Integer = 25 To 31
-		      Me.Markers(i).Type = i - 25
-		    Next
 		  #endif
 		  RaiseEvent Open()
 		End Sub
@@ -210,6 +218,17 @@ Inherits RectControl
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Function Dimensions() As REALbasic.Rect
+		  Dim wr As RECT
+		  If Not GetWindowRect(SciRef, wr) Then
+		    wr.left = GetLastError()
+		    Break
+		  End If
+		  Return New REALbasic.Rect(wr.left, wr.top, wr.right - wr.left, wr.bottom - wr.top)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub EmptyUndoBuffer()
 		  Call SciMessage(SciRef, SCI_EMPTYUNDOBUFFER, Nil, Nil)
@@ -219,6 +238,12 @@ Inherits RectControl
 	#tag Method, Flags = &h0
 		Function EOL() As Scintilla.EOL
 		  Return New Scintilla.EOL(SciRef)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Handle() As Integer
+		  Return ParentHandle
 		End Function
 	#tag EndMethod
 
@@ -468,18 +493,11 @@ Inherits RectControl
 		        End If
 		        
 		      End Select
-		    Else ' Message to the container window
+		    ElseIf HWND = ParentHandle Then ' Message to the container child window
 		      Select Case msg
 		        
 		      Case WM_SETFOCUS
 		        RaiseEvent GotFocus()
-		        
-		      Case WM_SIZING
-		        RaiseEvent Resizing()
-		        
-		      Case WM_SIZE
-		        RaiseEvent Resized()
-		        
 		        
 		      Case WM_NOTIFY
 		        Dim notification As SCNotification
@@ -540,6 +558,34 @@ Inherits RectControl
 		        End If
 		        'Return True
 		      End Select
+		    ElseIf HWND = Me.Window.Handle Then ' message to the top-level window
+		      Select Case msg
+		      Case WM_SIZING
+		        RaiseEvent Resizing()
+		        
+		      Case WM_SIZE
+		        Dim p As New MemoryBlock(8)
+		        Dim i As Integer = Integer(lParam)
+		        p.Int32Value(0) = BitAnd(i, &hFFFF)
+		        p.Int16Value(4) = ShiftRight(i, 16)
+		        Dim wr As RECT
+		        If Not GetWindowRect(ParentHandle, wr) Then
+		          i = GetLastError()
+		          Break
+		        End If
+		        Dim r As New REALbasic.Rect(wr.left, wr.top, wr.right - wr.left, wr.bottom - wr.top)
+		        
+		        If Me.LockLeft Then Me.Left = LockRect.Left
+		        If Me.LockTop Then Me.Top = LockRect.Top
+		        If Me.LockBottom Then Me.Height = r.Height - LockRect.Bottom
+		        If Me.LockRight Then Me.Width = r.Width - LockRect.Width
+		        
+		        RaiseEvent Resized()
+		        
+		      End Select
+		      
+		    Else ' some other window; this should never happen
+		      'Break
 		    End If
 		  #endif
 		End Function
@@ -1371,6 +1417,10 @@ Inherits RectControl
 		LineCount As Integer
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h1
+		Protected LockRect As REALbasic.Rect
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -1390,7 +1440,7 @@ Inherits RectControl
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
-		Private pHandle As Integer
+		Private ParentHandle As Integer
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -1464,6 +1514,10 @@ Inherits RectControl
 		#tag EndSetter
 		TopLine As Integer
 	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private WndAtom As Integer
+	#tag EndProperty
 
 
 	#tag Constant, Name = GWL_WNDPROC, Type = Double, Dynamic = False, Default = \"-4", Scope = Protected

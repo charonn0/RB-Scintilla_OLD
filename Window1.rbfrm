@@ -24,36 +24,6 @@ Begin Window Window1
    Title           =   "Untitled"
    Visible         =   True
    Width           =   1.037e+3
-   Begin ScintillaField ScintillaField1
-      AcceptFocus     =   ""
-      AllowUndo       =   ""
-      AutoDeactivate  =   True
-      CaretPeriod     =   ""
-      CaretPosition   =   ""
-      DoubleBuffered  =   ""
-      Enabled         =   True
-      Height          =   588
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   0
-      LineCount       =   ""
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   True
-      LockTop         =   True
-      Overtype        =   ""
-      ReadOnly        =   ""
-      Scope           =   0
-      TabIndex        =   0
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   0
-      TopLine         =   ""
-      Visible         =   True
-      Width           =   658
-   End
    Begin CheckBox ShowEOL
       AutoDeactivate  =   True
       Bold            =   ""
@@ -727,6 +697,36 @@ Begin Window Window1
       Visible         =   True
       Width           =   80
    End
+   Begin ScintillaField ScintillaField1
+      AcceptFocus     =   ""
+      AllowUndo       =   ""
+      AutoDeactivate  =   True
+      CaretPeriod     =   ""
+      CaretPosition   =   ""
+      DoubleBuffered  =   ""
+      Enabled         =   True
+      Height          =   588
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   0
+      LineCount       =   ""
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   True
+      Overtype        =   ""
+      ReadOnly        =   ""
+      Scope           =   0
+      TabIndex        =   0
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   0
+      TopLine         =   ""
+      Visible         =   True
+      Width           =   658
+   End
 End
 #tag EndWindow
 
@@ -812,247 +812,6 @@ End
 
 #tag EndWindowCode
 
-#tag Events ScintillaField1
-	#tag Event
-		Sub TextChanged()
-		  'Listbox1.AddRow(CurrentMethodName)
-		  'Listbox1.ScrollPosition = Listbox1.LastIndex
-		  TextArea1.Text = Me.Text
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
-		  Listbox1.AddRow(CurrentMethodName + "(MenuItem, " + Str(x), Str(y))
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		  
-		  Dim l As Scintilla.RenderLine = Me.LineFromPosition(Me.PositionFromXY(x, y))
-		  If l <> Nil Then
-		    If l.Annotation.Text = "" Then
-		      Dim mnu As New MenuItem("Annotate line")
-		      mnu.Tag = l
-		      base.Append(mnu)
-		    Else
-		      Dim mnu As New MenuItem("Clear annotation")
-		      mnu.Tag = l
-		      base.Append(mnu)
-		    End If
-		    If Me.Selection.Text <> "" Then
-		      Dim mnu As New MenuItem("Style")
-		      For i As Integer = 0 To 31
-		        Dim m As New MenuItem(Str(i))
-		        m.Tag = i
-		        mnu.Append(m)
-		      Next
-		      base.Append(mnu)
-		    End If
-		    Return True
-		  End If
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub Open()
-		  Me.Style(0).TextFont = "Consolas"
-		  Me.Style(0).TextSize = 12
-		  Me.Style(0).TextColor = &c00000000
-		  
-		  Me.Style(1) = Me.Style(0)
-		  Me.Style(1).Bold = True
-		  
-		  Me.Style(2) = Me.Style(0)
-		  Me.Style(2).Italic = True
-		  
-		  Me.Style(3) = Me.Style(0)
-		  Me.Style(3).Hotspot = True
-		  Me.Style(3).Background = &cC0C0C000
-		  Me.Style(3).TextColor = &c0000FF00
-		  
-		  Me.Style(4) = Me.Style(0)
-		  Me.Style(4).Background = &c8080FF00 ' current line
-		  
-		  
-		  'Me.Lexer = Scintilla.LexerTypes.AUTOMATIC
-		  Me.Lexer.Name = "AUTOMATIC"
-		  'MsgBox(Me.Lexer.Name)
-		  Me.Margin(0).Width = 15
-		  Me.Margin(1).Width = 15
-		  Me.Margin(0).Type = 1
-		  Me.Margin(1).Type = 0
-		  Me.Margin(1).SymbolMask = -33554432
-		  Me.Margin(0).Clickable = True
-		  
-		  For i As Integer = 0 To 31
-		    Me.AppendText(Chr(i))
-		    Me.Markers(i).Type = 0
-		    Call Me.Line(i).SetMarker(Me.Markers(i))
-		  Next
-		  'Dim p As Picture
-		  'Dim f As FolderItem = GetOpenFolderItem("")
-		  'p = Picture.Open(f)
-		  'Me.Markers(27).PixMap = p.GetPixMap
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
-		  Listbox1.AddRow(CurrentMethodName + "(MenuItem)")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		  
-		  Select Case hitItem.Text
-		  Case "Annotate line"
-		    Dim l As Scintilla.RenderLine = hitItem.Tag
-		    If l <> Nil Then
-		      l.Annotation.Style = Me.Style(3)
-		      l.Annotation.Style.Background = &cFF800000
-		      l.Annotation.Style.Italic = True
-		      l.Annotation.Text = "Syntax error----------------------------------------^"
-		      l.Annotation.Visible = True
-		    End If
-		    Return True
-		  Case "Clear annotation"
-		    Dim l As Scintilla.RenderLine = hitItem.Tag
-		    l.Annotation.Remove
-		    Return True
-		  Else
-		    Me.Selection.Style = Me.Style(Val(hitItem.Text))
-		    Return True
-		    
-		  End Select
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub MarginClicked(MarginNumber As Integer, LineNumber As Integer)
-		  Listbox1.AddRow(CurrentMethodName + "("+ Str(MarginNumber) + ", " + Str(LineNumber) + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		  
-		  If Not Me.Line(LineNumber).HasMarker(Me.Markers(1)) Then
-		    MarkerHandle = Me.Line(LineNumber).SetMarker(Me.Markers(1))
-		  Else
-		    Me.Line(LineNumber).RemoveMarker(MarkerHandle)
-		  End If
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub GotFocus()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub HotspotClicked(Position As Integer)
-		  Listbox1.AddRow(CurrentMethodName + "("+ Str(Position) + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub HotspotDoubleClicked(Position As Integer)
-		  Listbox1.AddRow(CurrentMethodName + "("+ Str(Position) + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub LostFocus()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseEnter()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseExit()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub Resized()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub Resizing()
-		  Listbox1.AddRow(CurrentMethodName)
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub KeyDown(key As String)
-		  Dim r As String
-		  Dim char As Integer
-		  For i As Integer = 1 To LenB(key)
-		    char = AscB(MidB(key, i, 1))
-		    If char<=34 Or char=37 Or char=38 Then
-		      r = r + "&h" + RightB("0" + Hex(char), 2)
-		    Elseif (char>=43 And char<=63) Or (char>=65 And char<=90) Or (char>=97 And char<=122) Then
-		      r = r + Chr(char)
-		    Else
-		      r = r + "&h" + RightB("0" + Hex(char), 2)
-		    End If
-		    
-		  Next
-		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		  
-		  If Key = "F" Then
-		    ScintillaField1.Autocomplete.ShowList("F", Split("Fred Frog Fork Fuck Fail Free", " "))
-		  End If
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseDown(X As Integer, Y As Integer, IsContextualClick As Boolean)
-		  If IsContextualClick Then
-		    Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ", True)")
-		  Else
-		    Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ", False)")
-		  End If
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub MouseUp(X As Integer, Y As Integer)
-		  Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub ScintillaEvent(EventCode As Integer)
-		  Listbox1.AddRow(CurrentMethodName + "(&h"+ Hex(EventCode) + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub KeyUp(key As String)
-		  Dim r As String
-		  Dim char As Integer
-		  For i As Integer = 1 To LenB(key)
-		    char = AscB(MidB(key, i, 1))
-		    If char<=34 Or char=37 Or char=38 Then
-		      r = r + "&h" + RightB("0" + Hex(char), 2)
-		    Elseif (char>=43 And char<=63) Or (char>=65 And char<=90) Or (char>=97 And char<=122) Then
-		      r = r + Chr(char)
-		    Else
-		      r = r + "&h" + RightB("0" + Hex(char), 2)
-		    End If
-		    
-		  Next
-		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
-		  Listbox1.ScrollPosition = Listbox1.LastIndex
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub AutocompleteSelection(SelectedText As String)
-		  Break
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub AutoCompletionCancel()
-		  'Break
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events ShowEOL
 	#tag Event
 		Sub Action()
@@ -1150,6 +909,258 @@ End
 		  Else
 		    ScintillaField1.CallTip.HideTip
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ScintillaField1
+	#tag Event
+		Sub TextChanged()
+		  'Listbox1.AddRow(CurrentMethodName)
+		  'Listbox1.ScrollPosition = Listbox1.LastIndex
+		  TextArea1.Text = Me.Text
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
+		  Listbox1.AddRow(CurrentMethodName + "(MenuItem, " + Str(x), Str(y))
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
+		  Dim l As Scintilla.RenderLine = Me.LineFromPosition(Me.PositionFromXY(x, y))
+		  If l <> Nil Then
+		    If l.Annotation.Text = "" Then
+		      Dim mnu As New MenuItem("Annotate line")
+		      mnu.Tag = l
+		      base.Append(mnu)
+		    Else
+		      Dim mnu As New MenuItem("Clear annotation")
+		      mnu.Tag = l
+		      base.Append(mnu)
+		    End If
+		    If Me.Selection.Text <> "" Then
+		      Dim mnu As New MenuItem("Style")
+		      For i As Integer = 0 To 31
+		        Dim m As New MenuItem(Str(i))
+		        m.Tag = i
+		        mnu.Append(m)
+		      Next
+		      base.Append(mnu)
+		    End If
+		    Return True
+		  End If
+		End Function
+	#tag EndEvent
+	#tag Event
+		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
+		  Listbox1.AddRow(CurrentMethodName + "(MenuItem)")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
+		  Select Case hitItem.Text
+		  Case "Annotate line"
+		    Dim l As Scintilla.RenderLine = hitItem.Tag
+		    If l <> Nil Then
+		      l.Annotation.Style = Me.Style(3)
+		      l.Annotation.Style.Background = &cFF800000
+		      l.Annotation.Style.Italic = True
+		      l.Annotation.Text = "Syntax error----------------------------------------^"
+		      l.Annotation.Visible = True
+		    End If
+		    Return True
+		  Case "Clear annotation"
+		    Dim l As Scintilla.RenderLine = hitItem.Tag
+		    l.Annotation.Remove
+		    Return True
+		  Else
+		    Me.Selection.Style = Me.Style(Val(hitItem.Text))
+		    Return True
+		    
+		  End Select
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub MarginClicked(MarginNumber As Integer, LineNumber As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "("+ Str(MarginNumber) + ", " + Str(LineNumber) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
+		  If Not Me.Line(LineNumber).HasMarker(Me.Markers(1)) Then
+		    MarkerHandle = Me.Line(LineNumber).SetMarker(Me.Markers(1))
+		  Else
+		    Me.Line(LineNumber).RemoveMarker(MarkerHandle)
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub GotFocus()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub HotspotClicked(Position As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "("+ Str(Position) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub HotspotDoubleClicked(Position As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "("+ Str(Position) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub LostFocus()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseEnter()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseExit()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Resized()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Resizing()
+		  Listbox1.AddRow(CurrentMethodName)
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub KeyDown(key As String)
+		  Dim r As String
+		  Dim char As Integer
+		  For i As Integer = 1 To LenB(key)
+		    char = AscB(MidB(key, i, 1))
+		    If char<=34 Or char=37 Or char=38 Then
+		      r = r + "&h" + RightB("0" + Hex(char), 2)
+		    Elseif (char>=43 And char<=63) Or (char>=65 And char<=90) Or (char>=97 And char<=122) Then
+		      r = r + Chr(char)
+		    Else
+		      r = r + "&h" + RightB("0" + Hex(char), 2)
+		    End If
+		    
+		  Next
+		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		  
+		  If Key = "F" Then
+		    ScintillaField1.Autocomplete.ShowList("F", Split("Fred Frog Fork Fuck Fail Free", " "))
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseDown(X As Integer, Y As Integer, IsContextualClick As Boolean)
+		  If IsContextualClick Then
+		    Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ", True)")
+		  Else
+		    Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ", False)")
+		  End If
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseUp(X As Integer, Y As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "("+ Str(X) + ", " + Str(Y) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub ScintillaEvent(EventCode As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "(&h"+ Hex(EventCode) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub KeyUp(key As String)
+		  Dim r As String
+		  Dim char As Integer
+		  For i As Integer = 1 To LenB(key)
+		    char = AscB(MidB(key, i, 1))
+		    If char<=34 Or char=37 Or char=38 Then
+		      r = r + "&h" + RightB("0" + Hex(char), 2)
+		    Elseif (char>=43 And char<=63) Or (char>=65 And char<=90) Or (char>=97 And char<=122) Then
+		      r = r + Chr(char)
+		    Else
+		      r = r + "&h" + RightB("0" + Hex(char), 2)
+		    End If
+		    
+		  Next
+		  Listbox1.AddRow(CurrentMethodName + "("+ r + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub AutocompleteSelection(SelectedText As String)
+		  Break
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub AutoCompletionCancel()
+		  'Break
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Open()
+		  For i As Integer = 0 To 31
+		    Me.Style(i).TextFont = "Tahoma"
+		    Me.Style(i).TextSize = 11
+		    Me.Style(i).TextColor = &c00000000
+		  Next
+		  '
+		  'Me.Style(1) = Me.Style(0)
+		  'Me.Style(1).Bold = True
+		  '
+		  'Me.Style(2) = Me.Style(0)
+		  'Me.Style(2).Italic = True
+		  '
+		  'Me.Style(3) = Me.Style(0)
+		  'Me.Style(3).Hotspot = True
+		  'Me.Style(3).Background = &cC0C0C000
+		  'Me.Style(3).TextColor = &c0000FF00
+		  '
+		  'Me.Style(4) = Me.Style(0)
+		  'Me.Style(4).Background = &c8080FF00 ' current line
+		  'Dim i As Integer = Integer(Scintilla.LexerTypes.VB)
+		  'Break
+		  '
+		  '
+		  ''Me.Lexer = Scintilla.LexerTypes.AUTOMATIC
+		  'Me.Lexer.Name = "AUTOMATIC"
+		  ''MsgBox(Me.Lexer.Name)
+		  'Me.Margin(0).Width = 15
+		  'Me.Margin(1).Width = 15
+		  'Me.Margin(0).Type = 1
+		  'Me.Margin(1).Type = 0
+		  'Me.Margin(1).SymbolMask = -33554432
+		  'Me.Margin(0).Clickable = True
+		  '
+		  'For i As Integer = 0 To 31
+		  'Me.AppendText(Chr(i))
+		  'Me.Markers(i).Type = 0
+		  'Call Me.Line(i).SetMarker(Me.Markers(i))
+		  'Next
+		  ''Dim p As Picture
+		  ''Dim f As FolderItem = GetOpenFolderItem("")
+		  ''p = Picture.Open(f)
+		  ''Me.Markers(27).PixMap = p.GetPixMap
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub StyleNeeded(StartPosition As Integer, EndPosition As Integer)
+		  Listbox1.AddRow(CurrentMethodName + "(" + Str(StartPosition) + ")" + "(" + Str(EndPosition) + ")")
+		  Listbox1.ScrollPosition = Listbox1.LastIndex
 		End Sub
 	#tag EndEvent
 #tag EndEvents
