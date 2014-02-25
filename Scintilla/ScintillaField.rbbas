@@ -119,7 +119,7 @@ Inherits RectControl
 		Sub Open()
 		  #If TargetWin32 Then
 		    ParentHandle = CreateWindowEx(0, "RB_Pane", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
-		    SciRef = CreateWindowEx(0, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE Or WS_EX_CONTROLPARENT, Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
+		    SciRef = CreateWindowEx(WS_EX_CONTROLPARENT, "Scintilla", "", WS_CHILD Or WS_CLIPCHILDREN Or WS_TABSTOP Or WS_VISIBLE , Me.Left, Me.Top, Me.Width, Me.Height, Me.Window.Handle, 0, 0, Nil)
 		    Dim h As Integer = SetParent(SciRef, ParentHandle)
 		    If h = Me.Window.Handle Then
 		      LockRect = New REALbasic.Rect(Me.Left, Me.Top, Me.Width, Me.Height)
